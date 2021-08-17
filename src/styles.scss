@@ -5,6 +5,11 @@
   right: 0;
   width: 100%;
   overflow: hidden;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
 
   img {
     position: relative;
