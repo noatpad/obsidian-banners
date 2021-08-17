@@ -1,9 +1,9 @@
-import { MarkdownPostProcessorContext, Vault, Workspace } from 'obsidian';
+import { Events, MarkdownPostProcessorContext, Vault, Workspace } from 'obsidian';
 import clamp from 'lodash/clamp';
 import isURL from 'validator/lib/isURL';
 import Banners from './main';
 
-const BANNER_ID = 'obsidian-banner';
+const BANNER_CLASS = 'obsidian-banner';
 
 export interface FileData {
   [key: string]: XY
@@ -22,17 +22,19 @@ export default class BannersProcessor {
   plugin: Banners;
   workspace: Workspace;
   vault: Vault;
+  events: Events;
   prevPath: string;
 
   constructor(plugin: Banners) {
     this.plugin = plugin;
     this.workspace = plugin.app.workspace;
     this.vault = plugin.app.vault;
+    this.events = plugin.events;
     this.register();
   }
 
   // Register postprocessor and listeners
-  register(): void {
+  register() {
     this.plugin.registerMarkdownPostProcessor(async (_, ctx: MPPCPlus) => {
       const { frontmatter, sourcePath } = ctx;
       const viewContainer = ctx.containerEl.parentElement as HTMLDivElement;
@@ -51,7 +53,7 @@ export default class BannersProcessor {
 
       // Create banner if it hasn't been already made, otherwise update the banner image
       const { banner: src } = frontmatter;
-      const bannerEl = viewContainer.querySelector(`.${BANNER_ID}`);
+      const bannerEl = viewContainer.querySelector(`.${BANNER_CLASS}`);
       if (!bannerEl) {
         this.addBanner(viewContainer, src, sourcePath);
       } else {
@@ -68,6 +70,15 @@ export default class BannersProcessor {
         .querySelectorAll('.markdown-preview-view.has-banner')
         .forEach((b: HTMLDivElement) => { this.setBannerOffset(b) });
     });
+
+    this.events.on('settingsSave', () => {
+      this.workspace.containerEl
+        .querySelectorAll('.markdown-preview-view.has-banner')
+        .forEach((b: HTMLDivElement) => {
+          this.restyleBanner(b);
+          this.setBannerOffset(b);
+        });
+    })
 
     // When deleting a file, remove its banner data
     this.vault.on('delete', async ({ path }) => {
@@ -89,7 +100,8 @@ export default class BannersProcessor {
   }
 
   // Create a banner for a given Markdown Preview View
-  addBanner(wrapper: HTMLDivElement, src: string, path: string): void {
+  addBanner(wrapper: HTMLDivElement, src: string, path: string) {
+    const { height, style } = this.plugin.settings;
     const bannerEl = document.createElement('div');
     const img = document.createElement('img');
 
@@ -102,7 +114,8 @@ export default class BannersProcessor {
     img.onload = () => { this.setBannerOffset(wrapper) };
     img.src = this.parseSource(src);
 
-    bannerEl.className = BANNER_ID;
+    bannerEl.className = BANNER_CLASS;
+    bannerEl.style.height = `${height}px`;
     bannerEl.appendChild(img);
 
     // Set up banner image drag handlers
@@ -143,17 +156,31 @@ export default class BannersProcessor {
 
     wrapper.prepend(bannerEl);
     wrapper.addClass('has-banner');
+
+    const markdown = wrapper.querySelector('.markdown-preview-section') as HTMLDivElement;
+    markdown.style.marginTop = `${height}px`;
   }
 
   // Remove banner from view
-  removeBanner(parent: HTMLElement): void {
+  removeBanner(wrapper: HTMLElement) {
     // If banner doesn't exist, do nothing
-    const bannerDiv = parent.querySelector(`.${BANNER_ID}`);
+    const bannerDiv = wrapper.querySelector(`.${BANNER_CLASS}`);
     if (!bannerDiv) { return }
 
     bannerDiv.remove();
-    parent.removeClass('has-banner');
-    parent.removeAttribute('path');
+    wrapper.removeClass('has-banner');
+    wrapper.removeAttribute('path');
+
+    const markdown = wrapper.querySelector('.markdown-preview-section') as HTMLDivElement;
+    markdown.style.marginTop = '';
+  }
+
+  restyleBanner(wrapper: HTMLDivElement) {
+    const { height, style } = this.plugin.settings;
+    const bannerEl = wrapper.querySelector('.obsidian-banner') as HTMLDivElement;
+    const markdown = wrapper.querySelector('.markdown-preview-section') as HTMLDivElement;
+    bannerEl.style.height = `${height}px`;
+    markdown.style.marginTop = `${height}px`;
   }
 
   // Set banner image positioning
@@ -209,13 +236,13 @@ export default class BannersProcessor {
   }
 
   // Upsert banner data for a file
-  async upsertFileData(path: string, val: XY): Promise<void> {
+  async upsertFileData(path: string, val: XY) {
     this.plugin.fileData[path] = val;
     await this.plugin.saveData();
   }
 
   // Remove banner data for a file if necessary
-  async removeFileData(path: string): Promise<void> {
+  async removeFileData(path: string) {
     if (!this.plugin.fileData[path]) { return }
     delete this.plugin.fileData[path];
     await this.plugin.saveData();
