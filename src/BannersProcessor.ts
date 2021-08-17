@@ -71,6 +71,7 @@ export default class BannersProcessor {
         .forEach((b: HTMLDivElement) => { this.setBannerOffset(b) });
     });
 
+    // When settings change, restyle the banners with the current settings
     this.events.on('settingsSave', () => {
       this.workspace.containerEl
         .querySelectorAll('.markdown-preview-view.has-banner')
@@ -114,7 +115,9 @@ export default class BannersProcessor {
     img.onload = () => { this.setBannerOffset(wrapper) };
     img.src = this.parseSource(src);
 
-    bannerEl.className = BANNER_CLASS;
+    const bannerClasses = [BANNER_CLASS];
+    if (style === 'gradient') { bannerClasses.push('gradient') }
+    bannerEl.addClasses(bannerClasses);
     bannerEl.style.height = `${height}px`;
     bannerEl.appendChild(img);
 
@@ -175,11 +178,19 @@ export default class BannersProcessor {
     markdown.style.marginTop = '';
   }
 
+  // Restyle the current banner
   restyleBanner(wrapper: HTMLDivElement) {
     const { height, style } = this.plugin.settings;
     const bannerEl = wrapper.querySelector('.obsidian-banner') as HTMLDivElement;
-    const markdown = wrapper.querySelector('.markdown-preview-section') as HTMLDivElement;
     bannerEl.style.height = `${height}px`;
+
+    if (style === 'gradient') {
+      bannerEl.addClass('gradient');
+    } else {
+      bannerEl.removeClass('gradient');
+    }
+
+    const markdown = wrapper.querySelector('.markdown-preview-section') as HTMLDivElement;
     markdown.style.marginTop = `${height}px`;
   }
 

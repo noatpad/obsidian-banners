@@ -11,6 +11,11 @@
     cursor: grabbing;
   }
 
+  &.gradient {
+    mask-image: linear-gradient(to bottom, black, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, black, transparent);
+  }
+
   img {
     position: relative;
     object-fit: cover;

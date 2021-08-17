@@ -1,14 +1,21 @@
 import { PluginSettingTab, Setting } from "obsidian"
 import Banners from "./main";
 
+type StyleOption = 'solid' | 'gradient';
+
 export interface ISettings {
   height: number,
-  style: 'solid' | 'gradient'
+  style: StyleOption
 }
 
 export const DEFAULT_SETTINGS: ISettings = {
   height: 250,
   style: 'solid'
+}
+
+const STYLE_OPTIONS: Record<StyleOption, string> = {
+  solid: 'Solid',
+  gradient: 'Gradient'
 }
 
 export default class SettingsTab extends PluginSettingTab {
@@ -41,5 +48,16 @@ export default class SettingsTab extends PluginSettingTab {
           await this.saveSettings();
         });
       });
+
+    new Setting(containerEl)
+      .setName('Banner style')
+      .setDesc('Set a style for all of your banners')
+      .addDropdown(dropdown => dropdown
+        .addOptions(STYLE_OPTIONS)
+        .setValue(style)
+        .onChange(async (val: StyleOption) => {
+          this.plugin.settings.style = val;
+          await this.saveSettings();
+        }));
   }
 }
