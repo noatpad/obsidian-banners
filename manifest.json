@@ -1,0 +1,10 @@
+{
+	"id": "obsidian-banners",
+	"name": "Banners",
+	"description": "",
+	"version": "1.0.0",
+	"minAppVersion": "0.9.8",
+	"author": "Danny Hernandez",
+	"authorUrl": "https://github.com/noatpad",
+	"isDesktopOnly": false
+}
