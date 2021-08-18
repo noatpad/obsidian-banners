@@ -1,13 +1,11 @@
-import { Events, MarkdownPostProcessorContext, Vault, Workspace } from 'obsidian';
+import { Events, MarkdownPostProcessorContext, TFile, Vault, Workspace } from 'obsidian';
 import clamp from 'lodash/clamp';
 import isURL from 'validator/lib/isURL';
+
 import Banners from './main';
+import MetaManager, { BannerMetadata } from './MetaManager';
 
 const BANNER_CLASS = 'obsidian-banner';
-
-export interface FileData {
-  [key: string]: XY
-}
 
 interface XY {
   x: number,
@@ -23,6 +21,7 @@ export default class BannersProcessor {
   workspace: Workspace;
   vault: Vault;
   events: Events;
+  metaManager: MetaManager;
   prevPath: string;
 
   constructor(plugin: Banners) {
@@ -30,6 +29,7 @@ export default class BannersProcessor {
     this.workspace = plugin.app.workspace;
     this.vault = plugin.app.vault;
     this.events = plugin.events;
+    this.metaManager = plugin.metaManager;
     this.register();
   }
 
@@ -42,7 +42,6 @@ export default class BannersProcessor {
       // If no `banner` metadata field exists, remove banner (and its data) if necessary and stop here
       if (!frontmatter?.banner) {
         this.removeBanner(viewContainer);
-        await this.removeFileData(sourcePath);
         return;
       }
 
@@ -57,8 +56,11 @@ export default class BannersProcessor {
       if (!bannerEl) {
         this.addBanner(viewContainer, src, sourcePath);
       } else {
+        const parsed = this.parseSource(src);
         const img = bannerEl.querySelector('img');
-        img.src = this.parseSource(src);
+        if (img.src !== parsed) {
+          img.src = this.parseSource(src);
+        }
       }
 
       this.prevPath = sourcePath;
@@ -79,24 +81,16 @@ export default class BannersProcessor {
           this.restyleBanner(b);
           this.setBannerOffset(b);
         });
-    })
-
-    // When deleting a file, remove its banner data
-    this.vault.on('delete', async ({ path }) => {
-      await this.removeFileData(path);
     });
+
+    // TODO: Remove banner for new files/opening empty files
 
     // When renaming a file, move the banner data to the new file
     this.vault.on('rename', async ({ path }, oldPath) => {
-      // If renamed file had no banner data to begin with, do nothing
-      const value = this.plugin.fileData[oldPath];
-      if (!value) { return }
-
-      await this.removeFileData(oldPath);
-      await this.upsertFileData(path, value);
+      this.prevPath = path;
       this.workspace.containerEl
         .querySelector(`.markdown-preview-view.has-banner[filepath="${oldPath}"]`)
-        .setAttribute('filepath', path);
+        ?.setAttribute('filepath', path);
     });
   }
 
@@ -153,13 +147,14 @@ export default class BannersProcessor {
 
       // Update banner data
       const attr = wrapper.getAttribute('filepath');
-      const data = { ...this.plugin.fileData[attr], ...this.getBannerOffset(img, bannerEl) }
-      await this.upsertFileData(attr, data);
+      await this.metaManager.upsertBannerData(attr, this.calcBannerOffset(img, bannerEl));
     };
 
+    // Set up entire wrapper
     wrapper.prepend(bannerEl);
     wrapper.addClass('has-banner');
 
+    // Add spacing to the markdown content
     const markdown = wrapper.querySelector('.markdown-preview-section') as HTMLDivElement;
     markdown.style.marginTop = `${height}px`;
   }
@@ -194,6 +189,18 @@ export default class BannersProcessor {
     markdown.style.marginTop = `${height}px`;
   }
 
+  // Calculate percentage of scroll based on an image's centered position
+  calcBannerOffset(img: HTMLImageElement, wrapper: HTMLDivElement): Partial<BannerMetadata> {
+    const { className, height, width } = img;
+    const { top, left } = img.style;
+    const { clientHeight, clientWidth } = wrapper;
+    if (className === 'full-width') {
+      return { banner_y: (Math.abs(parseInt(top)) + (clientHeight / 2)) / height };
+    } else {
+      return { banner_x: (Math.abs(parseInt(left)) + (clientWidth / 2)) / width };
+    }
+  }
+
   // Set banner image positioning
   setBannerOffset(wrapper: HTMLDivElement) {
     const bannerEl = wrapper.querySelector('.obsidian-banner');
@@ -210,28 +217,15 @@ export default class BannersProcessor {
     }
 
     // Update positioning based on their class
+    const { banner_x = 0.5, banner_y = 0.5 } = this.metaManager.getBannerData(wrapper.getAttribute('filepath'));
     if (img.className === 'full-width') {
-      const percent = this.plugin.fileData[wrapper.getAttribute('filepath')]?.y ?? 0.5;
-      const value = clamp((bannerEl.clientHeight / 2) - (img.height * percent), bannerEl.clientHeight - img.height, 0);
+      const value = clamp((bannerEl.clientHeight / 2) - (img.height * banner_y), bannerEl.clientHeight - img.height, 0);
       img.style.top = `${value}px`;
       img.style.left = '';
     } else {
-      const percent = this.plugin.fileData[wrapper.getAttribute('filepath')]?.x ?? 0.5;
-      const value = clamp((bannerEl.clientWidth / 2) - (img.width * percent), bannerEl.clientWidth - img.width, 0);
+      const value = clamp((bannerEl.clientWidth / 2) - (img.width * banner_x), bannerEl.clientWidth - img.width, 0);
       img.style.top = '';
       img.style.left = `${value}px`;
-    }
-  }
-
-  // Get percentage of scroll based on an image's centered position
-  getBannerOffset(img: HTMLImageElement, wrapper: HTMLDivElement): { x: number } | { y: number } {
-    const { className, height, width } = img;
-    const { top, left } = img.style;
-    const { clientHeight, clientWidth } = wrapper;
-    if (className === 'full-width') {
-      return { y: (Math.abs(parseInt(top)) + (clientHeight / 2)) / height };
-    } else {
-      return { x: (Math.abs(parseInt(left)) + (clientWidth / 2)) / width };
     }
   }
 
@@ -243,19 +237,7 @@ export default class BannersProcessor {
   // Parse source as a URL or a local file path
   parseSource(src: string): string {
     if (isURL(src)) { return src }
-    return this.vault.getAbstractFileByPath(src) ? this.vault.adapter.getResourcePath(src) : null;
-  }
-
-  // Upsert banner data for a file
-  async upsertFileData(path: string, val: XY) {
-    this.plugin.fileData[path] = val;
-    await this.plugin.saveData();
-  }
-
-  // Remove banner data for a file if necessary
-  async removeFileData(path: string) {
-    if (!this.plugin.fileData[path]) { return }
-    delete this.plugin.fileData[path];
-    await this.plugin.saveData();
+    const file = this.vault.getAbstractFileByPath(src);
+    return (file instanceof TFile) ? this.vault.adapter.getResourcePath(src) : null;
   }
 }
