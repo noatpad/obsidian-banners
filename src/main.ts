@@ -5,7 +5,6 @@ import BannersProcessor from './BannersProcessor';
 import SettingsTab, { DEFAULT_SETTINGS } from './Settings';
 import MetaManager from './MetaManager';
 import { SettingsOptions } from './types';
-
 export default class Banners extends Plugin {
   settings: SettingsOptions;
   bannersProcessor: BannersProcessor;
@@ -15,16 +14,22 @@ export default class Banners extends Plugin {
   async onload() {
     console.log('Loading Banners...');
 
-    const data = await this.loadData();
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, data?.settings);
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
     this.events = new Events();
     this.metaManager = new MetaManager(this);
     this.bannersProcessor = new BannersProcessor(this);
+
+    this.prepareStyles();
 
     this.addSettingTab(new SettingsTab(this));
   }
 
   async onunload() {
     console.log('Unloading Banners...');
+  }
+
+  prepareStyles() {
+    const { height } = this.settings;
+    document.documentElement.style.setProperty('--banner-height', `${height}px`)
   }
 }

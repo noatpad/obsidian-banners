@@ -112,7 +112,7 @@ export default class BannersProcessor {
 
   // Create a banner for a given Markdown Preview View
   addBanner(wrapper: HTMLDivElement, src: string, path: string) {
-    const { height, style } = this.plugin.settings;
+    const { style } = this.plugin.settings;
     const bannerEl = document.createElement('div');
     const img = document.createElement('img');
 
@@ -128,7 +128,6 @@ export default class BannersProcessor {
     const bannerClasses = [BANNER_CLASS];
     if (style === 'gradient') { bannerClasses.push('gradient') }
     bannerEl.addClasses(bannerClasses);
-    bannerEl.style.height = `${height}px`;
     bannerEl.appendChild(img);
 
     // Set up banner image drag handlers
@@ -169,10 +168,6 @@ export default class BannersProcessor {
     // Set up entire wrapper
     wrapper.prepend(bannerEl);
     wrapper.addClass('has-banner');
-
-    // Add spacing to the markdown content
-    const markdown = wrapper.querySelector('.markdown-preview-section') as HTMLDivElement;
-    markdown.style.marginTop = `${height}px`;
   }
 
   // Remove banner from view
@@ -191,18 +186,14 @@ export default class BannersProcessor {
 
   // Restyle the current banner
   restyleBanner(wrapper: HTMLDivElement) {
-    const { height, style } = this.plugin.settings;
+    const { style } = this.plugin.settings;
     const bannerEl = wrapper.querySelector('.obsidian-banner') as HTMLDivElement;
-    bannerEl.style.height = `${height}px`;
 
     if (style === 'gradient') {
       bannerEl.addClass('gradient');
     } else {
       bannerEl.removeClass('gradient');
     }
-
-    const markdown = wrapper.querySelector('.markdown-preview-section') as HTMLDivElement;
-    markdown.style.marginTop = `${height}px`;
   }
 
   // Calculate percentage of scroll based on an image's centered position
@@ -225,7 +216,7 @@ export default class BannersProcessor {
     // If image hasn't been loaded yet, do nothing
     if (!img.complete) { return }
 
-    // Detect transitions from full-width -> full-height and vice-versa
+    // Detect transitions between full-width <-> full-height
     if (img.className === 'full-width' && img.height < bannerEl.clientHeight) {
       img.className = 'full-height';
     } else if (img.className === 'full-height' && img.width < bannerEl.clientWidth) {

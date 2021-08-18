@@ -22,6 +22,7 @@ export default class SettingsTab extends PluginSettingTab {
 
   async saveSettings() {
     await this.plugin.saveData(this.plugin.settings);
+    this.plugin.prepareStyles();
     this.plugin.events.trigger('settingsSave');
   }
 

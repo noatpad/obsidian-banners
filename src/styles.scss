@@ -1,32 +1,39 @@
-.obsidian-banner {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  overflow: hidden;
-  cursor: grab;
+.markdown-preview-view.has-banner {
+  .obsidian-banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--banner-height);
+    width: 100%;
+    overflow: hidden;
+    cursor: grab;
 
-  &:active {
-    cursor: grabbing;
-  }
-
-  &.gradient {
-    mask-image: linear-gradient(to bottom, black, transparent);
-    -webkit-mask-image: linear-gradient(to bottom, black, transparent);
-  }
-
-  img {
-    position: relative;
-    object-fit: cover;
-    max-width: none !important;
-
-    &.full-height {
-      height: 100%;
+    &:active {
+      cursor: grabbing;
     }
 
-    &.full-width {
-      width: 100%;
+    &.gradient {
+      mask-image: linear-gradient(to bottom, black, transparent);
+      -webkit-mask-image: linear-gradient(to bottom, black, transparent);
     }
+
+    img {
+      position: relative;
+      object-fit: cover;
+      max-width: none !important;
+
+      &.full-height {
+        height: 100%;
+      }
+
+      &.full-width {
+        width: 100%;
+      }
+    }
+  }
+
+  .markdown-preview-section {
+    margin-top: var(--banner-height);
   }
 }
