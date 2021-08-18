@@ -2,12 +2,7 @@ import { FrontMatterCache, MetadataCache, TFile, Vault } from 'obsidian';
 import { stripIndents } from 'common-tags';
 
 import Banners from './main';
-
-export interface BannerMetadata {
-  banner: string,
-  banner_x: number,
-  banner_y: number
-}
+import { BannerMetadata } from './types';
 
 export default class MetaManager {
   plugin: Banners;

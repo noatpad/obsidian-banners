@@ -1,14 +1,8 @@
 import { PluginSettingTab, Setting } from "obsidian"
 import Banners from "./main";
+import { SettingsOptions, StyleOption } from "./types";
 
-type StyleOption = 'solid' | 'gradient';
-
-export interface ISettings {
-  height: number,
-  style: StyleOption
-}
-
-export const DEFAULT_SETTINGS: ISettings = {
+export const DEFAULT_SETTINGS: SettingsOptions = {
   height: 250,
   style: 'solid'
 }

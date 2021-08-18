@@ -3,14 +3,11 @@ import clamp from 'lodash/clamp';
 import isURL from 'validator/lib/isURL';
 
 import Banners from './main';
-import MetaManager, { BannerMetadata } from './MetaManager';
+import MetaManager from './MetaManager';
+import { BannerMetadata, XY } from './types';
 
 const BANNER_CLASS = 'obsidian-banner';
-
-interface XY {
-  x: number,
-  y: number
-}
+const BANNER_SELECTOR = `.${BANNER_CLASS}`;
 
 interface MPPCPlus extends MarkdownPostProcessorContext {
   containerEl: HTMLElement
@@ -53,7 +50,7 @@ export default class BannersProcessor {
 
       // Create banner if it hasn't been already made, otherwise update the banner image
       const { banner: src } = frontmatter;
-      const bannerEl = viewContainer.querySelector(`.${BANNER_CLASS}`);
+      const bannerEl = viewContainer.querySelector(BANNER_SELECTOR);
       if (!bannerEl) {
         this.addBanner(viewContainer, src, sourcePath);
       } else {
@@ -81,7 +78,9 @@ export default class BannersProcessor {
         .filter(l => (l.view as MarkdownView).file.path === file.path)
         .forEach(l => {
           const wrapper: HTMLDivElement = l.view.containerEl?.querySelector('.markdown-preview-view.has-banner');
-          this.removeBanner(wrapper);
+          if (wrapper) {
+            this.removeBanner(wrapper);
+          }
         })
     });
 
@@ -146,7 +145,7 @@ export default class BannersProcessor {
 
       // Get delta of mouse drag
       const currentPos = this.getMousePos(e, bannerEl);
-      const delta = { x: currentPos.x - prevPos.x, y: currentPos.y - prevPos.y };
+      const delta: XY = { x: currentPos.x - prevPos.x, y: currentPos.y - prevPos.y };
       prevPos = currentPos;
 
       // Move the image within the banner div & the image's boundaries
@@ -179,7 +178,7 @@ export default class BannersProcessor {
   // Remove banner from view
   removeBanner(wrapper: HTMLElement) {
     // If banner doesn't exist, do nothing
-    const bannerDiv = wrapper?.querySelector(`.${BANNER_CLASS}`);
+    const bannerDiv = wrapper.querySelector(BANNER_SELECTOR);
     if (!bannerDiv) { return }
 
     bannerDiv.remove();
