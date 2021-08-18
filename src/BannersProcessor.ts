@@ -1,4 +1,4 @@
-import { Events, MarkdownPostProcessorContext, TFile, Vault, Workspace } from 'obsidian';
+import { Events, MarkdownPostProcessorContext, MarkdownView, TFile, Vault, Workspace } from 'obsidian';
 import clamp from 'lodash/clamp';
 import isURL from 'validator/lib/isURL';
 
@@ -30,6 +30,7 @@ export default class BannersProcessor {
     this.vault = plugin.app.vault;
     this.events = plugin.events;
     this.metaManager = plugin.metaManager;
+    this.prevPath = '';
     this.register();
   }
 
@@ -73,6 +74,32 @@ export default class BannersProcessor {
         .forEach((b: HTMLDivElement) => { this.setBannerOffset(b) });
     });
 
+    // Remove banner when creating a new file or opening an empty file
+    this.workspace.on('file-open', async (file) => {
+      if (!file || file.stat.size > 0) { return }
+      this.workspace.getLeavesOfType('markdown')
+        .filter(l => (l.view as MarkdownView).file.path === file.path)
+        .forEach(l => {
+          const wrapper: HTMLDivElement = l.view.containerEl?.querySelector('.markdown-preview-view.has-banner');
+          this.removeBanner(wrapper);
+        })
+    });
+
+    // When duplicating a file, update banner's filepath reference
+    this.vault.on('create', (file) => {
+      if (!(file instanceof TFile) || file.extension !== 'md') { return }
+
+      // Only continue if the file is indeed a duplicate
+      const dupe = this.findDuplicateOf(file);
+      if (!dupe) { return }
+      this.updateFilepathAttr(file.path, dupe.path);
+    });
+
+    // When renaming a file, update banner's filepath reference
+    this.vault.on('rename', ({ path }, oldPath) => {
+      this.updateFilepathAttr(oldPath, path);
+    });
+
     // When settings change, restyle the banners with the current settings
     this.events.on('settingsSave', () => {
       this.workspace.containerEl
@@ -81,16 +108,6 @@ export default class BannersProcessor {
           this.restyleBanner(b);
           this.setBannerOffset(b);
         });
-    });
-
-    // TODO: Remove banner for new files/opening empty files
-
-    // When renaming a file, move the banner data to the new file
-    this.vault.on('rename', async ({ path }, oldPath) => {
-      this.prevPath = path;
-      this.workspace.containerEl
-        .querySelector(`.markdown-preview-view.has-banner[filepath="${oldPath}"]`)
-        ?.setAttribute('filepath', path);
     });
   }
 
@@ -162,7 +179,7 @@ export default class BannersProcessor {
   // Remove banner from view
   removeBanner(wrapper: HTMLElement) {
     // If banner doesn't exist, do nothing
-    const bannerDiv = wrapper.querySelector(`.${BANNER_CLASS}`);
+    const bannerDiv = wrapper?.querySelector(`.${BANNER_CLASS}`);
     if (!bannerDiv) { return }
 
     bannerDiv.remove();
@@ -239,5 +256,23 @@ export default class BannersProcessor {
     if (isURL(src)) { return src }
     const file = this.vault.getAbstractFileByPath(src);
     return (file instanceof TFile) ? this.vault.adapter.getResourcePath(src) : null;
+  }
+
+  // Find the file that was duplicated from the given file, if that's the case
+  findDuplicateOf({ basename, parent }: TFile): TFile {
+    const words = basename.split(' ');
+    words.pop();
+    const potentialName = words.join(' ');
+
+    const siblings = parent.children.filter(a => a instanceof TFile) as TFile[];
+    return siblings.find(f => f.basename === potentialName);
+  }
+
+  // Update `filepath` attribute reference
+  updateFilepathAttr(oldPath: string, newPath: string) {
+    this.prevPath = newPath;
+    this.workspace.containerEl
+      .querySelectorAll(`.markdown-preview-view.has-banner[filepath="${oldPath}"]`)
+      .forEach(v => v.setAttribute('filepath', newPath));
   }
 }
