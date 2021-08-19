@@ -27,16 +27,23 @@ export default class Banners extends Plugin {
     this.metaManager = new MetaManager(this);
     this.bannersProcessor = new BannersProcessor(this);
 
-    this.bannersProcessor.register();
+    this.bannersProcessor.load();
     this.prepareCommands();
     this.prepareListeners();
     this.prepareStyles();
 
     this.addSettingTab(new SettingsTab(this));
+
+    // Refresh the layout to trigger postprocessor
+    this.workspace.onLayoutReady(() => {
+      this.workspace.changeLayout(this.workspace.getLayout());
+    });
   }
 
   async onunload() {
     console.log('Unloading Banners...');
+
+    this.bannersProcessor.unload();
   }
 
   prepareStyles() {
@@ -78,15 +85,17 @@ export default class Banners extends Plugin {
   }
 
   prepareListeners() {
+    const { bannersProcessor } = this;
+
     // When resizing panes, update the banner image positioning
     this.workspace.on('resize', () => {
-      this.bannersProcessor.updateBannerElements((b) => this.bannersProcessor.setBannerOffset(b));
+      bannersProcessor.updateBannerElements((b) => bannersProcessor.setBannerOffset(b));
     });
 
     // Remove banner when creating a new file or opening an empty file
     this.workspace.on('file-open', async (file) => {
       if (!file || file.stat.size > 0) { return }
-      this.bannersProcessor.updateBannerElements((b) => this.bannersProcessor.removeBanner(b), file.path);
+      bannersProcessor.updateBannerElements((b) => bannersProcessor.removeBanner(b), file.path);
     });
 
     // When duplicating a file, update banner's filepath reference
@@ -96,32 +105,32 @@ export default class Banners extends Plugin {
       // Only continue if the file is indeed a duplicate
       const dupe = this.findDuplicateOf(file);
       if (!dupe) { return }
-      this.bannersProcessor.updateFilepathAttr(file.path, dupe.path);
+      bannersProcessor.updateFilepathAttr(file.path, dupe.path);
     });
 
     // When renaming a file, update banner's filepath reference
     this.vault.on('rename', ({ path }, oldPath) => {
-      this.bannersProcessor.updateFilepathAttr(oldPath, path);
+      bannersProcessor.updateFilepathAttr(oldPath, path);
     });
 
     // Fallback listener for manually removing the banner metadata
     // NOTE: This takes a few seconds to take effect, so the 'Remove banner' command is recommended
     this.metadataCache.on('changed', (file) => {
       if (this.metaManager.getBannerData(file).banner) { return }
-      this.bannersProcessor.updateBannerElements((b) => this.bannersProcessor.removeBanner(b), file.path);
+      bannersProcessor.updateBannerElements((b) => bannersProcessor.removeBanner(b), file.path);
     });
 
     // When settings change, restyle the banners with the current settings
     this.events.on('settingsSave', () => {
-      this.bannersProcessor.updateBannerElements((b) => {
-        this.bannersProcessor.restyleBanner(b);
-        this.bannersProcessor.setBannerOffset(b);
+      bannersProcessor.updateBannerElements((b) => {
+        bannersProcessor.restyleBanner(b);
+        bannersProcessor.setBannerOffset(b);
       });
     });
 
     // Handler to remove banner upon command
     this.events.on('cmdRemove', (file: TFile) => {
-      this.bannersProcessor.updateBannerElements((b) => this.bannersProcessor.removeBanner(b), file.path);
+      bannersProcessor.updateBannerElements((b) => bannersProcessor.removeBanner(b), file.path);
     });
   }
 

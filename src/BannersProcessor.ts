@@ -30,12 +30,12 @@ export default class BannersProcessor {
     this.plugin = plugin;
     this.workspace = plugin.app.workspace;
     this.vault = plugin.app.vault;
+
     this.metaManager = plugin.metaManager;
-    this.prevPath = '';
+    this.prevPath = null;
   }
 
-  // Register postprocessor and listeners
-  register() {
+  load() {
     this.plugin.registerMarkdownPostProcessor(async (_, ctx: MPPCPlus) => {
       const { frontmatter, sourcePath } = ctx;
       const viewContainer = ctx.containerEl.parentElement as HTMLDivElement;
@@ -66,6 +66,11 @@ export default class BannersProcessor {
 
       this.prevPath = sourcePath;
     });
+  }
+
+  unload() {
+    this.updateBannerElements((b) => this.removeBanner(b));
+    this.prevPath = null;
   }
 
   // Create a banner for a given Markdown Preview View
