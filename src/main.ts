@@ -29,7 +29,13 @@ export default class Banners extends Plugin {
   }
 
   prepareStyles() {
-    const { height } = this.settings;
-    document.documentElement.style.setProperty('--banner-height', `${height}px`)
+    const { embedHeight, height, showInEmbed } = this.settings;
+    document.documentElement.style.setProperty('--banner-height', `${height}px`);
+    document.documentElement.style.setProperty('--banner-embed-height', `${embedHeight}px`);
+    if (showInEmbed) {
+      document.body.removeClass('no-banner-in-embed');
+    } else {
+      document.body.addClass('no-banner-in-embed');
+    }
   }
 }

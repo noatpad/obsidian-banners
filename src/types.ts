@@ -16,5 +16,7 @@ export type StyleOption = 'solid' | 'gradient';
 
 export interface SettingsOptions {
   height: number,
-  style: StyleOption
+  style: StyleOption,
+  showInEmbed: boolean,
+  embedHeight: number
 }

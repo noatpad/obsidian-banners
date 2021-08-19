@@ -4,7 +4,9 @@ import { SettingsOptions, StyleOption } from "./types";
 
 export const DEFAULT_SETTINGS: SettingsOptions = {
   height: 250,
-  style: 'solid'
+  style: 'solid',
+  showInEmbed: true,
+  embedHeight: 120
 }
 
 const STYLE_OPTIONS: Record<StyleOption, string> = {
@@ -20,17 +22,21 @@ export default class SettingsTab extends PluginSettingTab {
     this.plugin = plugin;
   }
 
-  async saveSettings() {
+  async saveSettings(refresh = false) {
     await this.plugin.saveData(this.plugin.settings);
     this.plugin.prepareStyles();
     this.plugin.events.trigger('settingsSave');
+    if (refresh) {
+      this.display();
+    }
   }
 
   display() {
     const { containerEl } = this;
-    const { height, style } = this.plugin.settings;
+    const { height, style, showInEmbed, embedHeight } = this.plugin.settings;
     containerEl.empty();
 
+    // Banner height
     new Setting(containerEl)
       .setName('Banner height')
       .setDesc('Set how big the banner should be in pixels')
@@ -44,6 +50,7 @@ export default class SettingsTab extends PluginSettingTab {
         });
       });
 
+    // Banner style
     new Setting(containerEl)
       .setName('Banner style')
       .setDesc('Set a style for all of your banners')
@@ -54,5 +61,32 @@ export default class SettingsTab extends PluginSettingTab {
           this.plugin.settings.style = val;
           await this.saveSettings();
         }));
+
+    // Show banner in embed
+    new Setting(containerEl)
+      .setName('Show banner in preview embed')
+      .setDesc('Choose whether to display the banner in the page preview embed')
+      .addToggle(toggle => toggle
+        .setValue(showInEmbed)
+        .onChange(async (val) => {
+          this.plugin.settings.showInEmbed = val;
+          await this.saveSettings(true);
+        }));
+
+    // Embed banner height
+    if (this.plugin.settings.showInEmbed) {
+      new Setting(containerEl)
+      .setName('Embed banner height')
+      .setDesc('Set the banner size inside the file preview embed')
+      .addText(text => {
+        text.inputEl.type = 'number';
+        text.setValue(`${embedHeight}`);
+        text.setPlaceholder(`${DEFAULT_SETTINGS.embedHeight}`);
+        text.onChange(async (val) => {
+          this.plugin.settings.embedHeight = val ? parseInt(val) : DEFAULT_SETTINGS.embedHeight;
+          await this.saveSettings();
+        });
+      });
+    }
   }
 }
