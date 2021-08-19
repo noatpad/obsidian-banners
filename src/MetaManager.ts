@@ -23,8 +23,8 @@ export default class MetaManager {
   }
 
   // Get banner metadata from a file
-  getBannerData(path: string): BannerMetadata {
-    const file = this.getFileByPath(path);
+  getBannerData(fileOrPath: TFile | string): BannerMetadata {
+    const file = (fileOrPath instanceof TFile) ? fileOrPath : this.getFileByPath(fileOrPath);
     if (!file) { return }
 
     const {
@@ -75,43 +75,42 @@ export default class MetaManager {
     await this.vault.modify(file, newContent);
   }
 
-  // async removeBannerData(fileOrPath: TFile | string, fields: Array<keyof BannerMetadata> = ['banner', 'banner_x', 'banner_y']) {
-  //   const file = (fileOrPath instanceof TFile) ? fileOrPath : this.getFileByPath(fileOrPath);
-  //   if (!file) { return }
+  async removeBannerData(fileOrPath: TFile | string, fields: Array<keyof BannerMetadata> = ['banner', 'banner_x', 'banner_y']) {
+    const file = (fileOrPath instanceof TFile) ? fileOrPath : this.getFileByPath(fileOrPath);
+    if (!file) { return }
 
-  //   // If there's no YAML to remove, then stop here
-  //   const content = await this.vault.read(file);
-  //   const hasYaml = HAS_YAML_REGEX.test(content);
-  //   if (!hasYaml) { return }
+    // If there's no YAML to remove, then stop here
+    const content = await this.vault.read(file);
+    const hasYaml = HAS_YAML_REGEX.test(content);
+    if (!hasYaml) { return }
 
-  //   // Go one-by-one and delete the given fields of the YAML
-  //   const lines = content.split('\n');
-  //   const start = lines.indexOf('---');
-  //   let end = lines.indexOf('---', start + 1);
-  //   let isEmpty = true;
-  //   for (let i = start + 1; i < end && fields.length; i++) {
-  //     const [key] = lines[i].split(': ');
-  //     const fieldIndex = fields.indexOf(key as keyof BannerMetadata);
-  //     if (fieldIndex === -1) {
-  //       if (key) { isEmpty = false }
-  //       continue;
-  //     }
+    // Go one-by-one and delete the given fields of the YAML
+    const lines = content.split('\n');
+    const start = lines.indexOf('---');
+    let end = lines.indexOf('---', start + 1);
+    let isEmpty = true;
+    for (let i = start + 1; i < end && fields.length; i++) {
+      const [key] = lines[i].split(': ');
+      const fieldIndex = fields.indexOf(key as keyof BannerMetadata);
+      if (fieldIndex === -1) {
+        if (key) { isEmpty = false }
+        continue;
+      }
 
-  //     lines.splice(i, 1);
-  //     fields.splice(fieldIndex, 1);
-  //     i--;
-  //     end--;
-  //   }
+      lines.splice(i, 1);
+      fields.splice(fieldIndex, 1);
+      i--;
+      end--;
+    }
 
-  //   // If the YAML is empty after deleting those fields, remove the YAML lines as well
-  //   // FIXME: When YAML is deleted in one swoop, the preprocessor doesn't fire, leaving the banner there.
-  //   if (isEmpty) {
-  //     lines.splice(start, end - start + 1);
-  //   }
+    // If the YAML is empty after deleting those fields, remove the YAML lines as well
+    if (isEmpty) {
+      lines.splice(start, end - start + 1);
+    }
 
-  //   const newContent = lines.join('\n');
-  //   await this.vault.modify(file, newContent);
-  // }
+    const newContent = lines.join('\n');
+    await this.vault.modify(file, newContent);
+  }
 
   // Get file based on a path string
   getFileByPath(path: string): TFile {

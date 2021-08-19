@@ -56,10 +56,13 @@ export default class Banners extends Plugin {
       }
     });
 
-    // this.addCommand({
-    //   id: 'banners:remove',
-    //   name: 'Remove banner',
-    //   editorCallback: (_, view) => { this.metaManager.removeBannerData(view.file) }
-    // });
+    this.addCommand({
+      id: 'banners:remove',
+      name: 'Remove banner',
+      editorCallback: (_, view) => {
+        this.metaManager.removeBannerData(view.file);
+        this.events.trigger('cmdRemove', view.file);
+      }
+    });
   }
 }
