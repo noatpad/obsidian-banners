@@ -4,10 +4,15 @@ import isURL from 'validator/lib/isURL';
 
 import Banners from './main';
 import MetaManager from './MetaManager';
-import { BannerMetadata, XY } from './types';
+import { BannerMetadata } from './MetaManager';
 
 const BANNER_CLASS = 'obsidian-banner';
 const BANNER_SELECTOR = `.${BANNER_CLASS}`;
+
+interface XY {
+  x: number,
+  y: number
+}
 
 interface MPPCPlus extends MarkdownPostProcessorContext {
   containerEl: HTMLElement

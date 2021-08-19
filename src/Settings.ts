@@ -1,6 +1,15 @@
 import { PluginSettingTab, Setting } from "obsidian"
 import Banners from "./main";
-import { SettingsOptions, StyleOption } from "./types";
+
+type StyleOption = 'solid' | 'gradient';
+
+export interface SettingsOptions {
+  height: number,
+  style: StyleOption,
+  showInEmbed: boolean,
+  embedHeight: number
+}
+
 
 export const DEFAULT_SETTINGS: SettingsOptions = {
   height: 250,

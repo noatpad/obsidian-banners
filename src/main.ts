@@ -2,10 +2,9 @@ import { Events, Plugin } from 'obsidian';
 
 import './styles.scss';
 import BannersProcessor from './BannersProcessor';
-import SettingsTab, { DEFAULT_SETTINGS } from './Settings';
+import SettingsTab, { DEFAULT_SETTINGS, SettingsOptions } from './Settings';
 import MetaManager from './MetaManager';
 import LocalImageModal from './LocalImageModal';
-import { SettingsOptions } from './types';
 export default class Banners extends Plugin {
   settings: SettingsOptions;
   bannersProcessor: BannersProcessor;

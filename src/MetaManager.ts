@@ -2,7 +2,12 @@ import { FrontMatterCache, MetadataCache, TFile, Vault } from 'obsidian';
 import { stripIndents } from 'common-tags';
 
 import Banners from './main';
-import { BannerMetadata } from './types';
+
+export interface BannerMetadata {
+  banner: string,
+  banner_x: number,
+  banner_y: number
+}
 
 const HAS_YAML_REGEX = /^-{3}(\n|\r|\r\n)((.*)(\n|\r|\r\n))*-{3}/;
 
