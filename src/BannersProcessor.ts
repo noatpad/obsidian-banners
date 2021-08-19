@@ -1,4 +1,4 @@
-import { Events, MarkdownPostProcessorContext, MarkdownView, TFile, Vault, Workspace } from 'obsidian';
+import { MarkdownPostProcessorContext, TFile, Vault, Workspace } from 'obsidian';
 import clamp from 'lodash/clamp';
 import isURL from 'validator/lib/isURL';
 
@@ -22,7 +22,7 @@ export default class BannersProcessor {
   plugin: Banners;
   workspace: Workspace;
   vault: Vault;
-  events: Events;
+
   metaManager: MetaManager;
   prevPath: string;
 
@@ -30,10 +30,8 @@ export default class BannersProcessor {
     this.plugin = plugin;
     this.workspace = plugin.app.workspace;
     this.vault = plugin.app.vault;
-    this.events = plugin.events;
     this.metaManager = plugin.metaManager;
     this.prevPath = '';
-    this.register();
   }
 
   // Register postprocessor and listeners
@@ -68,53 +66,6 @@ export default class BannersProcessor {
 
       this.prevPath = sourcePath;
     });
-
-    // When resizing panes, update the banner image positioning
-    this.workspace.on('resize', () => {
-      this.updateBannerElements((b) => this.setBannerOffset(b));
-    });
-
-    // Remove banner when creating a new file or opening an empty file
-    this.workspace.on('file-open', async (file) => {
-      if (!file || file.stat.size > 0) { return }
-      this.updateBannerElements((b) => this.removeBanner(b), file.path);
-    });
-
-    // When duplicating a file, update banner's filepath reference
-    this.vault.on('create', (file) => {
-      if (!(file instanceof TFile) || file.extension !== 'md') { return }
-
-      // Only continue if the file is indeed a duplicate
-      const dupe = this.findDuplicateOf(file);
-      if (!dupe) { return }
-      this.updateFilepathAttr(file.path, dupe.path);
-    });
-
-    // Fallback listener for removing the banner metadata without the command
-    // NOTE: This takes a few seconds to take effect, so the 'Remove banner' command is recommended
-    this.plugin.app.metadataCache.on('changed', (file) => {
-      if (this.metaManager.getBannerData(file).banner) { return }
-      this.updateBannerElements((b) => this.removeBanner(b), file.path);
-      console.log('changed');
-    });
-
-    // When renaming a file, update banner's filepath reference
-    this.vault.on('rename', ({ path }, oldPath) => {
-      this.updateFilepathAttr(oldPath, path);
-    });
-
-    // When settings change, restyle the banners with the current settings
-    this.events.on('settingsSave', () => {
-      this.updateBannerElements((b) => {
-        this.restyleBanner(b);
-        this.setBannerOffset(b);
-      });
-    });
-
-    // Handler to remove banner upon command
-    this.events.on('cmdRemove', (file: TFile) => {
-      this.updateBannerElements((b) => this.removeBanner(b), file.path);
-    })
   }
 
   // Create a banner for a given Markdown Preview View
@@ -243,26 +194,11 @@ export default class BannersProcessor {
     }
   }
 
-  // Get mouse position
-  getMousePos(e: MouseEvent, div: HTMLDivElement): XY {
-    return { x: e.pageX - div.offsetTop, y: e.pageY - div.offsetLeft };
-  }
-
   // Parse source as a URL or a local file path
   parseSource(src: string): string {
     if (isURL(src)) { return src }
     const file = this.vault.getAbstractFileByPath(src);
     return (file instanceof TFile) ? this.vault.adapter.getResourcePath(src) : null;
-  }
-
-  // Find the file that was duplicated from the given file, if that's the case
-  findDuplicateOf({ basename, parent }: TFile): TFile {
-    const words = basename.split(' ');
-    words.pop();
-    const potentialName = words.join(' ');
-
-    const siblings = parent.children.filter(a => a instanceof TFile) as TFile[];
-    return siblings.find(f => f.basename === potentialName);
   }
 
   // Helper function to get all specified banner wrappers and do something with them
@@ -281,5 +217,10 @@ export default class BannersProcessor {
   updateFilepathAttr(oldPath: string, newPath: string) {
     this.prevPath = newPath;
     this.updateBannerElements((b) => b.setAttribute('filepath', newPath), oldPath);
+  }
+
+  // Get mouse position
+  getMousePos(e: MouseEvent, div: HTMLDivElement): XY {
+    return { x: e.pageX - div.offsetTop, y: e.pageY - div.offsetLeft };
   }
 }
