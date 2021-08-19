@@ -1,9 +1,10 @@
 import { Events, Plugin } from 'obsidian';
-import './styles.scss';
 
+import './styles.scss';
 import BannersProcessor from './BannersProcessor';
 import SettingsTab, { DEFAULT_SETTINGS } from './Settings';
 import MetaManager from './MetaManager';
+import LocalImageModal from './LocalImageModal';
 import { SettingsOptions } from './types';
 export default class Banners extends Plugin {
   settings: SettingsOptions;
@@ -20,6 +21,7 @@ export default class Banners extends Plugin {
     this.bannersProcessor = new BannersProcessor(this);
 
     this.prepareStyles();
+    this.prepareCommands();
 
     this.addSettingTab(new SettingsTab(this));
   }
@@ -37,5 +39,28 @@ export default class Banners extends Plugin {
     } else {
       document.body.addClass('no-banner-in-embed');
     }
+  }
+
+  prepareCommands() {
+    this.addCommand({
+      id: 'banners:addLocal',
+      name: 'Add/Change banner with local image',
+      editorCallback: (_, view) => { new LocalImageModal(this, view.file).open() }
+    });
+
+    this.addCommand({
+      id: 'banners:addClipboard',
+      name: 'Add/Change banner with clipboard',
+      editorCallback: async (_, view) => {
+        const clipboard = await navigator.clipboard.readText();
+        this.metaManager.upsertBannerData(view.file, { banner: clipboard });
+      }
+    });
+
+    // this.addCommand({
+    //   id: 'banners:remove',
+    //   name: 'Remove banner',
+    //   editorCallback: (_, view) => { this.metaManager.removeBannerData(view.file) }
+    // });
   }
 }

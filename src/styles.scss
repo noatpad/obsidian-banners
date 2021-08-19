@@ -53,6 +53,35 @@
   }
 }
 
+// Modal suggestions
+.banner-suggestion-item {
+  padding: 6px 10px;
+
+  .suggestion-text {
+    height: 0;
+    margin: 0;
+    padding-left: 10px;
+  }
+
+  .suggestion-image-wrapper {
+    position: relative;
+    height: 200px;
+    width: 100%;
+    margin: 6px 0;
+    overflow: hidden;
+
+    img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      object-fit: cover;
+    }
+  }
+}
+
+// Disable banner in embed
 body.no-banner-in-embed .markdown-embed-content > .markdown-preview-view.has-banner {
   .obsidian-banner {
     display: none;
