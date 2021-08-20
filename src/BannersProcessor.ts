@@ -174,6 +174,8 @@ export default class BannersProcessor {
     } else {
       bannerEl.removeClass('gradient');
     }
+
+    this.setBannerOffset(wrapper);
   }
 
   // Calculate percentage of scroll based on an image's centered position
@@ -224,6 +226,7 @@ export default class BannersProcessor {
   }
 
   // Helper function to get all specified banner wrappers and do something with them
+  // `filepath` is used if you wanna target banners that pertain to a specific file
   updateBannerElements(cbPerBanner: (wrapper: HTMLDivElement) => any, filepath?: string) {
     const selector = '.markdown-preview-view.has-banner';
     if (filepath) {

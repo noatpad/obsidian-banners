@@ -87,7 +87,7 @@ export default class Banners extends Plugin {
   prepareListeners() {
     const { bannersProcessor } = this;
 
-    // When resizing panes, update the banner image positioning
+    // When resizing panes, update all banner image positions
     this.workspace.on('resize', () => {
       bannersProcessor.updateBannerElements((b) => bannersProcessor.setBannerOffset(b));
     });
@@ -114,7 +114,7 @@ export default class Banners extends Plugin {
     });
 
     // Fallback listener for manually removing the banner metadata
-    // NOTE: This takes a few seconds to take effect, so the 'Remove banner' command is recommended
+    // NOTE: This can take a few seconds to take effect, so the 'Remove banner' command is recommended
     this.metadataCache.on('changed', (file) => {
       if (this.metaManager.getBannerData(file).banner) { return }
       bannersProcessor.updateBannerElements((b) => bannersProcessor.removeBanner(b), file.path);
@@ -122,10 +122,7 @@ export default class Banners extends Plugin {
 
     // When settings change, restyle the banners with the current settings
     this.events.on('settingsSave', () => {
-      bannersProcessor.updateBannerElements((b) => {
-        bannersProcessor.restyleBanner(b);
-        bannersProcessor.setBannerOffset(b);
-      });
+      bannersProcessor.updateBannerElements((b) => bannersProcessor.restyleBanner(b));
     });
 
     // Handler to remove banner upon command
