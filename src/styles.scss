@@ -45,7 +45,6 @@
   .obsidian-banner {
     height: var(--banner-embed-height);
     cursor: initial;
-    pointer-events: none;
   }
 
   .markdown-preview-section {
@@ -78,16 +77,5 @@
       width: 100%;
       object-fit: cover;
     }
-  }
-}
-
-// Disable banner in embed
-body.no-banner-in-embed .markdown-embed-content > .markdown-preview-view.has-banner {
-  .obsidian-banner {
-    display: none;
-  }
-
-  .markdown-preview-section {
-    margin-top: 0;
   }
 }

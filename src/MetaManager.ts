@@ -3,6 +3,7 @@ import { stripIndents } from 'common-tags';
 
 import Banners from './main';
 
+export type FrontmatterWithBannerData = FrontMatterCache | BannerMetadata
 export interface BannerMetadata {
   banner: string,
   banner_x: number,
@@ -31,7 +32,7 @@ export default class MetaManager {
       banner,
       banner_x,
       banner_y
-    } = this.metadata.getFileCache(file)?.frontmatter ?? {} as FrontMatterCache | BannerMetadata;
+    } = this.metadata.getFileCache(file)?.frontmatter ?? {} as FrontmatterWithBannerData;
     return { banner, banner_x, banner_y };
   }
 

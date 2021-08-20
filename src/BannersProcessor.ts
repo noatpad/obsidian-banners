@@ -3,8 +3,9 @@ import clamp from 'lodash/clamp';
 import isURL from 'validator/lib/isURL';
 
 import Banners from './main';
-import MetaManager from './MetaManager';
+import MetaManager, { FrontmatterWithBannerData } from './MetaManager';
 import { BannerMetadata } from './MetaManager';
+import { SettingsOptions } from './Settings';
 
 const BANNER_CLASS = 'obsidian-banner';
 const BANNER_SELECTOR = `.${BANNER_CLASS}`;
@@ -15,11 +16,13 @@ interface XY {
 }
 
 interface MPPCPlus extends MarkdownPostProcessorContext {
-  containerEl: HTMLElement
+  containerEl: HTMLElement,
+  frontmatter: FrontmatterWithBannerData
 }
 
 export default class BannersProcessor {
   plugin: Banners;
+  settings: SettingsOptions;
   workspace: Workspace;
   vault: Vault;
 
@@ -28,6 +31,7 @@ export default class BannersProcessor {
 
   constructor(plugin: Banners) {
     this.plugin = plugin;
+    this.settings = plugin.settings;
     this.workspace = plugin.app.workspace;
     this.vault = plugin.app.vault;
 
@@ -39,6 +43,12 @@ export default class BannersProcessor {
     this.plugin.registerMarkdownPostProcessor(async (_, ctx: MPPCPlus) => {
       const { frontmatter, sourcePath } = ctx;
       const viewContainer = ctx.containerEl.parentElement as HTMLDivElement;
+      const isEmbed = viewContainer.parentElement.hasClass('markdown-embed-content');
+
+      // If banners in embeds are disabled, post-process nothing
+      if (isEmbed && !this.settings.showInEmbed) {
+        return;
+      }
 
       // If no `banner` metadata field exists, remove banner (and its data) if necessary and stop here
       if (!frontmatter?.banner) {
@@ -52,11 +62,11 @@ export default class BannersProcessor {
       }
 
       // Create banner if it hasn't been already made, otherwise update the banner image
-      const { banner: src } = frontmatter;
       const bannerEl = viewContainer.querySelector(BANNER_SELECTOR);
       if (!bannerEl) {
-        this.addBanner(viewContainer, src, sourcePath);
+        this.addBanner(viewContainer, ctx, isEmbed);
       } else {
+        const { banner: src } = frontmatter;
         const parsed = this.parseSource(src);
         const img = bannerEl.querySelector('img');
         if (img.src !== parsed) {
@@ -64,7 +74,10 @@ export default class BannersProcessor {
         }
       }
 
-      this.prevPath = sourcePath;
+      // Since no interaction is made with embed banners, avoid changing this reference
+      if (!isEmbed) {
+        this.prevPath = sourcePath;
+      }
     });
   }
 
@@ -74,13 +87,14 @@ export default class BannersProcessor {
   }
 
   // Create a banner for a given Markdown Preview View
-  addBanner(wrapper: HTMLDivElement, src: string, path: string) {
+  addBanner(wrapper: HTMLDivElement, ctx: MPPCPlus, isEmbed: boolean) {
+    const { sourcePath, frontmatter: { banner: src }} = ctx;
     const { style } = this.plugin.settings;
     const bannerEl = document.createElement('div');
     const img = document.createElement('img');
 
     // Set attribute to be used for modifying banner data
-    wrapper.setAttribute('filepath', path);
+    wrapper.setAttribute('filepath', sourcePath);
 
     // Initially make the image full-width (the more common case) and set its inital positioning
     img.draggable = false;
@@ -93,40 +107,43 @@ export default class BannersProcessor {
     bannerEl.addClasses(bannerClasses);
     bannerEl.appendChild(img);
 
-    // Set up banner image drag handlers
-    let dragging = false;
-    let prevPos: XY;
-    bannerEl.onmousedown = (e) => {
-      // Prepare dragging behavior
-      prevPos = this.getMousePos(e, bannerEl);
-      dragging = true;
-    };
-    bannerEl.onmousemove = (e) => {
-      // Only continue if dragging
-      if (!dragging) { return }
+    // Only enable banner drag in Markdown views, not in embeds
+    if (!isEmbed) {
+      // Set up banner image drag handlers
+      let dragging = false;
+      let prevPos: XY;
+      bannerEl.onmousedown = (e) => {
+        // Prepare dragging behavior
+        prevPos = this.getMousePos(e, bannerEl);
+        dragging = true;
+      };
+      bannerEl.onmousemove = (e) => {
+        // Only continue if dragging
+        if (!dragging) { return }
 
-      // Get delta of mouse drag
-      const currentPos = this.getMousePos(e, bannerEl);
-      const delta: XY = { x: currentPos.x - prevPos.x, y: currentPos.y - prevPos.y };
-      prevPos = currentPos;
+        // Get delta of mouse drag
+        const currentPos = this.getMousePos(e, bannerEl);
+        const delta: XY = { x: currentPos.x - prevPos.x, y: currentPos.y - prevPos.y };
+        prevPos = currentPos;
 
-      // Move the image within the banner div & the image's boundaries
-      const { height, width } = img;
-      const { left, top } = img.style;
-      const newTop = clamp(parseInt(top || '0') + delta.y, bannerEl.clientHeight - height, 0);
-      const newLeft = clamp(parseInt(left || '0') + delta.x, bannerEl.clientWidth - width, 0);
-      img.style.top = `${newTop}px`;
-      img.style.left = `${newLeft}px`;
+        // Move the image within the banner div & the image's boundaries
+        const { height, width } = img;
+        const { left, top } = img.style;
+        const newTop = clamp(parseInt(top || '0') + delta.y, bannerEl.clientHeight - height, 0);
+        const newLeft = clamp(parseInt(left || '0') + delta.x, bannerEl.clientWidth - width, 0);
+        img.style.top = `${newTop}px`;
+        img.style.left = `${newLeft}px`;
+      }
+      wrapper.onmouseup = async () => {
+        // Only continue when finishing drag
+        if (!dragging) { return }
+        dragging = false;
+
+        // Update banner data
+        const attr = wrapper.getAttribute('filepath');
+        await this.metaManager.upsertBannerData(attr, this.calcBannerOffset(img, bannerEl));
+      };
     }
-    wrapper.onmouseup = async () => {
-      // Only continue when finishing drag
-      if (!dragging) { return }
-      dragging = false;
-
-      // Update banner data
-      const attr = wrapper.getAttribute('filepath');
-      await this.metaManager.upsertBannerData(attr, this.calcBannerOffset(img, bannerEl));
-    };
 
     // Set up entire wrapper
     wrapper.prepend(bannerEl);
