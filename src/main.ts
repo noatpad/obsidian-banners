@@ -1,19 +1,25 @@
-import { Events, MetadataCache, Plugin, TFile, Vault, Workspace } from 'obsidian';
+import { EventRef, Events, MetadataCache, Plugin, TFile, Vault, Workspace } from 'obsidian';
 
 import './styles.scss';
 import BannersProcessor from './BannersProcessor';
 import SettingsTab, { DEFAULT_SETTINGS, SettingsOptions } from './Settings';
 import MetaManager from './MetaManager';
 import LocalImageModal from './LocalImageModal';
+
+interface Listener {
+  component: 'workspace' | 'vault' | 'metadataCache' | 'events',
+  ref: EventRef
+}
 export default class Banners extends Plugin {
   settings: SettingsOptions;
   workspace: Workspace;
   vault: Vault;
   metadataCache: MetadataCache
 
-  bannersProcessor: BannersProcessor;
   events: Events;
   metaManager: MetaManager;
+  bannersProcessor: BannersProcessor;
+  listeners: Listener[]
 
   async onload() {
     console.log('Loading Banners...');
@@ -26,6 +32,7 @@ export default class Banners extends Plugin {
     this.events = new Events();
     this.metaManager = new MetaManager(this);
     this.bannersProcessor = new BannersProcessor(this);
+    this.listeners = [];
 
     this.bannersProcessor.load();
     this.prepareCommands();
@@ -44,6 +51,8 @@ export default class Banners extends Plugin {
     console.log('Unloading Banners...');
 
     this.bannersProcessor.unload();
+    this.removeListeners();
+    this.removeStyles();
   }
 
   prepareStyles() {
@@ -88,18 +97,20 @@ export default class Banners extends Plugin {
     const { bannersProcessor } = this;
 
     // When resizing panes, update all banner image positions
-    this.workspace.on('resize', () => {
+    const resizeRef = this.workspace.on('resize', () => {
       bannersProcessor.updateBannerElements((b) => bannersProcessor.setBannerOffset(b));
     });
 
     // Remove banner when creating a new file or opening an empty file
-    this.workspace.on('file-open', async (file) => {
+    const fileOpenRef = this.workspace.on('file-open', async (file) => {
+      console.log('hello');
+
       if (!file || file.stat.size > 0) { return }
       bannersProcessor.updateBannerElements((b) => bannersProcessor.removeBanner(b), file.path);
     });
 
     // When duplicating a file, update banner's filepath reference
-    this.vault.on('create', (file) => {
+    const vaultOpenRef = this.vault.on('create', (file) => {
       if (!(file instanceof TFile) || file.extension !== 'md') { return }
 
       // Only continue if the file is indeed a duplicate
@@ -109,26 +120,48 @@ export default class Banners extends Plugin {
     });
 
     // When renaming a file, update banner's filepath reference
-    this.vault.on('rename', ({ path }, oldPath) => {
+    const vaultRenameRef = this.vault.on('rename', ({ path }, oldPath) => {
       bannersProcessor.updateFilepathAttr(oldPath, path);
     });
 
     // Fallback listener for manually removing the banner metadata
     // NOTE: This can take a few seconds to take effect, so the 'Remove banner' command is recommended
-    this.metadataCache.on('changed', (file) => {
+    const metadataChangeRef = this.metadataCache.on('changed', (file) => {
       if (this.metaManager.getBannerData(file).banner) { return }
       bannersProcessor.updateBannerElements((b) => bannersProcessor.removeBanner(b), file.path);
     });
 
     // When settings change, restyle the banners with the current settings
-    this.events.on('settingsSave', () => {
+    const settingsSaveRef = this.events.on('settingsSave', () => {
       bannersProcessor.updateBannerElements((b) => bannersProcessor.restyleBanner(b));
     });
 
     // Handler to remove banner upon command
-    this.events.on('cmdRemove', (file: TFile) => {
+    const commandRemoveRef = this.events.on('cmdRemove', (file: TFile) => {
       bannersProcessor.updateBannerElements((b) => bannersProcessor.removeBanner(b), file.path);
     });
+
+    this.listeners = [
+      { component: 'workspace', ref: resizeRef },
+      { component: 'workspace', ref: fileOpenRef },
+      { component: 'vault', ref: vaultOpenRef },
+      { component: 'vault', ref: vaultRenameRef },
+      { component: 'metadataCache', ref: metadataChangeRef },
+      { component: 'events', ref: settingsSaveRef },
+      { component: 'events', ref: commandRemoveRef },
+    ];
+  }
+
+  removeListeners() {
+    this.listeners.forEach(({ component, ref }) => {
+      this[component].offref(ref);
+    });
+  }
+
+  removeStyles() {
+    document.documentElement.style.removeProperty('--banner-height');
+    document.documentElement.style.removeProperty('--banner-embed-height');
+    document.body.removeClass('no-banner-in-embed');
   }
 
   // Helper to find the file that was duplicated from a given file, if that's the case

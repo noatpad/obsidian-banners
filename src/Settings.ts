@@ -9,7 +9,6 @@ export interface SettingsOptions {
   embedHeight: number
 }
 
-
 export const DEFAULT_SETTINGS: SettingsOptions = {
   height: 250,
   style: 'solid',
