@@ -6,14 +6,16 @@ export interface SettingsOptions {
   height: number,
   style: StyleOption,
   showInEmbed: boolean,
-  embedHeight: number
+  embedHeight: number,
+  allowMobileDrag: boolean
 }
 
 export const DEFAULT_SETTINGS: SettingsOptions = {
   height: 250,
   style: 'solid',
   showInEmbed: true,
-  embedHeight: 120
+  embedHeight: 120,
+  allowMobileDrag: false
 }
 
 const STYLE_OPTIONS: Record<StyleOption, string> = {
@@ -40,7 +42,13 @@ export default class SettingsTab extends PluginSettingTab {
 
   display() {
     const { containerEl } = this;
-    const { height, style, showInEmbed, embedHeight } = this.plugin.settings;
+    const {
+      height,
+      style,
+      showInEmbed,
+      embedHeight,
+      allowMobileDrag
+    } = this.plugin.settings;
     containerEl.empty();
 
     // Banner height
@@ -95,5 +103,16 @@ export default class SettingsTab extends PluginSettingTab {
         });
       });
     }
+
+    // Experimental setting for dragging banners in mobile
+    new Setting(containerEl)
+      .setName('Allow mobile drag')
+      .setDesc('EXPERIMENTAL: Allow adjusting the banner on mobile devices. App reload might be necessary')
+      .addToggle(toggle => toggle
+        .setValue(allowMobileDrag)
+        .onChange(async (val) => {
+          this.plugin.settings.allowMobileDrag = val;
+          await this.saveSettings();
+        }));
   }
 }

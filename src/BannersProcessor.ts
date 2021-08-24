@@ -85,7 +85,7 @@ export default class BannersProcessor {
   // Create a banner for a given Markdown Preview View
   addBanner(wrapper: HTMLDivElement, ctx: MPPCPlus, isEmbed: boolean) {
     const { sourcePath, frontmatter: { banner: src }} = ctx;
-    const { style } = this.plugin.settings;
+    const { allowMobileDrag, style } = this.plugin.settings;
 
     const bannerEl = document.createElement('div');
     const messageBox = document.createElement('div');
@@ -118,12 +118,14 @@ export default class BannersProcessor {
       // Set up banner image drag handlers
       let dragging = false;
       let prevPos: XY;
-      img.onmousedown = (e) => {
+
+      const dragStart = (e: MouseEvent | TouchEvent) => {
         // Prepare dragging behavior
         prevPos = this.getMousePos(e, bannerEl);
         dragging = true;
       };
-      img.onmousemove = (e) => {
+
+      const dragMove = (e: MouseEvent | TouchEvent) => {
         // Only continue if dragging
         if (!dragging) { return }
 
@@ -140,7 +142,8 @@ export default class BannersProcessor {
         img.style.top = `${newTop}px`;
         img.style.left = `${newLeft}px`;
       }
-      wrapper.onmouseup = async () => {
+
+      const dragStop = async () => {
         // Only continue when finishing drag
         if (!dragging) { return }
         dragging = false;
@@ -148,7 +151,17 @@ export default class BannersProcessor {
         // Update banner data
         const attr = wrapper.getAttribute('filepath');
         await this.metaManager.upsertBannerData(attr, this.calcBannerOffset(img, bannerEl));
-      };
+      }
+
+      img.onmousedown = dragStart;
+      img.onmousemove = dragMove;
+      wrapper.onmouseup = dragStop;
+
+      if (allowMobileDrag) {
+        img.ontouchstart = dragStart;
+        img.ontouchmove = dragMove;
+        wrapper.ontouchend = dragStop;
+      }
     }
 
     // Set up entire wrapper
@@ -265,8 +278,9 @@ export default class BannersProcessor {
   }
 
   // Helper to get mouse position
-  getMousePos(e: MouseEvent, div: HTMLDivElement): XY {
-    return { x: e.pageX - div.offsetTop, y: e.pageY - div.offsetLeft };
+  getMousePos(e: MouseEvent | TouchEvent, div: HTMLDivElement): XY {
+    const { pageX, pageY } = (e instanceof MouseEvent) ? e : e.targetTouches[0];
+    return { x: pageX - div.offsetTop, y: pageY - div.offsetLeft };
   }
 
   // Helper to setup loading indicator
