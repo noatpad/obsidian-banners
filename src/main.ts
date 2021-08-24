@@ -1,4 +1,5 @@
-import { EventRef, Events, MetadataCache, Plugin, TFile, Vault, Workspace } from 'obsidian';
+import { EventRef, Events, MetadataCache, Notice, Plugin, TFile, Vault, Workspace } from 'obsidian';
+import isURL from 'validator/lib/isURL';
 
 import './styles.scss';
 import BannersProcessor from './BannersProcessor';
@@ -19,6 +20,7 @@ export default class Banners extends Plugin {
   events: Events;
   metaManager: MetaManager;
   bannersProcessor: BannersProcessor;
+  localImageModal: LocalImageModal;
   listeners: Listener[]
 
   async onload() {
@@ -32,6 +34,7 @@ export default class Banners extends Plugin {
     this.events = new Events();
     this.metaManager = new MetaManager(this);
     this.bannersProcessor = new BannersProcessor(this);
+    this.localImageModal = new LocalImageModal(this);
     this.listeners = [];
 
     this.bannersProcessor.load();
@@ -55,40 +58,35 @@ export default class Banners extends Plugin {
     this.removeStyles();
   }
 
-  prepareStyles() {
-    const { embedHeight, height, showInEmbed } = this.settings;
-    document.documentElement.style.setProperty('--banner-height', `${height}px`);
-    document.documentElement.style.setProperty('--banner-embed-height', `${embedHeight}px`);
-    if (showInEmbed) {
-      document.body.removeClass('no-banner-in-embed');
-    } else {
-      document.body.addClass('no-banner-in-embed');
-    }
-  }
-
   prepareCommands() {
     this.addCommand({
       id: 'banners:addLocal',
       name: 'Add/Change banner with local image',
-      editorCallback: (_, view) => { new LocalImageModal(this, view.file).open() }
+      checkCallback: (checking) => {
+        const file = this.workspace.getActiveFile();
+        if (checking) { return !!file }
+        this.localImageModal.launch(file);
+      }
     });
 
     this.addCommand({
       id: 'banners:addClipboard',
       name: 'Add/Change banner from clipboard',
-      editorCallback: async (_, view) => {
-        const clipboard = await navigator.clipboard.readText();
-        this.metaManager.upsertBannerData(view.file, { banner: clipboard });
+      checkCallback: (checking) => {
+        const file = this.workspace.getActiveFile();
+        if (checking) { return !!file }
+        this.pasteBanner(file);
       }
+
     });
 
     this.addCommand({
       id: 'banners:remove',
       name: 'Remove banner',
-      editorCallback: (_, view) => {
-        const { file } = view;
-        this.metaManager.removeBannerData(file);
-        this.bannersProcessor.updateBannerElements((b) => this.bannersProcessor.removeBanner(b), file.path);
+      checkCallback: (checking) => {
+        const file = this.workspace.getActiveFile();
+        if (checking) { return !!file }
+        this.removeBanner(file);
       }
     });
   }
@@ -150,6 +148,17 @@ export default class Banners extends Plugin {
     ];
   }
 
+  prepareStyles() {
+    const { embedHeight, height, showInEmbed } = this.settings;
+    document.documentElement.style.setProperty('--banner-height', `${height}px`);
+    document.documentElement.style.setProperty('--banner-embed-height', `${embedHeight}px`);
+    if (showInEmbed) {
+      document.body.removeClass('no-banner-in-embed');
+    } else {
+      document.body.addClass('no-banner-in-embed');
+    }
+  }
+
   removeListeners() {
     this.listeners.forEach(({ component, ref }) => {
       this[component].offref(ref);
@@ -170,5 +179,23 @@ export default class Banners extends Plugin {
 
     const siblings = parent.children.filter(a => a instanceof TFile) as TFile[];
     return siblings.find(f => f.basename === potentialName && f.extension === extension);
+  }
+
+  // Helper to use clipboard for banner
+  async pasteBanner(file: TFile) {
+    const clipboard = await navigator.clipboard.readText();
+    if (!isURL(clipboard)) {
+      new Notice('Your clipboard didn\'t had a valid URL! Please try again (and check the console if you wanna debug).');
+      console.error({ clipboard });
+    } else {
+      this.metaManager.upsertBannerData(file, { banner: clipboard });
+      new Notice('Pasted a new banner!');
+    }
+  }
+
+  // Helper to remove banner
+  removeBanner(file: TFile) {
+    this.metaManager.removeBannerData(file);
+    this.bannersProcessor.updateBannerElements((b) => this.bannersProcessor.removeBanner(b), file.path);
   }
 }

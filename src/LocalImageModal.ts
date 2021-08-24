@@ -11,13 +11,18 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
   metaManager: MetaManager;
   targetFile: TFile
 
-  constructor(plugin: Banners, targetFile: TFile) {
+  constructor(plugin: Banners) {
     super(plugin.app);
     this.plugin = plugin;
     this.vault = plugin.app.vault;
     this.metaManager = plugin.metaManager;
-    this.targetFile = targetFile;
+    this.targetFile = null;
     this.setPlaceholder('Pick an image to use as a banner');
+  }
+
+  launch(file: TFile) {
+    this.targetFile = file;
+    super.open();
   }
 
   getItems(): TFile[] {
