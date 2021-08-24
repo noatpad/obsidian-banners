@@ -1,5 +1,7 @@
+@use './spinner';
+
 .markdown-preview-view.has-banner {
-  // Banner element
+  // Banner wrapper
   .obsidian-banner {
     position: absolute;
     top: 0;
@@ -8,21 +10,42 @@
     height: var(--banner-height);
     width: 100%;
     overflow: hidden;
-    cursor: grab;
-
-    &:active {
-      cursor: grabbing;
-    }
 
     &.gradient {
       mask-image: linear-gradient(to bottom, black, transparent);
       -webkit-mask-image: linear-gradient(to bottom, black, transparent);
     }
 
+    // Banner message box
+    .banner-message {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      border: 2px solid var(--background-modifier-border);
+
+      p {
+        margin: 6px 8px;
+        text-align: center;
+        color: var(--text-muted);
+      }
+    }
+
+    // Banner image
     img {
       position: relative;
       object-fit: cover;
       max-width: none !important;
+      cursor: grab;
+
+      &:active {
+        cursor: grabbing;
+      }
 
       &.full-height {
         height: 100%;
@@ -32,12 +55,25 @@
         width: 100%;
       }
     }
+
+    // Hide loading indicator when image has loaded
+    &.loaded {
+      .banner-message {
+        display: none;
+      }
+    }
   }
 
   // Markdown wrapper below the banner
   .markdown-preview-section {
     margin-top: var(--banner-height);
   }
+}
+
+// Make banner message respect readable line width setting
+.markdown-preview-view.has-banner.is-readable-line-width .banner-message {
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 // Popover embed

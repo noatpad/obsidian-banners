@@ -6,6 +6,7 @@ import Banners from './main';
 import MetaManager, { FrontmatterWithBannerData } from './MetaManager';
 import { BannerMetadata } from './MetaManager';
 import { SettingsOptions } from './Settings';
+import { html } from 'common-tags';
 
 const BANNER_CLASS = 'obsidian-banner';
 const BANNER_SELECTOR = `.${BANNER_CLASS}`;
@@ -62,16 +63,11 @@ export default class BannersProcessor {
       }
 
       // Create banner if it hasn't been already made, otherwise update the banner image
-      const bannerEl = viewContainer.querySelector(BANNER_SELECTOR);
+      const bannerEl: HTMLDivElement = viewContainer.querySelector(BANNER_SELECTOR);
       if (!bannerEl) {
         this.addBanner(viewContainer, ctx, isEmbed);
       } else {
-        const { banner: src } = frontmatter;
-        const parsed = this.parseSource(src);
-        const img = bannerEl.querySelector('img');
-        if (img.src !== parsed) {
-          img.src = this.parseSource(src);
-        }
+        this.updateBanner(bannerEl, ctx);
       }
 
       // Since no interaction is made with embed banners, avoid changing this reference
@@ -90,34 +86,52 @@ export default class BannersProcessor {
   addBanner(wrapper: HTMLDivElement, ctx: MPPCPlus, isEmbed: boolean) {
     const { sourcePath, frontmatter: { banner: src }} = ctx;
     const { style } = this.plugin.settings;
+
     const bannerEl = document.createElement('div');
+    const messageBox = document.createElement('div');
     const img = document.createElement('img');
 
     // Set attribute to be used for modifying banner data
     wrapper.setAttribute('filepath', sourcePath);
 
+    // Prepare loading/error message
+    this.setupMessageBox(messageBox);
+
     // Initially make the image full-width (the more common case) and set its inital positioning
     img.draggable = false;
     img.className = 'full-width';
-    img.onload = () => { this.setBannerOffset(wrapper) };
+    img.onload = () => {
+      this.setBannerOffset(wrapper);
+      bannerEl.addClass('loaded');
+    };
+    img.onerror = () => {
+      messageBox.innerHTML = html`
+        <p>
+          Error loading banner image! Is the <em>banner</em> field correct?
+          <br/>
+          Click <a class="internal-link">here</a> to pick a local image for your banner, or <a class="internal-link">here</a> to paste a link URL instead.
+        </p>
+      `;
+      bannerEl.addClass('error');
+    }
     img.src = this.parseSource(src);
 
     const bannerClasses = [BANNER_CLASS];
     if (style === 'gradient') { bannerClasses.push('gradient') }
     bannerEl.addClasses(bannerClasses);
-    bannerEl.appendChild(img);
+    bannerEl.append(messageBox, img);
 
     // Only enable banner drag in Markdown views, not in embeds
     if (!isEmbed) {
       // Set up banner image drag handlers
       let dragging = false;
       let prevPos: XY;
-      bannerEl.onmousedown = (e) => {
+      img.onmousedown = (e) => {
         // Prepare dragging behavior
         prevPos = this.getMousePos(e, bannerEl);
         dragging = true;
       };
-      bannerEl.onmousemove = (e) => {
+      img.onmousemove = (e) => {
         // Only continue if dragging
         if (!dragging) { return }
 
@@ -150,13 +164,27 @@ export default class BannersProcessor {
     wrapper.addClass('has-banner');
   }
 
+  // Update the image on a banner
+  updateBanner(bannerEl: HTMLElement, { frontmatter }: MPPCPlus) {
+    // Only continue if the parsed source is different
+    const { banner: src } = frontmatter;
+    const parsed = this.parseSource(src);
+    const img = bannerEl.querySelector('img');
+    if (img.src === parsed || (img.src === 'app://obsidian.md/null' && parsed === null)) { return }
+
+    const messageBox: HTMLDivElement = bannerEl.querySelector('.banner-message');
+    this.setupMessageBox(messageBox);
+    bannerEl.removeClasses(['loaded', 'error']);
+    img.src = parsed;
+  }
+
   // Remove banner from view
   removeBanner(wrapper: HTMLElement) {
     // If banner doesn't exist, do nothing
-    const bannerDiv = wrapper.querySelector(BANNER_SELECTOR);
-    if (!bannerDiv) { return }
+    const bannerEl = wrapper.querySelector(BANNER_SELECTOR);
+    if (!bannerEl) { return }
 
-    bannerDiv.remove();
+    bannerEl.remove();
     wrapper.removeClass('has-banner');
     wrapper.removeAttribute('path');
 
@@ -247,5 +275,17 @@ export default class BannersProcessor {
   // Get mouse position
   getMousePos(e: MouseEvent, div: HTMLDivElement): XY {
     return { x: e.pageX - div.offsetTop, y: e.pageY - div.offsetLeft };
+  }
+
+  // Helper function to setup loading indicator
+  setupMessageBox(box: HTMLDivElement) {
+    box.className = 'banner-message';
+    box.innerHTML = html`
+      <div class="spinner">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+      </div>
+    `;
   }
 }

@@ -103,8 +103,6 @@ export default class Banners extends Plugin {
 
     // Remove banner when creating a new file or opening an empty file
     const fileOpenRef = this.workspace.on('file-open', async (file) => {
-      console.log('hello');
-
       if (!file || file.stat.size > 0) { return }
       bannersProcessor.updateBannerElements((b) => bannersProcessor.removeBanner(b), file.path);
     });
