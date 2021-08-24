@@ -11,7 +11,7 @@
     width: 100%;
     overflow: hidden;
 
-    &.gradient {
+    &.gradient:not(.error) {
       mask-image: linear-gradient(to bottom, black, transparent);
       -webkit-mask-image: linear-gradient(to bottom, black, transparent);
     }
@@ -59,6 +59,13 @@
     // Hide loading indicator when image has loaded
     &.loaded {
       .banner-message {
+        display: none;
+      }
+    }
+
+    // Hide image upon an error loading it
+    &.error {
+      img {
         display: none;
       }
     }

@@ -105,20 +105,12 @@ export default class BannersProcessor {
       bannerEl.addClass('loaded');
     };
     img.onerror = () => {
-      messageBox.innerHTML = html`
-        <p>
-          Error loading banner image! Is the <em>banner</em> field correct?
-          <br/>
-          Click <a class="internal-link">here</a> to pick a local image for your banner, or <a class="internal-link">here</a> to paste a link URL instead.
-        </p>
-      `;
+      messageBox.innerHTML = '<p>Error loading banner image! Is the <em>banner</em> field valid?</p>';
       bannerEl.addClass('error');
     }
     img.src = this.parseSource(src);
 
-    const bannerClasses = [BANNER_CLASS];
-    if (style === 'gradient') { bannerClasses.push('gradient') }
-    bannerEl.addClasses(bannerClasses);
+    bannerEl.addClasses([BANNER_CLASS, style]);
     bannerEl.append(messageBox, img);
 
     // Only enable banner drag in Markdown views, not in embeds
@@ -253,7 +245,7 @@ export default class BannersProcessor {
     return (file instanceof TFile) ? this.vault.adapter.getResourcePath(src) : null;
   }
 
-  // Helper function to get all specified banner wrappers and do something with them
+  // Helper to get all specified banner wrappers and do something with them
   // `filepath` is used if you wanna target banners that pertain to a specific file
   updateBannerElements(cbPerBanner: (wrapper: HTMLDivElement) => any, filepath?: string) {
     const selector = '.markdown-preview-view.has-banner';
@@ -266,18 +258,18 @@ export default class BannersProcessor {
       .forEach(cbPerBanner);
   }
 
-  // Update `filepath` attribute reference
+  // Helper to update `filepath` attribute reference
   updateFilepathAttr(oldPath: string, newPath: string) {
     this.prevPath = newPath;
     this.updateBannerElements((b) => b.setAttribute('filepath', newPath), oldPath);
   }
 
-  // Get mouse position
+  // Helper to get mouse position
   getMousePos(e: MouseEvent, div: HTMLDivElement): XY {
     return { x: e.pageX - div.offsetTop, y: e.pageY - div.offsetLeft };
   }
 
-  // Helper function to setup loading indicator
+  // Helper to setup loading indicator
   setupMessageBox(box: HTMLDivElement) {
     box.className = 'banner-message';
     box.innerHTML = html`
