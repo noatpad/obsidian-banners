@@ -85,7 +85,7 @@ export default class Banners extends Plugin {
       name: 'Remove banner',
       checkCallback: (checking) => {
         const file = this.workspace.getActiveFile();
-        if (checking) { return !!file }
+        if (checking) { return !!file && !!this.metaManager.getBannerData(file)?.banner }
         this.removeBanner(file);
       }
     });
@@ -197,5 +197,6 @@ export default class Banners extends Plugin {
   removeBanner(file: TFile) {
     this.metaManager.removeBannerData(file);
     this.bannersProcessor.updateBannerElements((b) => this.bannersProcessor.removeBanner(b), file.path);
+    new Notice(`Removed banner for ${file.name}!`);
   }
 }
