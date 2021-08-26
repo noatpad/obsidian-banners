@@ -1,4 +1,4 @@
-import { PluginSettingTab, Setting } from "obsidian"
+import { PluginSettingTab, Setting } from "obsidian";
 import Banners from "./main";
 
 type StyleOption = 'solid' | 'gradient';
@@ -107,7 +107,7 @@ export default class SettingsTab extends PluginSettingTab {
     // Experimental setting for dragging banners in mobile
     new Setting(containerEl)
       .setName('Allow mobile drag')
-      .setDesc('EXPERIMENTAL: Allow adjusting the banner on mobile devices. App reload might be necessary')
+      .setDesc('EXPERIMENTAL: Allow dragging the banner on mobile devices. App reload might be necessary')
       .addToggle(toggle => toggle
         .setValue(allowMobileDrag)
         .onChange(async (val) => {

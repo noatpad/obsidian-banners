@@ -1,12 +1,12 @@
 import { MarkdownPostProcessorContext, TFile, Vault, Workspace } from 'obsidian';
 import clamp from 'lodash/clamp';
 import isURL from 'validator/lib/isURL';
+import { html } from 'common-tags';
 
 import Banners from './main';
 import MetaManager, { FrontmatterWithBannerData } from './MetaManager';
 import { BannerMetadata } from './MetaManager';
 import { SettingsOptions } from './Settings';
-import { html } from 'common-tags';
 
 const BANNER_CLASS = 'obsidian-banner';
 const BANNER_SELECTOR = `.${BANNER_CLASS}`;

@@ -1,5 +1,6 @@
 import { html } from 'common-tags';
 import { FuzzyMatch, FuzzySuggestModal, TFile, Vault } from 'obsidian';
+
 import Banners from './main';
 import MetaManager from './MetaManager';
 

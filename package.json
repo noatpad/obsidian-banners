@@ -1,14 +1,18 @@
 {
   "name": "obsidian-banners",
   "version": "1.0.0",
-  "description": "",
+  "description": "An Obsidian plugin to display banner images in your notes",
   "author": "Danny Hernandez",
   "main": "src/main.ts",
   "scripts": {
     "build": "rollup --config rollup.config.js",
     "dev": "rollup --config rollup.config.dev.js -w"
   },
-  "keywords": [],
+  "keywords": [
+    "obsidian",
+    "obsidian-md",
+    "obsidian-plugin"
+  ],
   "devDependencies": {
     "@rollup/plugin-commonjs": "^18.0.0",
     "@rollup/plugin-node-resolve": "^11.2.1",
