@@ -23,7 +23,7 @@
     "@types/validator": "^13.6.3",
     "common-tags": "^1.8.0",
     "lodash": "^4.17.21",
-    "obsidian": "^0.12.0",
+    "obsidian": "^0.12.11",
     "rollup": "^2.32.1",
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-scss": "^3.0.0",
