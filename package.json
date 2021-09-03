@@ -6,7 +6,7 @@
   "main": "src/main.ts",
   "scripts": {
     "build": "rollup --config rollup.config.js",
-    "dev": "rollup --config rollup.config.dev.js -w"
+    "dev": "NODE_ENV=dev rollup --config rollup.config.js -w"
   },
   "keywords": [
     "obsidian",

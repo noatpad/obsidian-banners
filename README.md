@@ -45,7 +45,7 @@ If you remove a note's entire frontmatter with one keystroke (like a *Select All
 ## Develop
 Once you run `npm i`, you can build the files into `dist/` easily by running `npm run build`.
 
-You can also have it watch your files and update your plugin within your vault while you develop by running `npm run dev`. Just make sure to set `TEST_VAULT` in `./rollup.config.dev.js` to your testing vault beforehand.
+You can also have it watch your files and update your plugin within your vault while you develop by running `npm run dev`. Just make sure to set `TEST_VAULT` in `./rollup.config.js` to your testing vault beforehand.
 ## Things I *might* do down the road
 - [ ] Make content's vertical displacement height different than banner height (this can be nice for aesthetic choices with the *Gradient* style)
 - [ ] Note-specific settings (override global style & height settings per note)
