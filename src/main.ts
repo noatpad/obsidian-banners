@@ -1,4 +1,4 @@
-import { Events, MarkdownPostProcessorContext, MarkdownView, MetadataCache, Notice, Plugin, TFile, Vault, Workspace } from 'obsidian';
+import { MarkdownPostProcessorContext, MarkdownView, MetadataCache, Notice, Plugin, TFile, Vault, Workspace } from 'obsidian';
 import isURL from 'validator/lib/isURL';
 
 import './styles.scss';
@@ -17,7 +17,6 @@ export default class BannersPlugin extends Plugin {
   vault: Vault;
   metadataCache: MetadataCache
 
-  events: Events;
   metaManager: MetaManager;
   localImageModal: LocalImageModal;
 
@@ -29,7 +28,6 @@ export default class BannersPlugin extends Plugin {
     this.vault = this.app.vault;
     this.metadataCache = this.app.metadataCache;
 
-    this.events = new Events();
     this.metaManager = new MetaManager(this);
     this.localImageModal = new LocalImageModal(this);
 
@@ -39,12 +37,7 @@ export default class BannersPlugin extends Plugin {
 
     this.addSettingTab(new SettingsTab(this));
 
-    // Refresh the layout to trigger postprocessor
-    this.workspace.getLeavesOfType('markdown').forEach((leaf) => {
-      if (leaf.getViewState().state.mode.includes('preview')) {
-        (leaf.view as MarkdownView).previewMode.rerender(true);
-      }
-    });
+    this.refreshViews();
   }
 
   async onunload() {
@@ -106,14 +99,9 @@ export default class BannersPlugin extends Plugin {
   }
 
   loadStyles() {
-    const { embedHeight, height, showInEmbed } = this.settings;
+    const { embedHeight, height } = this.settings;
     document.documentElement.style.setProperty('--banner-height', `${height}px`);
     document.documentElement.style.setProperty('--banner-embed-height', `${embedHeight}px`);
-    if (showInEmbed) {
-      document.body.removeClass('no-banner-in-embed');
-    } else {
-      document.body.addClass('no-banner-in-embed');
-    }
   }
 
   unloadBanners() {
@@ -128,7 +116,15 @@ export default class BannersPlugin extends Plugin {
   unloadStyles() {
     document.documentElement.style.removeProperty('--banner-height');
     document.documentElement.style.removeProperty('--banner-embed-height');
-    document.body.removeClass('no-banner-in-embed');
+  }
+
+  // Helper to refresh markdown views
+  refreshViews() {
+    this.workspace.getLeavesOfType('markdown').forEach((leaf) => {
+      if (leaf.getViewState().state.mode.includes('preview')) {
+        (leaf.view as MarkdownView).previewMode.rerender(true);
+      }
+    });
   }
 
   // Helper to use clipboard for banner

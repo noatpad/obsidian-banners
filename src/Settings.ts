@@ -31,16 +31,12 @@ export default class SettingsTab extends PluginSettingTab {
     this.plugin = plugin;
   }
 
-  async saveSettings({ refresh = false, restyleBanners = false } = {}) {
+  async saveSettings({ rerenderSettings = false, refreshViews = false } = {}) {
     await this.plugin.saveData(this.plugin.settings);
     this.plugin.loadStyles();
-    // this.plugin.events.trigger('settingsSave');
-    if (refresh) {
-      this.display();
-    }
-    if (restyleBanners) {
-      this.plugin.events.trigger('restyleBanners');
-    }
+
+    if (rerenderSettings) { this.display() }
+    if (refreshViews) { this.plugin.refreshViews() }
   }
 
   display() {
@@ -77,7 +73,7 @@ export default class SettingsTab extends PluginSettingTab {
         .setValue(style)
         .onChange(async (val: StyleOption) => {
           this.plugin.settings.style = val;
-          await this.saveSettings({ restyleBanners: true });
+          await this.saveSettings({ refreshViews: true });
         }));
 
     // Show banner in embed
@@ -88,7 +84,7 @@ export default class SettingsTab extends PluginSettingTab {
         .setValue(showInEmbed)
         .onChange(async (val) => {
           this.plugin.settings.showInEmbed = val;
-          await this.saveSettings({ refresh: true });
+          await this.saveSettings({ rerenderSettings: true, refreshViews: true });
         }));
 
     // Embed banner height
@@ -115,7 +111,7 @@ export default class SettingsTab extends PluginSettingTab {
         .setValue(allowMobileDrag)
         .onChange(async (val) => {
           this.plugin.settings.allowMobileDrag = val;
-          await this.saveSettings();
+          await this.saveSettings({ refreshViews: true });
         }));
   }
 }

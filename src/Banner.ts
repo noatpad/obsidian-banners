@@ -1,4 +1,4 @@
-import { Events, MarkdownRenderChild, TFile } from 'obsidian';
+import { MarkdownRenderChild, TFile } from 'obsidian';
 import clamp from 'lodash/clamp';
 import { html } from 'common-tags';
 import isURL from 'validator/lib/isURL';
@@ -15,7 +15,6 @@ export default class Banner extends MarkdownRenderChild {
   wrapper: HTMLElement;
   plugin: BannersPlugin;
   metaManager: MetaManager;
-  events: Events;
   ctx: MPPCPlus;
 
   isEmbed: boolean;
@@ -33,7 +32,6 @@ export default class Banner extends MarkdownRenderChild {
     this.wrapper = wrapper;
     this.plugin = plugin;
     this.metaManager = plugin.metaManager;
-    this.events = plugin.events;
 
     this.ctx = ctx;
     this.isEmbed = isEmbed;
@@ -43,7 +41,6 @@ export default class Banner extends MarkdownRenderChild {
 
   onload() {
     this.render();
-    this.events.on('restyleBanners', () => this.restyleBanner());
   }
 
   // Prepare and render banner
@@ -160,12 +157,5 @@ export default class Banner extends MarkdownRenderChild {
   getMousePos(e: MouseEvent | TouchEvent, div: HTMLElement): XY {
     const { pageX, pageY } = (e instanceof MouseEvent) ? e : e.targetTouches[0];
     return { x: pageX - div.offsetTop, y: pageY - div.offsetLeft };
-  }
-
-  // Helper to restyle banner when prompted
-  restyleBanner() {
-    const { style } = this.plugin.settings;
-    this.containerEl.removeClasses(['solid', 'gradient']);
-    this.containerEl.addClass(style);
   }
 }
