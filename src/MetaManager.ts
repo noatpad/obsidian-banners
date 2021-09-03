@@ -76,37 +76,36 @@ export default class MetaManager {
     await this.vault.modify(file, newContent);
   }
 
-  async removeBannerData(fileOrPath: TFile | string, fields: Array<keyof BannerMetadata> = ['banner', 'banner_x', 'banner_y']) {
+  async removeBannerData(fileOrPath: TFile | string, fields: Array<keyof BannerMetadata> & string[] = ['banner', 'banner_x', 'banner_y']) {
     const file = (fileOrPath instanceof TFile) ? fileOrPath : this.getFileByPath(fileOrPath);
     if (!file) { return }
 
-    // If there's no YAML to remove, then stop here
+    // If there's no (relevant) YAML to remove, stop here
+    const { frontmatter } = this.metadata.getFileCache(file);
+    console.log(frontmatter);
+    const frontmatterKeys = Object.keys(frontmatter ?? {});
+    if (!frontmatter || !fields.some(f => frontmatterKeys.includes(f))) { return }
+
     const content = await this.vault.read(file);
-    const hasYaml = HAS_YAML_REGEX.test(content);
-    if (!hasYaml) { return }
-
-    // Go one-by-one and delete the given fields of the YAML
     const lines = content.split('\n');
-    const start = lines.indexOf('---');
-    let end = lines.indexOf('---', start + 1);
-    let isEmpty = true;
-    for (let i = start + 1; i < end && fields.length; i++) {
-      const [key] = lines[i].split(': ');
-      const fieldIndex = fields.indexOf(key as keyof BannerMetadata);
-      if (fieldIndex === -1) {
-        if (key) { isEmpty = false }
-        continue;
-      }
+    const { line: start } = frontmatter.position.start;
+    let { line: end } = frontmatter.position.end;
 
-      lines.splice(i, 1);
-      fields.splice(fieldIndex, 1);
-      i--;
-      end--;
-    }
-
-    // If the YAML is empty after deleting those fields, remove the YAML lines as well
-    if (isEmpty) {
+    // Determine if the entire YAML should be removed or only part of it
+    if (frontmatterKeys.every(f => fields.includes(f) || f === 'position')) {
       lines.splice(start, end - start + 1);
+    } else {
+      // Iterate through each YAML field-line and remove the desired ones
+      for (let i = start + 1; i < end && fields.length; i++) {
+        const [key] = lines[i].split(': ');
+        const fieldIndex = fields.indexOf(key);
+        if (fieldIndex === -1) { continue }
+
+        lines.splice(i, 1);
+        fields.splice(fieldIndex, 1);
+        i--;
+        end--;
+      }
     }
 
     const newContent = lines.join('\n');

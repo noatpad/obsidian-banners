@@ -61,9 +61,9 @@ export default class BannersPlugin extends Plugin {
 
       // Stop here for disallowed/unnecessary processing
       if (
-        (isEmbed && !this.settings.showInEmbed) ||
         !el.querySelector('pre.frontmatter') ||
-        !frontmatter?.banner
+        !frontmatter?.banner ||
+        (isEmbed && !this.settings.showInEmbed)
       ) { return }
 
       const banner = document.createElement('div');
