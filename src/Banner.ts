@@ -142,7 +142,7 @@ export default class Banner extends MarkdownRenderChild {
     // Update banner data
     const [x, y] = img.style.objectPosition
       .split(' ')
-      .map(n => parseFloat(n) / 100);
+      .map(n => Math.round(parseFloat(n) * 1000) / 100000);
     await this.metaManager.upsertBannerData(sourcePath, { banner_x: x, banner_y: y });
   }
 
