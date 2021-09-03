@@ -1,5 +1,5 @@
 import { PluginSettingTab, Setting } from "obsidian";
-import Banners from "./main";
+import BannersPlugin from "./main";
 
 type StyleOption = 'solid' | 'gradient';
 export interface SettingsOptions {
@@ -24,19 +24,22 @@ const STYLE_OPTIONS: Record<StyleOption, string> = {
 }
 
 export default class SettingsTab extends PluginSettingTab {
-  plugin: Banners;
+  plugin: BannersPlugin;
 
-  constructor(plugin: Banners) {
+  constructor(plugin: BannersPlugin) {
     super(plugin.app, plugin);
     this.plugin = plugin;
   }
 
-  async saveSettings(refresh = false) {
+  async saveSettings({ refresh = false, restyleBanners = false } = {}) {
     await this.plugin.saveData(this.plugin.settings);
-    this.plugin.prepareStyles();
-    this.plugin.events.trigger('settingsSave');
+    this.plugin.loadStyles();
+    // this.plugin.events.trigger('settingsSave');
     if (refresh) {
       this.display();
+    }
+    if (restyleBanners) {
+      this.plugin.events.trigger('restyleBanners');
     }
   }
 
@@ -74,7 +77,7 @@ export default class SettingsTab extends PluginSettingTab {
         .setValue(style)
         .onChange(async (val: StyleOption) => {
           this.plugin.settings.style = val;
-          await this.saveSettings();
+          await this.saveSettings({ restyleBanners: true });
         }));
 
     // Show banner in embed
@@ -85,7 +88,7 @@ export default class SettingsTab extends PluginSettingTab {
         .setValue(showInEmbed)
         .onChange(async (val) => {
           this.plugin.settings.showInEmbed = val;
-          await this.saveSettings(true);
+          await this.saveSettings({ refresh: true });
         }));
 
     // Embed banner height

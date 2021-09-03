@@ -10,7 +10,6 @@ Please visit the repository linked to view the source code
 */
 `;
 
-
 export default {
   input: 'src/main.ts',
   output: {

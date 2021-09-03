@@ -1,18 +1,18 @@
 import { html } from 'common-tags';
 import { FuzzyMatch, FuzzySuggestModal, TFile, Vault } from 'obsidian';
 
-import Banners from './main';
+import BannersPlugin from './main';
 import MetaManager from './MetaManager';
 
 const IMAGE_FORMATS = ['apng', 'avif', 'gif', 'jpg', 'jpeg', 'jpe', 'jif', 'jfif', 'png', 'webp'];
 
 export default class LocalImageModal extends FuzzySuggestModal<TFile> {
-  plugin: Banners;
+  plugin: BannersPlugin;
   vault: Vault;
   metaManager: MetaManager;
   targetFile: TFile
 
-  constructor(plugin: Banners) {
+  constructor(plugin: BannersPlugin) {
     super(plugin.app);
     this.plugin = plugin;
     this.vault = plugin.app.vault;

@@ -1,7 +1,7 @@
 import { FrontMatterCache, MetadataCache, TFile, Vault } from 'obsidian';
 import { stripIndents } from 'common-tags';
 
-import Banners from './main';
+import BannersPlugin from './main';
 
 export type FrontmatterWithBannerData = FrontMatterCache | BannerMetadata
 export interface BannerMetadata {
@@ -13,11 +13,11 @@ export interface BannerMetadata {
 const HAS_YAML_REGEX = /^-{3}(\n|\r|\r\n)((.*)(\n|\r|\r\n))*-{3}/;
 
 export default class MetaManager {
-  plugin: Banners;
+  plugin: BannersPlugin;
   metadata: MetadataCache
   vault: Vault;
 
-  constructor(plugin: Banners) {
+  constructor(plugin: BannersPlugin) {
     this.plugin = plugin;
     this.metadata = plugin.app.metadataCache;
     this.vault = plugin.app.vault;
@@ -121,7 +121,7 @@ export default class MetaManager {
 
   // Format into valid YAML fields
   formatYamlFields(fields: any[]): string {
-    return fields.sort((a, b) => b[0].localeCompare(a[0]))
+    return fields.sort((a, b) => a[0].localeCompare(b[0]))
       .map(([key, val]) => `${key}: ${val}`)
       .join('\n');
   }

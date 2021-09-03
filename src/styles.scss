@@ -1,8 +1,10 @@
 @use './spinner';
 
-.markdown-preview-view.has-banner {
-  // Banner wrapper
-  .obsidian-banner {
+// Main banner wrapper
+.obsidian-banner-wrapper {
+  margin-top: calc(var(--banner-height) + 10px);
+
+  > .obsidian-banner {
     position: absolute;
     top: 0;
     left: 0;
@@ -16,7 +18,6 @@
       -webkit-mask-image: linear-gradient(to bottom, black, transparent);
     }
 
-    // Banner message box
     .banner-message {
       position: absolute;
       top: 16px;
@@ -42,60 +43,44 @@
       object-fit: cover;
       max-width: none !important;
       cursor: grab;
+      height: 100%;
+      width: 100%;
 
       &:active {
         cursor: grabbing;
       }
-
-      &.full-height {
-        height: 100%;
-      }
-
-      &.full-width {
-        width: 100%;
-      }
-    }
-
-    // Hide loading indicator when image has loaded
-    &.loaded {
-      .banner-message {
-        display: none;
-      }
-    }
-
-    // Hide image upon an error loading it
-    &.error {
-      img {
-        display: none;
-      }
     }
   }
 
-  // Markdown wrapper below the banner
-  .markdown-preview-section {
-    margin-top: var(--banner-height);
+  // Hide loading indicator when image has loaded
+  &.loaded {
+    .banner-message {
+      display: none;
+    }
+  }
+
+  // Hide image upon an error loading it
+  &.error {
+    img {
+      display: none;
+    }
   }
 }
 
-// Make banner message respect readable line width setting
-.markdown-preview-view.has-banner.is-readable-line-width .banner-message {
-  max-width: 700px;
-  margin: 0 auto;
-}
+// Embeds
+.markdown-embed-content .obsidian-banner-wrapper {
+  margin-top: var(--banner-embed-height);
 
-// Popover embed
-.markdown-embed-content > .markdown-preview-view.has-banner {
-  .obsidian-banner {
+  > .obsidian-banner {
     height: var(--banner-embed-height);
-    cursor: initial;
-  }
 
-  .markdown-preview-section {
-    margin-top: var(--banner-embed-height);
+    img {
+      cursor: initial;
+    }
   }
 }
 
-// Modal suggestions
+// Local image modal
 .banner-suggestion-item {
   padding: 6px 10px;
 

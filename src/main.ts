@@ -1,17 +1,17 @@
-import { EventRef, Events, MetadataCache, Notice, Plugin, TFile, Vault, Workspace } from 'obsidian';
+import { Events, MarkdownPostProcessorContext, MarkdownView, MetadataCache, Notice, Plugin, TFile, Vault, Workspace } from 'obsidian';
 import isURL from 'validator/lib/isURL';
 
 import './styles.scss';
-import BannersProcessor from './BannersProcessor';
+import Banner from './Banner';
 import SettingsTab, { DEFAULT_SETTINGS, SettingsOptions } from './Settings';
-import MetaManager from './MetaManager';
+import MetaManager, { FrontmatterWithBannerData } from './MetaManager';
 import LocalImageModal from './LocalImageModal';
 
-interface Listener {
-  component: 'workspace' | 'vault' | 'metadataCache' | 'events',
-  ref: EventRef
+export interface MPPCPlus extends MarkdownPostProcessorContext {
+  containerEl: HTMLElement,
+  frontmatter: FrontmatterWithBannerData
 }
-export default class Banners extends Plugin {
+export default class BannersPlugin extends Plugin {
   settings: SettingsOptions;
   workspace: Workspace;
   vault: Vault;
@@ -19,9 +19,7 @@ export default class Banners extends Plugin {
 
   events: Events;
   metaManager: MetaManager;
-  bannersProcessor: BannersProcessor;
   localImageModal: LocalImageModal;
-  listeners: Listener[]
 
   async onload() {
     console.log('Loading Banners...');
@@ -33,32 +31,48 @@ export default class Banners extends Plugin {
 
     this.events = new Events();
     this.metaManager = new MetaManager(this);
-    this.bannersProcessor = new BannersProcessor(this);
     this.localImageModal = new LocalImageModal(this);
-    this.listeners = [];
 
-    this.bannersProcessor.load();
-    this.prepareCommands();
-    this.prepareListeners();
-    this.prepareStyles();
+    this.loadProcessor();
+    this.loadCommands();
+    this.loadStyles();
 
     this.addSettingTab(new SettingsTab(this));
 
     // Refresh the layout to trigger postprocessor
-    this.workspace.onLayoutReady(() => {
-      this.workspace.changeLayout(this.workspace.getLayout());
+    this.workspace.getLeavesOfType('markdown').forEach((leaf) => {
+      if (leaf.getViewState().state.mode.includes('preview')) {
+        (leaf.view as MarkdownView).previewMode.rerender(true);
+      }
     });
   }
 
   async onunload() {
     console.log('Unloading Banners...');
 
-    this.bannersProcessor.unload();
-    this.removeListeners();
-    this.removeStyles();
+    this.unloadBanners();
+    this.unloadStyles();
   }
 
-  prepareCommands() {
+  loadProcessor() {
+    this.registerMarkdownPostProcessor(async (el, ctx: MPPCPlus) => {
+      const { containerEl, frontmatter } = ctx;
+      const isEmbed = containerEl.parentElement.parentElement.hasClass('markdown-embed-content');
+
+      // Stop here for disallowed/unnecessary processing
+      if (
+        (isEmbed && !this.settings.showInEmbed) ||
+        !el.querySelector('pre.frontmatter') ||
+        !frontmatter?.banner
+      ) { return }
+
+      const banner = document.createElement('div');
+      el.prepend(banner);
+      ctx.addChild(new Banner(this, banner, el, ctx, isEmbed));
+    });
+  }
+
+  loadCommands() {
     this.addCommand({
       id: 'banners:addLocal',
       name: 'Add/Change banner with local image',
@@ -91,64 +105,7 @@ export default class Banners extends Plugin {
     });
   }
 
-  prepareListeners() {
-    const { bannersProcessor } = this;
-
-    // When resizing panes, update all banner image positions
-    const resizeRef = this.workspace.on('resize', () => {
-      bannersProcessor.updateBannerElements((b) => bannersProcessor.setBannerOffset(b));
-    });
-
-    // Remove banner when creating a new file or opening an empty file
-    const fileOpenRef = this.workspace.on('file-open', async (file) => {
-      if (!file || file.stat.size > 0) { return }
-      bannersProcessor.updateBannerElements((b) => bannersProcessor.removeBanner(b), file.path);
-    });
-
-    // When duplicating a file, update banner's filepath reference
-    const vaultOpenRef = this.vault.on('create', (file) => {
-      if (!(file instanceof TFile) || file.extension !== 'md') { return }
-
-      // Only continue if the file is indeed a duplicate
-      const dupe = this.findDuplicateOf(file);
-      if (!dupe) { return }
-      bannersProcessor.updateFilepathAttr(file.path, dupe.path);
-    });
-
-    // When renaming a file, update banner's filepath reference
-    const vaultRenameRef = this.vault.on('rename', ({ path }, oldPath) => {
-      bannersProcessor.updateFilepathAttr(oldPath, path);
-    });
-
-    // Fallback listener for manually removing the banner metadata
-    // NOTE: This can take a few seconds to take effect, so the 'Remove banner' command is recommended
-    const metadataChangeRef = this.metadataCache.on('changed', (file) => {
-      if (this.metaManager.getBannerData(file).banner) { return }
-      bannersProcessor.updateBannerElements((b) => bannersProcessor.removeBanner(b), file.path);
-    });
-
-    // When settings change, restyle the banners with the current settings
-    const settingsSaveRef = this.events.on('settingsSave', () => {
-      bannersProcessor.updateBannerElements((b) => bannersProcessor.restyleBanner(b));
-    });
-
-    // Handler to remove banner upon command
-    const commandRemoveRef = this.events.on('cmdRemove', (file: TFile) => {
-      bannersProcessor.updateBannerElements((b) => bannersProcessor.removeBanner(b), file.path);
-    });
-
-    this.listeners = [
-      { component: 'workspace', ref: resizeRef },
-      { component: 'workspace', ref: fileOpenRef },
-      { component: 'vault', ref: vaultOpenRef },
-      { component: 'vault', ref: vaultRenameRef },
-      { component: 'metadataCache', ref: metadataChangeRef },
-      { component: 'events', ref: settingsSaveRef },
-      { component: 'events', ref: commandRemoveRef },
-    ];
-  }
-
-  prepareStyles() {
+  loadStyles() {
     const { embedHeight, height, showInEmbed } = this.settings;
     document.documentElement.style.setProperty('--banner-height', `${height}px`);
     document.documentElement.style.setProperty('--banner-embed-height', `${embedHeight}px`);
@@ -159,26 +116,19 @@ export default class Banners extends Plugin {
     }
   }
 
-  removeListeners() {
-    this.listeners.forEach(({ component, ref }) => {
-      this[component].offref(ref);
-    });
+  unloadBanners() {
+    this.workspace.containerEl
+      .querySelectorAll('.obsidian-banner-wrapper')
+      .forEach((wrapper) => {
+        wrapper.querySelector('.obsidian-banner').remove();
+        wrapper.removeClasses(['obsidian-banner-wrapper', 'loaded', 'error']);
+      });
   }
 
-  removeStyles() {
+  unloadStyles() {
     document.documentElement.style.removeProperty('--banner-height');
     document.documentElement.style.removeProperty('--banner-embed-height');
     document.body.removeClass('no-banner-in-embed');
-  }
-
-  // Helper to find the file that was duplicated from a given file, if that's the case
-  findDuplicateOf({ basename, extension, parent }: TFile): TFile {
-    const words = basename.split(' ');
-    words.pop();
-    const potentialName = words.join(' ');
-
-    const siblings = parent.children.filter(a => a instanceof TFile) as TFile[];
-    return siblings.find(f => f.basename === potentialName && f.extension === extension);
   }
 
   // Helper to use clipboard for banner
@@ -196,7 +146,6 @@ export default class Banners extends Plugin {
   // Helper to remove banner
   removeBanner(file: TFile) {
     this.metaManager.removeBannerData(file);
-    this.bannersProcessor.updateBannerElements((b) => this.bannersProcessor.removeBanner(b), file.path);
     new Notice(`Removed banner for ${file.name}!`);
   }
 }
