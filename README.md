@@ -29,18 +29,16 @@ If you want to remove the banner, you can run the **Remove banner** command to d
 I have only tested this plugin using MacOS (Obsidian 0.12.12) and on iOS (Obsidian app 1.0.4). It probably works fine on older versions, but just a heads up.
 
 ## Installation
-- **From the Community Plugins tab**: *The plugin is still under review! Check back later or install it manually*
+- **From the Community Plugins tab**:
+	- Within Obsidian, search for Banners in the Community Plugins browser and install it directly
 - **Manual install**:
   - Go to the latest release [here](https://github.com/noatpad/obsidian-banners/releases/latest), & download the files listed there (`main.js`, `styles.css`, & `manifest.json`)
-  - Go to your vault's plugin folder (`<vault>/.obsidian/plugins`), create a folder called `obsidian-banners`, and move your files in here.
+  - Go to your vault's plugin folder (`<vault>/.obsidian/plugins`), create a folder called `obsidian-banners`, and move your files in there.
   - Reload Obsidian & enable the plugin in Settings -> Community Plugins
 
 ## FAQ
 #### What are these `banner`, `banner_x`, `banner_y` fields in my note's frontmatter?
 This plugin uses the frontmatter to store data about your note's banner, so it can use it for displaying in preview mode. Right now it simply keeps the filepath/URL to your banner image & the x/y positioning (which is useful when resizing the pane).
-
-#### When I remove my note's frontmatter, the banner takes a few seconds to go away
-If you remove a note's entire frontmatter with one keystroke (like a *Select All + Delete*), the preview view of the note won't remove the banner instantaneously, rather in a few seconds when the file saves (or when you manually save). This is due to API limitations, which is why the **Remove banner** command is recommended instead.
 
 ## Develop
 Once you run `npm i`, you can build the files into `dist/` easily by running `npm run build`.
