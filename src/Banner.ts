@@ -65,7 +65,7 @@ export default class Banner extends MarkdownRenderChild {
     `;
 
     const img = document.createElement('img');
-    img.className = 'full-width';
+    img.className = 'banner-image full-width';
     img.style.objectPosition = `${banner_x * 100}% ${banner_y * 100}%`;
     img.draggable = false;
     img.onload = () => {

@@ -38,10 +38,10 @@
     }
 
     // Banner image
-    img {
+    img.banner-image {
       position: relative;
       object-fit: cover;
-      max-width: none !important;
+      max-width: none;
       cursor: grab;
       height: 100%;
       width: 100%;
