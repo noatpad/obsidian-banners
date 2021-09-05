@@ -1,4 +1,4 @@
-import { MarkdownPostProcessorContext, MarkdownView, MetadataCache, Notice, Plugin, TFile, Vault, Workspace } from 'obsidian';
+import { MarkdownPostProcessorContext, MarkdownRenderChild, MarkdownView, MetadataCache, Notice, Plugin, TFile, Vault, Workspace } from 'obsidian';
 import isURL from 'validator/lib/isURL';
 
 import './styles.scss';
@@ -49,18 +49,17 @@ export default class BannersPlugin extends Plugin {
 
   loadProcessor() {
     this.registerMarkdownPostProcessor(async (el, ctx: MPPCPlus) => {
+      // Only process the frontmatter
+      if (!el.querySelector('pre.frontmatter')) { return }
+
+      const { showInEmbed } = this.settings;
       const { containerEl, frontmatter } = ctx;
       const isEmbed = containerEl.parentElement.parentElement.hasClass('markdown-embed-content');
 
-      // Stop here for disallowed/unnecessary processing
-      if (
-        !el.querySelector('pre.frontmatter') ||
-        !frontmatter?.banner ||
-        (isEmbed && !this.settings.showInEmbed)
-      ) { return }
+      // Stop here if no banner data is found or if a disallowed embed banner
+      if (!frontmatter?.banner || (isEmbed && !showInEmbed)) { return }
 
       const banner = document.createElement('div');
-      el.prepend(banner);
       ctx.addChild(new Banner(this, banner, el, ctx, isEmbed));
     });
   }

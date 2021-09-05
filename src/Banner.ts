@@ -39,12 +39,8 @@ export default class Banner extends MarkdownRenderChild {
     this.prevPos = null;
   }
 
-  onload() {
-    this.render();
-  }
-
   // Prepare and render banner
-  render() {
+  onload() {
     const { allowMobileDrag, style } = this.plugin.settings;
     const {
       containerEl: contentEl,
@@ -95,6 +91,7 @@ export default class Banner extends MarkdownRenderChild {
 
     img.src = this.parseSource(src);
     this.containerEl.append(messageBox, img);
+    this.wrapper.prepend(this.containerEl);
   }
 
   handleDragStart(e: MouseEvent | TouchEvent) {
