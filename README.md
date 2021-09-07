@@ -40,6 +40,9 @@ I have only tested this plugin using MacOS (Obsidian 0.12.12) and on iOS (Obsidi
 #### What are these `banner`, `banner_x`, `banner_y` fields in my note's frontmatter?
 This plugin uses the frontmatter to store data about your note's banner, so it can use it for displaying in preview mode. Right now it simply keeps the filepath/URL to your banner image & the x/y positioning (which is useful when resizing the pane).
 
+#### Is this incompatible with other plugins?
+There *might* be a few cases. The banner attaches itself to the frontmatter block, based on how Obsidian's API works. The gotcha here is if a plugin has styling that clashes with Banners' styling, it may causes issues. It's rather situational, but feel free to drop an issue if you encounter something like this.
+
 ## Develop
 Once you run `npm i`, you can build the files into `dist/` easily by running `npm run build`.
 
