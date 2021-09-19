@@ -28,7 +28,11 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
   }
 
   getItems(): TFile[] {
-    return this.vault.getFiles().filter(f => IMAGE_FORMATS.includes(f.extension));
+    const { bannersFolder } = this.settings;
+    return this.vault.getFiles().filter(f => (
+      IMAGE_FORMATS.includes(f.extension) &&
+      (!bannersFolder || f.parent.path.contains(bannersFolder))
+    ));
   }
 
   getItemText(item: TFile): string {
@@ -38,7 +42,8 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
   renderSuggestion(match: FuzzyMatch<TFile>, el: HTMLElement) {
     super.renderSuggestion(match, el);
 
-    if (this.settings.showPreviewInLocalModal) {
+    const { showPreviewInLocalModal } = this.settings;
+    if (showPreviewInLocalModal) {
       const content = el.innerHTML;
       el.addClass('banner-suggestion-item');
       el.innerHTML = html`

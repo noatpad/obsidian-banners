@@ -61,6 +61,7 @@ export default class SettingsTab extends PluginSettingTab {
       embedHeight,
       showPreviewInLocalModal,
       localSuggestionsLimit,
+      bannersFolder,
       allowMobileDrag
     } = this.plugin.settings;
     containerEl.empty();
@@ -145,8 +146,20 @@ export default class SettingsTab extends PluginSettingTab {
         text.onChange(async (val) => {
           this.plugin.settings.localSuggestionsLimit = val ? parseInt(val) : null;
           await this.saveSettings();
-        })
+        });
       });
+
+    // Search in a specific folder for banners
+    new Setting(containerEl)
+      .setName('Banners folder')
+      .setDesc('Select a folder to only search in for banner files')
+      .addText(text => text
+        .setValue(bannersFolder)
+        .setPlaceholder(INITIAL_SETTINGS.bannersFolder)
+        .onChange(async (val) => {
+          this.plugin.settings.bannersFolder = val;
+          await this.saveSettings();
+        }));
 
     this.createHeader(
       'Experimental Things',
