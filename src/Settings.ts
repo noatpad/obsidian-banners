@@ -66,6 +66,11 @@ export default class SettingsTab extends PluginSettingTab {
     } = this.plugin.settings;
     containerEl.empty();
 
+    this.createHeader(
+      "Banners",
+      "A nice, lil' thing to add some presentation to your notes"
+    );
+
     // Banner height
     new Setting(containerEl)
       .setName('Banner height')
@@ -121,7 +126,7 @@ export default class SettingsTab extends PluginSettingTab {
 
     this.createHeader(
       'Local Image Modal',
-      'Settings for the modal when you run the "Add/Change banner with local image" command'
+      'For the modal that shows when you run the "Add/Change banner with local image" command'
     );
 
     // Show preview images in local image modal
@@ -138,7 +143,14 @@ export default class SettingsTab extends PluginSettingTab {
     // Limit of suggestions in local image modal
     new Setting(containerEl)
       .setName('Maximum number of results')
-      .setDesc('Show up to this many suggestions when searching through local images')
+      .setDesc(createFragment(frag => {
+        frag.appendText('Show up to this many suggestions when searching through local images.');
+        frag.createEl('br');
+        frag.createEl('b', { text: 'NOTE: '});
+        frag.appendText('Using a high number while ');
+        frag.createEl('span', { text: 'Show preview images ', attr: { style: 'color: var(--text-normal)' } });
+        frag.appendText('is on can lead to some slowdowns');
+      }))
       .addText(text => {
         text.inputEl.type = 'number';
         text.setValue(`${localSuggestionsLimit}`);
@@ -152,7 +164,11 @@ export default class SettingsTab extends PluginSettingTab {
     // Search in a specific folder for banners
     new Setting(containerEl)
       .setName('Banners folder')
-      .setDesc('Select a folder to only search in for banner files')
+      .setDesc(createFragment(frag => {
+        frag.appendText('Select a folder to exclusively search for banner files in.');
+        frag.createEl('br');
+        frag.appendText('If empty, it will search the entire vault for image files');
+      }))
       .addText(text => text
         .setValue(bannersFolder)
         .setPlaceholder(INITIAL_SETTINGS.bannersFolder)
@@ -163,13 +179,18 @@ export default class SettingsTab extends PluginSettingTab {
 
     this.createHeader(
       'Experimental Things',
-      'Not as well-tested and probably have some finicky stuff in them'
+      'Not as well-tested and probably finicky'
     );
 
     // Drag banners in mobile
     new Setting(containerEl)
       .setName('Allow mobile drag')
-      .setDesc('Allow dragging the banner on mobile devices. App reload might be necessary')
+      .setDesc(createFragment(frag => {
+        frag.appendText('Allow dragging the banner on mobile devices.');
+        frag.createEl('br');
+        frag.createEl('b', { text: 'NOTE: ' });
+        frag.appendText('App reload might be necessary');
+      }))
       .addToggle(toggle => toggle
         .setValue(allowMobileDrag)
         .onChange(async (val) => {
