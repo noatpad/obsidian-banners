@@ -1,7 +1,6 @@
-import { MarkdownRenderChild, TFile } from 'obsidian';
+import { MarkdownRenderChild, TFile, Vault } from 'obsidian';
 import clamp from 'lodash/clamp';
 import { html } from 'common-tags';
-import isURL from 'validator/lib/isURL';
 
 import BannersPlugin, { MPPCPlus } from './main';
 import MetaManager from './MetaManager';
@@ -15,8 +14,9 @@ export default class Banner extends MarkdownRenderChild {
   wrapper: HTMLElement;
   plugin: BannersPlugin;
   metaManager: MetaManager;
-  ctx: MPPCPlus;
+  vault: Vault;
 
+  ctx: MPPCPlus;
   isEmbed: boolean;
   isDragging: boolean;
   prevPos: XY
@@ -32,6 +32,7 @@ export default class Banner extends MarkdownRenderChild {
     this.wrapper = wrapper;
     this.plugin = plugin;
     this.metaManager = plugin.metaManager;
+    this.vault = plugin.vault;
 
     this.ctx = ctx;
     this.isEmbed = isEmbed;
@@ -145,9 +146,8 @@ export default class Banner extends MarkdownRenderChild {
 
   // Helper to get the URL path to the image file
   parseSource(src: string): string {
-    if (isURL(src)) { return src }
-    const file = this.plugin.vault.getAbstractFileByPath(src);
-    return (file instanceof TFile) ? this.plugin.vault.adapter.getResourcePath(src) : null;
+    const file = this.vault.getAbstractFileByPath(src);
+    return (file instanceof TFile) ? this.vault.adapter.getResourcePath(src) : src;
   }
 
   // Helper to get mouse position
