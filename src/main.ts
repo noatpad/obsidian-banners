@@ -3,7 +3,7 @@ import isURL from 'validator/lib/isURL';
 
 import './styles.scss';
 import Banner from './Banner';
-import SettingsTab, { DEFAULT_SETTINGS, SettingsOptions } from './Settings';
+import SettingsTab, { DEFAULT_SETTINGS, INITIAL_SETTINGS, SettingsOptions } from './Settings';
 import MetaManager, { FrontmatterWithBannerData } from './MetaManager';
 import LocalImageModal from './LocalImageModal';
 
@@ -99,8 +99,8 @@ export default class BannersPlugin extends Plugin {
 
   loadStyles() {
     const { embedHeight, height } = this.settings;
-    document.documentElement.style.setProperty('--banner-height', `${height}px`);
-    document.documentElement.style.setProperty('--banner-embed-height', `${embedHeight}px`);
+    document.documentElement.style.setProperty('--banner-height', `${height ?? INITIAL_SETTINGS.height}px`);
+    document.documentElement.style.setProperty('--banner-embed-height', `${embedHeight ?? INITIAL_SETTINGS.embedHeight}px`);
   }
 
   unloadBanners() {

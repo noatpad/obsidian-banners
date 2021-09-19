@@ -12,12 +12,18 @@ export interface SettingsOptions {
 }
 
 export const DEFAULT_SETTINGS: SettingsOptions = {
-  height: 250,
+  height: null,
   style: 'solid',
   showInEmbed: true,
-  embedHeight: 120,
+  embedHeight: null,
   bannersFolder: '',
   allowMobileDrag: false
+}
+
+export const INITIAL_SETTINGS: Partial<SettingsOptions> = {
+  height: 250,
+  embedHeight: 120,
+  bannersFolder: '/'
 }
 
 const STYLE_OPTIONS: Record<StyleOption, string> = {
@@ -59,9 +65,9 @@ export default class SettingsTab extends PluginSettingTab {
       .addText(text => {
         text.inputEl.type = 'number';
         text.setValue(`${height}`);
-        text.setPlaceholder(`${DEFAULT_SETTINGS.height}`);
+        text.setPlaceholder(`${INITIAL_SETTINGS.height}`);
         text.onChange(async (val) => {
-          this.plugin.settings.height = val ? parseInt(val) : DEFAULT_SETTINGS.height;
+          this.plugin.settings.height = val ? parseInt(val) : null;
           await this.saveSettings();
         });
       });
@@ -97,9 +103,9 @@ export default class SettingsTab extends PluginSettingTab {
         .addText(text => {
           text.inputEl.type = 'number';
           text.setValue(`${embedHeight}`);
-          text.setPlaceholder(`${DEFAULT_SETTINGS.embedHeight}`);
+          text.setPlaceholder(`${INITIAL_SETTINGS.embedHeight}`);
           text.onChange(async (val) => {
-            this.plugin.settings.embedHeight = val ? parseInt(val) : DEFAULT_SETTINGS.embedHeight;
+            this.plugin.settings.embedHeight = val ? parseInt(val) : null;
             await this.saveSettings();
           });
         });
