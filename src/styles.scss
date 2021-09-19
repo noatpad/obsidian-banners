@@ -107,3 +107,19 @@
     }
   }
 }
+
+// Settings
+.banner-setting-header {
+  display: block;
+  padding: 6px 0;
+
+  p {
+    margin: 0;
+    font-size: 1.2em;
+  }
+
+  .banner-setting-header-description {
+    color: var(--text-muted);
+    font-size: 0.7em;
+  }
+}

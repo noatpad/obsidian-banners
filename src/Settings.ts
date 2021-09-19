@@ -7,6 +7,7 @@ export interface SettingsOptions {
   style: StyleOption,
   showInEmbed: boolean,
   embedHeight: number,
+  bannersFolder: string,
   allowMobileDrag: boolean
 }
 
@@ -15,6 +16,7 @@ export const DEFAULT_SETTINGS: SettingsOptions = {
   style: 'solid',
   showInEmbed: true,
   embedHeight: 120,
+  bannersFolder: '',
   allowMobileDrag: false
 }
 
@@ -90,28 +92,38 @@ export default class SettingsTab extends PluginSettingTab {
     // Embed banner height
     if (this.plugin.settings.showInEmbed) {
       new Setting(containerEl)
-      .setName('Embed banner height')
-      .setDesc('Set the banner size inside the file preview embed')
-      .addText(text => {
-        text.inputEl.type = 'number';
-        text.setValue(`${embedHeight}`);
-        text.setPlaceholder(`${DEFAULT_SETTINGS.embedHeight}`);
-        text.onChange(async (val) => {
-          this.plugin.settings.embedHeight = val ? parseInt(val) : DEFAULT_SETTINGS.embedHeight;
-          await this.saveSettings();
+        .setName('Embed banner height')
+        .setDesc('Set the banner size inside the file preview embed')
+        .addText(text => {
+          text.inputEl.type = 'number';
+          text.setValue(`${embedHeight}`);
+          text.setPlaceholder(`${DEFAULT_SETTINGS.embedHeight}`);
+          text.onChange(async (val) => {
+            this.plugin.settings.embedHeight = val ? parseInt(val) : DEFAULT_SETTINGS.embedHeight;
+            await this.saveSettings();
+          });
         });
-      });
     }
 
-    // Experimental setting for dragging banners in mobile
+    this.createHeader("Experimental Things", "Not as well-tested and probably have some finicky stuff in them");
+
+    // Drag banners in mobile
     new Setting(containerEl)
       .setName('Allow mobile drag')
-      .setDesc('EXPERIMENTAL: Allow dragging the banner on mobile devices. App reload might be necessary')
+      .setDesc('Allow dragging the banner on mobile devices. App reload might be necessary')
       .addToggle(toggle => toggle
         .setValue(allowMobileDrag)
         .onChange(async (val) => {
           this.plugin.settings.allowMobileDrag = val;
           await this.saveSettings({ refreshViews: true });
         }));
+  }
+
+  createHeader(text: string, desc: string = null) {
+    const header = this.containerEl.createDiv({ cls: "setting-item setting-item-heading banner-setting-header" });
+    header.createEl('p', { text });
+    if (desc) {
+      header.createEl('p', { text: desc, cls: 'banner-setting-header-description' });
+    }
   }
 }
