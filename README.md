@@ -9,6 +9,7 @@ Within an open note, you can use the **Add/Change banner with local image** comm
 If you want to remove the banner, you can run the **Remove banner** command to do just that.
 
 ## Settings
+#### Banners
 - **Banner height**: Specify how tall the banner image should be for each note.
 - **Banner style**: Change how your banner looks in your notes. There are currently 2 options:
   - *Solid*: A simple, sharp-container banner image.
@@ -22,6 +23,14 @@ If you want to remove the banner, you can run the **Remove banner** command to d
 ![embed](https://raw.githubusercontent.com/noatpad/obsidian-banners/master/images/embed.png)
 
 - **Embed banner height**: If **Show banner in preview embed** is on, this setting determines how tall the banner image in the embed should be.
+
+#### Local Image Modal
+- **Show preview images**: Enable this to allow preview images to be seen when searching through the modal.
+- **Suggestions limit**: Limit the amount of suggestions the modal can display at once.
+  - ***NOTE:** If you set this to a high number, while having **Show preview images** on, you may experience some slowdowns while searching.*
+- **Banners folder**: Specify a folder to exclusively search for image files within the modal. If unset, the modal will search the entire vault by default.
+
+#### Experimental
 - **Allow mobile drag**: Choose if you can adjust the banner positioning on mobile devices by dragging.
   - ***NOTE:** This setting is experimental since it acts a bit funny with the mobile app's already built-in touch gestures.*
 

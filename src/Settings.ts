@@ -1,5 +1,5 @@
-import { PluginSettingTab, Setting } from "obsidian";
-import BannersPlugin from "./main";
+import { PluginSettingTab, Setting } from 'obsidian';
+import BannersPlugin from './main';
 
 type StyleOption = 'solid' | 'gradient';
 export interface SettingsOptions {
@@ -7,15 +7,28 @@ export interface SettingsOptions {
   style: StyleOption,
   showInEmbed: boolean,
   embedHeight: number,
+  showPreviewInLocalModal: boolean,
+  localSuggestionsLimit: number,
+  bannersFolder: string,
   allowMobileDrag: boolean
 }
 
 export const DEFAULT_SETTINGS: SettingsOptions = {
-  height: 250,
+  height: null,
   style: 'solid',
   showInEmbed: true,
-  embedHeight: 120,
+  embedHeight: null,
+  showPreviewInLocalModal: true,
+  localSuggestionsLimit: null,
+  bannersFolder: '',
   allowMobileDrag: false
+}
+
+export const INITIAL_SETTINGS: Partial<SettingsOptions> = {
+  height: 250,
+  embedHeight: 120,
+  localSuggestionsLimit: 10,
+  bannersFolder: '/'
 }
 
 const STYLE_OPTIONS: Record<StyleOption, string> = {
@@ -46,9 +59,17 @@ export default class SettingsTab extends PluginSettingTab {
       style,
       showInEmbed,
       embedHeight,
+      showPreviewInLocalModal,
+      localSuggestionsLimit,
+      bannersFolder,
       allowMobileDrag
     } = this.plugin.settings;
     containerEl.empty();
+
+    this.createHeader(
+      "Banners",
+      "A nice, lil' thing to add some presentation to your notes"
+    );
 
     // Banner height
     new Setting(containerEl)
@@ -57,9 +78,9 @@ export default class SettingsTab extends PluginSettingTab {
       .addText(text => {
         text.inputEl.type = 'number';
         text.setValue(`${height}`);
-        text.setPlaceholder(`${DEFAULT_SETTINGS.height}`);
+        text.setPlaceholder(`${INITIAL_SETTINGS.height}`);
         text.onChange(async (val) => {
-          this.plugin.settings.height = val ? parseInt(val) : DEFAULT_SETTINGS.height;
+          this.plugin.settings.height = val ? parseInt(val) : null;
           await this.saveSettings();
         });
       });
@@ -90,28 +111,99 @@ export default class SettingsTab extends PluginSettingTab {
     // Embed banner height
     if (this.plugin.settings.showInEmbed) {
       new Setting(containerEl)
-      .setName('Embed banner height')
-      .setDesc('Set the banner size inside the file preview embed')
+        .setName('Embed banner height')
+        .setDesc('Set the banner size inside the file preview embed')
+        .addText(text => {
+          text.inputEl.type = 'number';
+          text.setValue(`${embedHeight}`);
+          text.setPlaceholder(`${INITIAL_SETTINGS.embedHeight}`);
+          text.onChange(async (val) => {
+            this.plugin.settings.embedHeight = val ? parseInt(val) : null;
+            await this.saveSettings();
+          });
+        });
+    }
+
+    this.createHeader(
+      'Local Image Modal',
+      'For the modal that shows when you run the "Add/Change banner with local image" command'
+    );
+
+    // Show preview images in local image modal
+    new Setting(containerEl)
+      .setName('Show preview images')
+      .setDesc('Enabling this will display a preview of the images suggested')
+      .addToggle(toggle => toggle
+        .setValue(showPreviewInLocalModal)
+        .onChange(async (val) => {
+          this.plugin.settings.showPreviewInLocalModal = val;
+          await this.saveSettings();
+        }));
+
+    // Limit of suggestions in local image modal
+    new Setting(containerEl)
+      .setName('Suggestions limit')
+      .setDesc(createFragment(frag => {
+        frag.appendText('Show up to this many suggestions when searching through local images.');
+        frag.createEl('br');
+        frag.createEl('b', { text: 'NOTE: '});
+        frag.appendText('Using a high number while ');
+        frag.createEl('span', { text: 'Show preview images ', attr: { style: 'color: var(--text-normal)' } });
+        frag.appendText('is on can lead to some slowdowns');
+      }))
       .addText(text => {
         text.inputEl.type = 'number';
-        text.setValue(`${embedHeight}`);
-        text.setPlaceholder(`${DEFAULT_SETTINGS.embedHeight}`);
+        text.setValue(`${localSuggestionsLimit}`);
+        text.setPlaceholder(`${INITIAL_SETTINGS.localSuggestionsLimit}`);
         text.onChange(async (val) => {
-          this.plugin.settings.embedHeight = val ? parseInt(val) : DEFAULT_SETTINGS.embedHeight;
+          this.plugin.settings.localSuggestionsLimit = val ? parseInt(val) : null;
           await this.saveSettings();
         });
       });
-    }
 
-    // Experimental setting for dragging banners in mobile
+    // Search in a specific folder for banners
+    new Setting(containerEl)
+      .setName('Banners folder')
+      .setDesc(createFragment(frag => {
+        frag.appendText('Select a folder to exclusively search for banner files in.');
+        frag.createEl('br');
+        frag.appendText('If empty, it will search the entire vault for image files');
+      }))
+      .addText(text => text
+        .setValue(bannersFolder)
+        .setPlaceholder(INITIAL_SETTINGS.bannersFolder)
+        .onChange(async (val) => {
+          this.plugin.settings.bannersFolder = val;
+          await this.saveSettings();
+        }));
+
+    this.createHeader(
+      'Experimental Things',
+      'Not as well-tested and probably finicky'
+    );
+
+    // Drag banners in mobile
     new Setting(containerEl)
       .setName('Allow mobile drag')
-      .setDesc('EXPERIMENTAL: Allow dragging the banner on mobile devices. App reload might be necessary')
+      .setDesc(createFragment(frag => {
+        frag.appendText('Allow dragging the banner on mobile devices.');
+        frag.createEl('br');
+        frag.createEl('b', { text: 'NOTE: ' });
+        frag.appendText('App reload might be necessary');
+      }))
       .addToggle(toggle => toggle
         .setValue(allowMobileDrag)
         .onChange(async (val) => {
           this.plugin.settings.allowMobileDrag = val;
           await this.saveSettings({ refreshViews: true });
         }));
+  }
+
+  createHeader(text: string, desc: string = null) {
+    const header = this.containerEl.createDiv({ cls: 'setting-item setting-item-heading banner-setting-header' });
+    header.createEl('p', { text });
+    if (desc) {
+      header.createEl('p', { text: desc, cls: 'banner-setting-header-description' });
+    }
   }
 }

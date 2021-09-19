@@ -107,3 +107,21 @@
     }
   }
 }
+
+// Settings
+.banner-setting-header {
+  display: block;
+  padding: 6px 0;
+
+  p {
+    margin: 0;
+    font-size: 1.2em;
+  }
+
+  .banner-setting-header-description {
+    margin-top: 2px;
+    font-size: 0.7em;
+    color: var(--text-muted);
+    line-height: 18px;
+  }
+}
