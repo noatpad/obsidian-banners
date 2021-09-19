@@ -119,7 +119,9 @@
   }
 
   .banner-setting-header-description {
-    color: var(--text-muted);
+    margin-top: 2px;
     font-size: 0.7em;
+    color: var(--text-muted);
+    line-height: 18px;
   }
 }

@@ -1,5 +1,5 @@
-import { PluginSettingTab, Setting } from "obsidian";
-import BannersPlugin from "./main";
+import { PluginSettingTab, Setting } from 'obsidian';
+import BannersPlugin from './main';
 
 type StyleOption = 'solid' | 'gradient';
 export interface SettingsOptions {
@@ -7,6 +7,7 @@ export interface SettingsOptions {
   style: StyleOption,
   showInEmbed: boolean,
   embedHeight: number,
+  showPreviewInLocalModal: boolean,
   bannersFolder: string,
   allowMobileDrag: boolean
 }
@@ -16,6 +17,7 @@ export const DEFAULT_SETTINGS: SettingsOptions = {
   style: 'solid',
   showInEmbed: true,
   embedHeight: null,
+  showPreviewInLocalModal: true,
   bannersFolder: '',
   allowMobileDrag: false
 }
@@ -54,6 +56,7 @@ export default class SettingsTab extends PluginSettingTab {
       style,
       showInEmbed,
       embedHeight,
+      showPreviewInLocalModal,
       allowMobileDrag
     } = this.plugin.settings;
     containerEl.empty();
@@ -111,7 +114,25 @@ export default class SettingsTab extends PluginSettingTab {
         });
     }
 
-    this.createHeader("Experimental Things", "Not as well-tested and probably have some finicky stuff in them");
+    this.createHeader(
+      'Local Image Modal',
+      'Settings for the modal when you run the "Add/Change banner with local image" command'
+    );
+
+    new Setting(containerEl)
+      .setName('Show preview images')
+      .setDesc('Enabling this will display a preview of the images suggested')
+      .addToggle(toggle => toggle
+        .setValue(showPreviewInLocalModal)
+        .onChange(async (val) => {
+          this.plugin.settings.showPreviewInLocalModal = val;
+          await this.saveSettings();
+        }));
+
+    this.createHeader(
+      'Experimental Things',
+      'Not as well-tested and probably have some finicky stuff in them'
+    );
 
     // Drag banners in mobile
     new Setting(containerEl)
@@ -126,7 +147,7 @@ export default class SettingsTab extends PluginSettingTab {
   }
 
   createHeader(text: string, desc: string = null) {
-    const header = this.containerEl.createDiv({ cls: "setting-item setting-item-heading banner-setting-header" });
+    const header = this.containerEl.createDiv({ cls: 'setting-item setting-item-heading banner-setting-header' });
     header.createEl('p', { text });
     if (desc) {
       header.createEl('p', { text: desc, cls: 'banner-setting-header-description' });
