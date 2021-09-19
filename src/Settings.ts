@@ -27,7 +27,7 @@ export const DEFAULT_SETTINGS: SettingsOptions = {
 export const INITIAL_SETTINGS: Partial<SettingsOptions> = {
   height: 250,
   embedHeight: 120,
-  localSuggestionsLimit: 20,
+  localSuggestionsLimit: 10,
   bannersFolder: '/'
 }
 
@@ -142,7 +142,7 @@ export default class SettingsTab extends PluginSettingTab {
 
     // Limit of suggestions in local image modal
     new Setting(containerEl)
-      .setName('Maximum number of results')
+      .setName('Suggestions limit')
       .setDesc(createFragment(frag => {
         frag.appendText('Show up to this many suggestions when searching through local images.');
         frag.createEl('br');
