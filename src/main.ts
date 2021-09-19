@@ -18,7 +18,6 @@ export default class BannersPlugin extends Plugin {
   metadataCache: MetadataCache
 
   metaManager: MetaManager;
-  localImageModal: LocalImageModal;
 
   async onload() {
     console.log('Loading Banners...');
@@ -29,7 +28,6 @@ export default class BannersPlugin extends Plugin {
     this.metadataCache = this.app.metadataCache;
 
     this.metaManager = new MetaManager(this);
-    this.localImageModal = new LocalImageModal(this);
 
     this.loadProcessor();
     this.loadCommands();
@@ -71,7 +69,7 @@ export default class BannersPlugin extends Plugin {
       checkCallback: (checking) => {
         const file = this.workspace.getActiveFile();
         if (checking) { return !!file }
-        this.localImageModal.launch(file);
+        new LocalImageModal(this, file).open();
       }
     });
 

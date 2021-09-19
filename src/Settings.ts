@@ -8,6 +8,7 @@ export interface SettingsOptions {
   showInEmbed: boolean,
   embedHeight: number,
   showPreviewInLocalModal: boolean,
+  localSuggestionsLimit: number,
   bannersFolder: string,
   allowMobileDrag: boolean
 }
@@ -18,6 +19,7 @@ export const DEFAULT_SETTINGS: SettingsOptions = {
   showInEmbed: true,
   embedHeight: null,
   showPreviewInLocalModal: true,
+  localSuggestionsLimit: null,
   bannersFolder: '',
   allowMobileDrag: false
 }
@@ -25,6 +27,7 @@ export const DEFAULT_SETTINGS: SettingsOptions = {
 export const INITIAL_SETTINGS: Partial<SettingsOptions> = {
   height: 250,
   embedHeight: 120,
+  localSuggestionsLimit: 20,
   bannersFolder: '/'
 }
 
@@ -57,6 +60,7 @@ export default class SettingsTab extends PluginSettingTab {
       showInEmbed,
       embedHeight,
       showPreviewInLocalModal,
+      localSuggestionsLimit,
       allowMobileDrag
     } = this.plugin.settings;
     containerEl.empty();
@@ -119,6 +123,7 @@ export default class SettingsTab extends PluginSettingTab {
       'Settings for the modal when you run the "Add/Change banner with local image" command'
     );
 
+    // Show preview images in local image modal
     new Setting(containerEl)
       .setName('Show preview images')
       .setDesc('Enabling this will display a preview of the images suggested')
@@ -128,6 +133,20 @@ export default class SettingsTab extends PluginSettingTab {
           this.plugin.settings.showPreviewInLocalModal = val;
           await this.saveSettings();
         }));
+
+    // Limit of suggestions in local image modal
+    new Setting(containerEl)
+      .setName('Maximum number of results')
+      .setDesc('Show up to this many suggestions when searching through local images')
+      .addText(text => {
+        text.inputEl.type = 'number';
+        text.setValue(`${localSuggestionsLimit}`);
+        text.setPlaceholder(`${INITIAL_SETTINGS.localSuggestionsLimit}`);
+        text.onChange(async (val) => {
+          this.plugin.settings.localSuggestionsLimit = val ? parseInt(val) : null;
+          await this.saveSettings();
+        })
+      });
 
     this.createHeader(
       'Experimental Things',
