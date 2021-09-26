@@ -125,3 +125,15 @@
     line-height: 18px;
   }
 }
+
+// Export to PDF
+@media print {
+  .obsidian-banner-wrapper {
+    margin-top: 0;
+
+    > .obsidian-banner {
+      position: initial;
+      margin-bottom: 20px;
+    }
+  }
+}
