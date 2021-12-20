@@ -47,11 +47,12 @@ export default class SettingsTab extends PluginSettingTab {
     this.plugin = plugin;
   }
 
-  async saveSettings({ rerenderSettings = false, refreshViews = false } = {}) {
+  async saveSettings(changed: Partial<SettingsOptions>, { reloadSettings = false, refreshViews = false } = {}) {
+    this.plugin.settings = { ...this.plugin.settings, ...changed };
     await this.plugin.saveData(this.plugin.settings);
     this.plugin.loadStyles();
 
-    if (rerenderSettings) { this.display() }
+    if (reloadSettings) { this.display() }
     if (refreshViews) { this.plugin.refreshViews() }
   }
 
@@ -83,10 +84,7 @@ export default class SettingsTab extends PluginSettingTab {
         text.inputEl.type = 'number';
         text.setValue(`${height}`);
         text.setPlaceholder(`${DEFAULT_VALUES.height}`);
-        text.onChange(async (val) => {
-          this.plugin.settings.height = val ? parseInt(val) : null;
-          await this.saveSettings();
-        });
+        text.onChange(async (val) => this.saveSettings({ height: val ? parseInt(val) : null }));
       });
 
     // Banner style
@@ -96,10 +94,7 @@ export default class SettingsTab extends PluginSettingTab {
       .addDropdown(dropdown => dropdown
         .addOptions(STYLE_OPTIONS)
         .setValue(style)
-        .onChange(async (val: StyleOption) => {
-          this.plugin.settings.style = val;
-          await this.saveSettings({ refreshViews: true });
-        }));
+        .onChange(async (val: StyleOption) => this.saveSettings({ style: val }, { refreshViews: true })));
 
     // Show banner in embed
     new Setting(containerEl)
@@ -107,10 +102,7 @@ export default class SettingsTab extends PluginSettingTab {
       .setDesc('Choose whether to display the banner in the page preview embed')
       .addToggle(toggle => toggle
         .setValue(showInEmbed)
-        .onChange(async (val) => {
-          this.plugin.settings.showInEmbed = val;
-          await this.saveSettings({ rerenderSettings: true, refreshViews: true });
-        }));
+        .onChange(async (val) => this.saveSettings({ showInEmbed: val }, { reloadSettings: true, refreshViews: true })));
 
     // Embed banner height
     if (this.plugin.settings.showInEmbed) {
@@ -121,10 +113,7 @@ export default class SettingsTab extends PluginSettingTab {
           text.inputEl.type = 'number';
           text.setValue(`${embedHeight}`);
           text.setPlaceholder(`${DEFAULT_VALUES.embedHeight}`);
-          text.onChange(async (val) => {
-            this.plugin.settings.embedHeight = val ? parseInt(val) : null;
-            await this.saveSettings();
-          });
+          text.onChange(async (val) => this.saveSettings({ embedHeight: val ? parseInt(val) : null }));
         });
     }
 
@@ -147,10 +136,7 @@ export default class SettingsTab extends PluginSettingTab {
       .addText(text => text
         .setValue(frontmatterField)
         .setPlaceholder(DEFAULT_VALUES.frontmatterField)
-        .onChange(async (val) => {
-          this.plugin.settings.frontmatterField = val || null;
-          await this.saveSettings({ refreshViews: true });
-        }))
+        .onChange(async (val) => this.saveSettings({ frontmatterField: val || null }, { refreshViews: true })));
 
     this.createHeader(
       'Local Image Modal',
@@ -163,10 +149,7 @@ export default class SettingsTab extends PluginSettingTab {
       .setDesc('Enabling this will display a preview of the images suggested')
       .addToggle(toggle => toggle
         .setValue(showPreviewInLocalModal)
-        .onChange(async (val) => {
-          this.plugin.settings.showPreviewInLocalModal = val;
-          await this.saveSettings();
-        }));
+        .onChange(async (val) => this.saveSettings({ showPreviewInLocalModal: val })));
 
     // Limit of suggestions in local image modal
     new Setting(containerEl)
@@ -183,10 +166,7 @@ export default class SettingsTab extends PluginSettingTab {
         text.inputEl.type = 'number';
         text.setValue(`${localSuggestionsLimit}`);
         text.setPlaceholder(`${DEFAULT_VALUES.localSuggestionsLimit}`);
-        text.onChange(async (val) => {
-          this.plugin.settings.localSuggestionsLimit = val ? parseInt(val) : null;
-          await this.saveSettings();
-        });
+        text.onChange(async (val) => this.saveSettings({ localSuggestionsLimit: val ? parseInt(val) : null }));
       });
 
     // Search in a specific folder for banners
@@ -200,10 +180,7 @@ export default class SettingsTab extends PluginSettingTab {
       .addText(text => text
         .setValue(bannersFolder)
         .setPlaceholder(DEFAULT_VALUES.bannersFolder)
-        .onChange(async (val) => {
-          this.plugin.settings.bannersFolder = val || null;
-          await this.saveSettings();
-        }));
+        .onChange(async (val) => this.saveSettings({ bannersFolder: val || null } )));
 
     this.createHeader(
       'Experimental Things',
@@ -221,10 +198,7 @@ export default class SettingsTab extends PluginSettingTab {
       }))
       .addToggle(toggle => toggle
         .setValue(allowMobileDrag)
-        .onChange(async (val) => {
-          this.plugin.settings.allowMobileDrag = val;
-          await this.saveSettings({ refreshViews: true });
-        }));
+        .onChange(async (val) => this.saveSettings({ allowMobileDrag: val }, { refreshViews: true })));
   }
 
   createHeader(text: string, desc: string = null) {
