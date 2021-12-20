@@ -3,7 +3,7 @@ import { FuzzyMatch, FuzzySuggestModal, TFile, Vault } from 'obsidian';
 
 import BannersPlugin from './main';
 import MetaManager from './MetaManager';
-import { DEFAULT_VALUES, SettingsOptions } from './Settings';
+import { SettingsOptions } from './Settings';
 
 const IMAGE_FORMATS = ['apng', 'avif', 'gif', 'jpg', 'jpeg', 'jpe', 'jif', 'jfif', 'png', 'webp'];
 
@@ -21,9 +21,8 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
     this.settings = plugin.settings;
     this.metaManager = plugin.metaManager;
 
-    const { localSuggestionsLimit } = this.settings;
     this.targetFile = file;
-    this.limit = localSuggestionsLimit ?? DEFAULT_VALUES.localSuggestionsLimit;
+    this.limit = this.plugin.getSettingValue('localSuggestionsLimit');
     this.setPlaceholder('Pick an image to use as a banner');
   }
 
@@ -56,7 +55,7 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
   }
 
   async onChooseItem(image: TFile) {
-    const banner = this.plugin.getSettingValue('frontmatterField') as string;
+    const banner = this.plugin.getSettingValue('frontmatterField');
     await this.metaManager.upsertBannerData(this.targetFile, { [banner]: image.path });
   }
 }

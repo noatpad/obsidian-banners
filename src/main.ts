@@ -95,9 +95,8 @@ export default class BannersPlugin extends Plugin {
   }
 
   loadStyles() {
-    const { embedHeight, height } = this.settings;
-    document.documentElement.style.setProperty('--banner-height', `${height ?? DEFAULT_VALUES.height}px`);
-    document.documentElement.style.setProperty('--banner-embed-height', `${embedHeight ?? DEFAULT_VALUES.embedHeight}px`);
+    document.documentElement.style.setProperty('--banner-height', `${this.getSettingValue('height')}px`);
+    document.documentElement.style.setProperty('--banner-embed-height', `${this.getSettingValue('embedHeight')}px`);
   }
 
   unloadBanners() {
@@ -130,7 +129,7 @@ export default class BannersPlugin extends Plugin {
       new Notice('Your clipboard didn\'t had a valid URL! Please try again (and check the console if you wanna debug).');
       console.error({ clipboard });
     } else {
-      const banner = this.getSettingValue('frontmatterField') as string;
+      const banner = this.getSettingValue('frontmatterField');
       await this.metaManager.upsertBannerData(file, { [banner]: clipboard })
       new Notice('Pasted a new banner!');
     }
@@ -143,7 +142,7 @@ export default class BannersPlugin extends Plugin {
   }
 
   // Helper to get setting value (or the default setting value if not set)
-  getSettingValue(key: keyof SettingsOptions): string | number | boolean {
+  getSettingValue<K extends keyof SettingsOptions>(key: K): Partial<SettingsOptions>[K] {
     return this.settings[key] ?? DEFAULT_VALUES[key];
   }
 }

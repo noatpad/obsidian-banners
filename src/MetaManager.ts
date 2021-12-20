@@ -27,7 +27,7 @@ export default class MetaManager {
   getBannerData(frontmatter: FrontMatterCache): BannerMetadata {
     if (!frontmatter) { return }
 
-    const fieldName = this.plugin.getSettingValue('frontmatterField') as string;
+    const fieldName = this.plugin.getSettingValue('frontmatterField');
     const {
       [fieldName]: banner,
       [`${fieldName}_x`]: banner_x,
