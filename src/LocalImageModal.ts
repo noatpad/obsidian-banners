@@ -1,5 +1,5 @@
 import { html } from 'common-tags';
-import { FuzzyMatch, FuzzySuggestModal, TFile, Vault } from 'obsidian';
+import { FuzzyMatch, FuzzySuggestModal, MetadataCache, TFile, Vault } from 'obsidian';
 
 import BannersPlugin from './main';
 import MetaManager from './MetaManager';
@@ -10,6 +10,7 @@ const IMAGE_FORMATS = ['apng', 'avif', 'gif', 'jpg', 'jpeg', 'jpe', 'jif', 'jfif
 export default class LocalImageModal extends FuzzySuggestModal<TFile> {
   plugin: BannersPlugin;
   vault: Vault;
+  metadataCache: MetadataCache;
   settings: SettingsOptions;
   metaManager: MetaManager;
   targetFile: TFile;
@@ -18,6 +19,7 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
     super(plugin.app);
     this.plugin = plugin;
     this.vault = plugin.app.vault;
+    this.metadataCache = plugin.app.metadataCache;
     this.settings = plugin.settings;
     this.metaManager = plugin.metaManager;
 
@@ -56,6 +58,7 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
 
   async onChooseItem(image: TFile) {
     const banner = this.plugin.getSettingValue('frontmatterField');
-    await this.metaManager.upsertBannerData(this.targetFile, { [banner]: image.path });
+    const link = this.metadataCache.fileToLinktext(image, this.targetFile.path);
+    await this.metaManager.upsertBannerData(this.targetFile, { [banner]: `"[[${link}]]"` });
   }
 }

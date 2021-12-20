@@ -1,4 +1,4 @@
-import { MarkdownRenderChild, TFile, Vault } from 'obsidian';
+import { MarkdownRenderChild, MetadataCache, TFile, Vault } from 'obsidian';
 import clamp from 'lodash/clamp';
 import { html } from 'common-tags';
 
@@ -13,8 +13,9 @@ interface XY {
 export default class Banner extends MarkdownRenderChild {
   wrapper: HTMLElement;
   plugin: BannersPlugin;
-  metaManager: MetaManager;
+  metadataCache: MetadataCache;
   vault: Vault;
+  metaManager: MetaManager;
 
   ctx: MPPCPlus;
   isEmbed: boolean;
@@ -31,8 +32,9 @@ export default class Banner extends MarkdownRenderChild {
     super(el);
     this.wrapper = wrapper;
     this.plugin = plugin;
-    this.metaManager = plugin.metaManager;
+    this.metadataCache = plugin.app.metadataCache;
     this.vault = plugin.vault;
+    this.metaManager = plugin.metaManager;
 
     this.ctx = ctx;
     this.isEmbed = isEmbed;
@@ -150,8 +152,17 @@ export default class Banner extends MarkdownRenderChild {
 
   // Helper to get the URL path to the image file
   parseSource(src: string): string {
-    const file = this.vault.getAbstractFileByPath(src);
-    return (file instanceof TFile) ? this.vault.adapter.getResourcePath(src) : src;
+    // Internal link format - "[[<link>]]"
+    if (/^\[\[.+\]\]$/.test(src)) {
+      const link = src.slice(2, -2)
+      const file = this.metadataCache.getFirstLinkpathDest(link, this.ctx.sourcePath);
+      return file ? this.vault.getResourcePath(file) : link;
+    }
+
+    // Absolute paths (legacy), relative paths (legacy), & URLs
+    const path = src.startsWith('/') ? src.slice(1) : src;
+    const file = this.vault.getAbstractFileByPath(path);
+    return (file instanceof TFile) ? this.vault.getResourcePath(file) : src;
   }
 
   // Helper to get mouse position
