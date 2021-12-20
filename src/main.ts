@@ -3,13 +3,12 @@ import isURL from 'validator/lib/isURL';
 
 import './styles.scss';
 import Banner from './Banner';
-import SettingsTab, { DEFAULT_SETTINGS, INITIAL_SETTINGS, SettingsOptions } from './Settings';
-import MetaManager, { FrontmatterWithBannerData } from './MetaManager';
+import SettingsTab, { INITIAL_SETTINGS, DEFAULT_VALUES, SettingsOptions } from './Settings';
+import MetaManager from './MetaManager';
 import LocalImageModal from './LocalImageModal';
 
 export interface MPPCPlus extends MarkdownPostProcessorContext {
-  containerEl: HTMLElement,
-  frontmatter: FrontmatterWithBannerData
+  containerEl: HTMLElement
 }
 export default class BannersPlugin extends Plugin {
   settings: SettingsOptions;
@@ -22,7 +21,7 @@ export default class BannersPlugin extends Plugin {
   async onload() {
     console.log('Loading Banners...');
 
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    this.settings = Object.assign({}, INITIAL_SETTINGS, await this.loadData());
     this.workspace = this.app.workspace;
     this.vault = this.app.vault;
     this.metadataCache = this.app.metadataCache;
@@ -55,7 +54,7 @@ export default class BannersPlugin extends Plugin {
       const isEmbed = containerEl.parentElement.parentElement.hasClass('markdown-embed-content');
 
       // Stop here if no banner data is found or if a disallowed embed banner
-      if (!frontmatter?.banner || (isEmbed && !showInEmbed)) { return }
+      if (!this.metaManager.getBannerData(frontmatter)?.banner || (isEmbed && !showInEmbed)) { return }
 
       const banner = document.createElement('div');
       ctx.addChild(new Banner(this, banner, el, ctx, isEmbed));
@@ -89,7 +88,7 @@ export default class BannersPlugin extends Plugin {
       name: 'Remove banner',
       checkCallback: (checking) => {
         const file = this.workspace.getActiveFile();
-        if (checking) { return !!file && !!this.metaManager.getBannerData(file)?.banner }
+        if (checking) { return !!file && !!this.metaManager.getBannerDataFromFile(file)?.banner }
         this.removeBanner(file);
       }
     });
@@ -97,8 +96,8 @@ export default class BannersPlugin extends Plugin {
 
   loadStyles() {
     const { embedHeight, height } = this.settings;
-    document.documentElement.style.setProperty('--banner-height', `${height ?? INITIAL_SETTINGS.height}px`);
-    document.documentElement.style.setProperty('--banner-embed-height', `${embedHeight ?? INITIAL_SETTINGS.embedHeight}px`);
+    document.documentElement.style.setProperty('--banner-height', `${height ?? DEFAULT_VALUES.height}px`);
+    document.documentElement.style.setProperty('--banner-embed-height', `${embedHeight ?? DEFAULT_VALUES.embedHeight}px`);
   }
 
   unloadBanners() {
@@ -131,7 +130,8 @@ export default class BannersPlugin extends Plugin {
       new Notice('Your clipboard didn\'t had a valid URL! Please try again (and check the console if you wanna debug).');
       console.error({ clipboard });
     } else {
-      this.metaManager.upsertBannerData(file, { banner: clipboard });
+      const banner = this.getSettingValue('frontmatterField') as string;
+      await this.metaManager.upsertBannerData(file, { [banner]: clipboard })
       new Notice('Pasted a new banner!');
     }
   }
@@ -140,5 +140,10 @@ export default class BannersPlugin extends Plugin {
   removeBanner(file: TFile) {
     this.metaManager.removeBannerData(file);
     new Notice(`Removed banner for ${file.name}!`);
+  }
+
+  // Helper to get setting value (or the default setting value if not set)
+  getSettingValue(key: keyof SettingsOptions): string | number | boolean {
+    return this.settings[key] ?? DEFAULT_VALUES[key];
   }
 }

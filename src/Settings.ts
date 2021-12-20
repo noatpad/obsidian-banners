@@ -7,26 +7,29 @@ export interface SettingsOptions {
   style: StyleOption,
   showInEmbed: boolean,
   embedHeight: number,
+  frontmatterField: string,
   showPreviewInLocalModal: boolean,
   localSuggestionsLimit: number,
   bannersFolder: string,
   allowMobileDrag: boolean
 }
 
-export const DEFAULT_SETTINGS: SettingsOptions = {
+export const INITIAL_SETTINGS: SettingsOptions = {
   height: null,
   style: 'solid',
   showInEmbed: true,
   embedHeight: null,
+  frontmatterField: null,
   showPreviewInLocalModal: true,
   localSuggestionsLimit: null,
-  bannersFolder: '',
+  bannersFolder: null,
   allowMobileDrag: false
 }
 
-export const INITIAL_SETTINGS: Partial<SettingsOptions> = {
+export const DEFAULT_VALUES: Partial<SettingsOptions> = {
   height: 250,
   embedHeight: 120,
+  frontmatterField: 'banner',
   localSuggestionsLimit: 10,
   bannersFolder: '/'
 }
@@ -59,6 +62,7 @@ export default class SettingsTab extends PluginSettingTab {
       style,
       showInEmbed,
       embedHeight,
+      frontmatterField,
       showPreviewInLocalModal,
       localSuggestionsLimit,
       bannersFolder,
@@ -78,7 +82,7 @@ export default class SettingsTab extends PluginSettingTab {
       .addText(text => {
         text.inputEl.type = 'number';
         text.setValue(`${height}`);
-        text.setPlaceholder(`${INITIAL_SETTINGS.height}`);
+        text.setPlaceholder(`${DEFAULT_VALUES.height}`);
         text.onChange(async (val) => {
           this.plugin.settings.height = val ? parseInt(val) : null;
           await this.saveSettings();
@@ -116,13 +120,37 @@ export default class SettingsTab extends PluginSettingTab {
         .addText(text => {
           text.inputEl.type = 'number';
           text.setValue(`${embedHeight}`);
-          text.setPlaceholder(`${INITIAL_SETTINGS.embedHeight}`);
+          text.setPlaceholder(`${DEFAULT_VALUES.embedHeight}`);
           text.onChange(async (val) => {
             this.plugin.settings.embedHeight = val ? parseInt(val) : null;
             await this.saveSettings();
           });
         });
     }
+
+    // Customizable banner metadata fields
+    new Setting(containerEl)
+      .setName('Frontmatter field name')
+      .setDesc(createFragment(frag => {
+        frag.appendText('Set a customizable frontmatter field to use for banner data');
+        frag.createEl('br');
+        frag.appendText('For example, the default value ')
+        frag.createEl('code', { text: DEFAULT_VALUES.frontmatterField })
+        frag.appendText(' will use the fields ')
+        frag.createEl('code', { text: DEFAULT_VALUES.frontmatterField })
+        frag.appendText(', ');
+        frag.createEl('code', { text: `${DEFAULT_VALUES.frontmatterField}_x` })
+        frag.appendText(', ');
+        frag.createEl('code', { text: `${DEFAULT_VALUES.frontmatterField}_y` })
+        frag.appendText(', and so on...');
+      }))
+      .addText(text => text
+        .setValue(frontmatterField)
+        .setPlaceholder(DEFAULT_VALUES.frontmatterField)
+        .onChange(async (val) => {
+          this.plugin.settings.frontmatterField = val || null;
+          await this.saveSettings({ refreshViews: true });
+        }))
 
     this.createHeader(
       'Local Image Modal',
@@ -154,7 +182,7 @@ export default class SettingsTab extends PluginSettingTab {
       .addText(text => {
         text.inputEl.type = 'number';
         text.setValue(`${localSuggestionsLimit}`);
-        text.setPlaceholder(`${INITIAL_SETTINGS.localSuggestionsLimit}`);
+        text.setPlaceholder(`${DEFAULT_VALUES.localSuggestionsLimit}`);
         text.onChange(async (val) => {
           this.plugin.settings.localSuggestionsLimit = val ? parseInt(val) : null;
           await this.saveSettings();
@@ -171,9 +199,9 @@ export default class SettingsTab extends PluginSettingTab {
       }))
       .addText(text => text
         .setValue(bannersFolder)
-        .setPlaceholder(INITIAL_SETTINGS.bannersFolder)
+        .setPlaceholder(DEFAULT_VALUES.bannersFolder)
         .onChange(async (val) => {
-          this.plugin.settings.bannersFolder = val;
+          this.plugin.settings.bannersFolder = val || null;
           await this.saveSettings();
         }));
 

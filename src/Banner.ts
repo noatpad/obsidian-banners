@@ -45,12 +45,13 @@ export default class Banner extends MarkdownRenderChild {
     const { allowMobileDrag, style } = this.plugin.settings;
     const {
       containerEl: contentEl,
-      frontmatter: {
-        banner: src,
-        banner_x = 0.5,
-        banner_y = 0.5
-      }
+      frontmatter
     } = this.ctx;
+    const {
+      banner: src,
+      banner_x = 0.5,
+      banner_y = 0.5
+    } = this.metaManager.getBannerData(frontmatter);
 
     this.wrapper.addClass('obsidian-banner-wrapper');
     this.containerEl.addClasses(['obsidian-banner', style]);
@@ -73,7 +74,7 @@ export default class Banner extends MarkdownRenderChild {
       this.wrapper.addClass('loaded');
     }
     img.onerror = () => {
-      messageBox.innerHTML = '<p>Error loading banner image! Is the <code>banner</code> field valid?</p>';
+      messageBox.innerHTML = `<p>Error loading banner image! Is the <code>${this.plugin.getSettingValue('frontmatterField')}</code> field valid?</p>`;
       this.wrapper.addClass('error');
     }
 
@@ -141,7 +142,10 @@ export default class Banner extends MarkdownRenderChild {
     const [x, y] = img.style.objectPosition
       .split(' ')
       .map(n => Math.round(parseFloat(n) * 1000) / 100000);
-    await this.metaManager.upsertBannerData(sourcePath, { banner_x: x, banner_y: y });
+
+    // await this.metaManager.upsertBannerData(sourcePath, { banner_x: x, banner_y: y });
+    const baseName = this.plugin.getSettingValue('frontmatterField');
+    await this.metaManager.upsertBannerData(sourcePath, { [`${baseName}_x`]: x, [`${baseName}_y`]: y });
   }
 
   // Helper to get the URL path to the image file

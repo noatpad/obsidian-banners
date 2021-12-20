@@ -3,7 +3,7 @@ import { stripIndents } from 'common-tags';
 
 import BannersPlugin from './main';
 
-export type FrontmatterWithBannerData = FrontMatterCache | BannerMetadata
+// export type FrontmatterWithBannerData = FrontMatterCache | BannerMetadata
 export interface BannerMetadata {
   banner: string,
   banner_x: number,
@@ -23,21 +23,28 @@ export default class MetaManager {
     this.vault = plugin.app.vault;
   }
 
-  // Get banner metadata from a file
-  getBannerData(fileOrPath: TFile | string): BannerMetadata {
-    const file = (fileOrPath instanceof TFile) ? fileOrPath : this.getFileByPath(fileOrPath);
-    if (!file) { return }
+  // Get banner metadata from frontmatter
+  getBannerData(frontmatter: FrontMatterCache): BannerMetadata {
+    if (!frontmatter) { return }
 
+    const fieldName = this.plugin.getSettingValue('frontmatterField') as string;
     const {
-      banner,
-      banner_x,
-      banner_y
-    } = this.metadata.getFileCache(file)?.frontmatter ?? {} as FrontmatterWithBannerData;
+      [fieldName]: banner,
+      [`${fieldName}_x`]: banner_x,
+      [`${fieldName}_y`]: banner_y
+    } = frontmatter;
     return { banner, banner_x, banner_y };
   }
 
+  // Get banner metadata from a file
+  getBannerDataFromFile(fileOrPath: TFile | string): BannerMetadata {
+    const file = (fileOrPath instanceof TFile) ? fileOrPath : this.getFileByPath(fileOrPath);
+    if (!file) { return }
+    return this.getBannerData(this.metadata.getFileCache(file)?.frontmatter);
+  }
+
   // Upsert banner data into a file's frontmatter
-  async upsertBannerData(fileOrPath: TFile | string, data: Partial<BannerMetadata>) {
+  async upsertBannerData(fileOrPath: TFile | string, data: {[key: string]: string | number}) {
     const file = (fileOrPath instanceof TFile) ? fileOrPath : this.getFileByPath(fileOrPath);
     if (!file) { return }
 
@@ -54,8 +61,7 @@ export default class MetaManager {
         const targetIndex = fields.findIndex(([k]) => k === key);
         if (targetIndex === -1) { continue }
 
-        const dataKey = key as keyof BannerMetadata;
-        lines[i] = `${key}: ${data[dataKey]}`;
+        lines[i] = `${key}: ${data[key]}`;
         fields.splice(targetIndex, 1);
       }
 
@@ -76,13 +82,12 @@ export default class MetaManager {
     await this.vault.modify(file, newContent);
   }
 
-  async removeBannerData(fileOrPath: TFile | string, fields: Array<keyof BannerMetadata> & string[] = ['banner', 'banner_x', 'banner_y']) {
+  async removeBannerData(fileOrPath: TFile | string, fields: string[] = this.getAllBannerFields()) {
     const file = (fileOrPath instanceof TFile) ? fileOrPath : this.getFileByPath(fileOrPath);
     if (!file) { return }
 
     // If there's no (relevant) YAML to remove, stop here
     const { frontmatter } = this.metadata.getFileCache(file);
-    console.log(frontmatter);
     const frontmatterKeys = Object.keys(frontmatter ?? {});
     if (!frontmatter || !fields.some(f => frontmatterKeys.includes(f))) { return }
 
@@ -123,5 +128,11 @@ export default class MetaManager {
     return fields.sort((a, b) => a[0].localeCompare(b[0]))
       .map(([key, val]) => `${key}: ${val}`)
       .join('\n');
+  }
+
+  // Get all banner fields
+  getAllBannerFields(): string[] {
+    const base = this.plugin.getSettingValue('frontmatterField');
+    return ['', '_x', '_y'].map(suffix => `${base}${suffix}`);
   }
 }
