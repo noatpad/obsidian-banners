@@ -49,15 +49,21 @@ export default class BannersPlugin extends Plugin {
       // Only process the frontmatter
       if (!el.querySelector('pre.frontmatter')) { return }
 
-      const { showInEmbed } = this.settings;
+      const { showInInternalEmbed, showInPreviewEmbed } = this.settings;
       const { containerEl, frontmatter } = ctx;
-      const isEmbed = containerEl.parentElement.parentElement.hasClass('markdown-embed-content');
+      const fourLevelsDown = containerEl.parentElement.parentElement.parentElement.parentElement;
+      const isInternalEmbed = fourLevelsDown.hasClass('internal-embed');
+      const isPreviewEmbed = fourLevelsDown.hasClass('popover');
 
       // Stop here if no banner data is found or if a disallowed embed banner
-      if (!this.metaManager.getBannerData(frontmatter)?.banner || (isEmbed && !showInEmbed)) { return }
+      if (
+        !this.metaManager.getBannerData(frontmatter)?.banner ||
+        (isInternalEmbed && !showInInternalEmbed) ||
+        (isPreviewEmbed && !showInPreviewEmbed)
+      ) { return }
 
       const banner = document.createElement('div');
-      ctx.addChild(new Banner(this, banner, el, ctx, isEmbed));
+      ctx.addChild(new Banner(this, banner, el, ctx, isInternalEmbed || isPreviewEmbed));
     });
   }
 
@@ -96,7 +102,8 @@ export default class BannersPlugin extends Plugin {
 
   loadStyles() {
     document.documentElement.style.setProperty('--banner-height', `${this.getSettingValue('height')}px`);
-    document.documentElement.style.setProperty('--banner-embed-height', `${this.getSettingValue('embedHeight')}px`);
+    document.documentElement.style.setProperty('--banner-internal-embed-height', `${this.getSettingValue('internalEmbedHeight')}px`);
+    document.documentElement.style.setProperty('--banner-preview-embed-height', `${this.getSettingValue('previewEmbedHeight')}px`);
   }
 
   unloadBanners() {

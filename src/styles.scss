@@ -67,12 +67,25 @@
   }
 }
 
-// Embeds
-.markdown-embed-content .obsidian-banner-wrapper {
-  margin-top: var(--banner-embed-height);
+// Internal embed banner
+.internal-embed .markdown-embed-content .obsidian-banner-wrapper {
+  margin-top: var(--banner-internal-embed-height);
 
   > .obsidian-banner {
-    height: var(--banner-embed-height);
+    height: var(--banner-internal-embed-height);
+
+    img {
+      cursor: initial;
+    }
+  }
+}
+
+// Preview embed banner
+.popover .markdown-embed-content .obsidian-banner-wrapper {
+  margin-top: var(--banner-preview-embed-height);
+
+  > .obsidian-banner {
+    height: var(--banner-preview-embed-height);
 
     img {
       cursor: initial;

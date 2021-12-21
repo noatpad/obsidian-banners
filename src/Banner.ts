@@ -145,7 +145,6 @@ export default class Banner extends MarkdownRenderChild {
       .split(' ')
       .map(n => Math.round(parseFloat(n) * 1000) / 100000);
 
-    // await this.metaManager.upsertBannerData(sourcePath, { banner_x: x, banner_y: y });
     const baseName = this.plugin.getSettingValue('frontmatterField');
     await this.metaManager.upsertBannerData(sourcePath, { [`${baseName}_x`]: x, [`${baseName}_y`]: y });
   }

@@ -5,8 +5,10 @@ type StyleOption = 'solid' | 'gradient';
 export interface SettingsOptions {
   height: number,
   style: StyleOption,
-  showInEmbed: boolean,
-  embedHeight: number,
+  showInInternalEmbed: boolean,
+  internalEmbedHeight: number,
+  showInPreviewEmbed: boolean,
+  previewEmbedHeight: number,
   frontmatterField: string,
   showPreviewInLocalModal: boolean,
   localSuggestionsLimit: number,
@@ -17,8 +19,10 @@ export interface SettingsOptions {
 export const INITIAL_SETTINGS: SettingsOptions = {
   height: null,
   style: 'solid',
-  showInEmbed: true,
-  embedHeight: null,
+  showInInternalEmbed: true,
+  internalEmbedHeight: null,
+  showInPreviewEmbed: true,
+  previewEmbedHeight: null,
   frontmatterField: null,
   showPreviewInLocalModal: true,
   localSuggestionsLimit: null,
@@ -28,7 +32,8 @@ export const INITIAL_SETTINGS: SettingsOptions = {
 
 export const DEFAULT_VALUES: Partial<SettingsOptions> = {
   height: 250,
-  embedHeight: 120,
+  internalEmbedHeight: 200,
+  previewEmbedHeight: 120,
   frontmatterField: 'banner',
   localSuggestionsLimit: 10,
   bannersFolder: '/'
@@ -61,8 +66,10 @@ export default class SettingsTab extends PluginSettingTab {
     const {
       height,
       style,
-      showInEmbed,
-      embedHeight,
+      showInInternalEmbed,
+      internalEmbedHeight,
+      showInPreviewEmbed,
+      previewEmbedHeight,
       frontmatterField,
       showPreviewInLocalModal,
       localSuggestionsLimit,
@@ -73,7 +80,7 @@ export default class SettingsTab extends PluginSettingTab {
 
     this.createHeader(
       "Banners",
-      "A nice, lil' thing to add some presentation to your notes"
+      "A nice, lil' thing to add some flair to your notes"
     );
 
     // Banner height
@@ -96,24 +103,53 @@ export default class SettingsTab extends PluginSettingTab {
         .setValue(style)
         .onChange(async (val: StyleOption) => this.saveSettings({ style: val }, { refreshViews: true })));
 
-    // Show banner in embed
+    // Show banner in internal embed
     new Setting(containerEl)
-      .setName('Show banner in preview embed')
-      .setDesc('Choose whether to display the banner in the page preview embed')
+      .setName('Show banner in internal embed')
+      .setDesc(createFragment(frag => {
+        frag.appendText('Choose whether to display the banner in the internal embed. This is the embed that appears when you write ');
+        frag.createEl('code', { text: '![[file]]' });
+        frag.appendText(' in a file');
+      }))
       .addToggle(toggle => toggle
-        .setValue(showInEmbed)
-        .onChange(async (val) => this.saveSettings({ showInEmbed: val }, { reloadSettings: true, refreshViews: true })));
+        .setValue(showInInternalEmbed)
+        .onChange(async (val) => this.saveSettings({ showInInternalEmbed: val }, { reloadSettings: true, refreshViews: true })));
 
-    // Embed banner height
-    if (this.plugin.settings.showInEmbed) {
+    // Internal embed banner height
+    if (this.plugin.settings.showInInternalEmbed) {
       new Setting(containerEl)
-        .setName('Embed banner height')
-        .setDesc('Set the banner size inside the file preview embed')
+        .setName('Internal embed banner height')
+        .setDesc('Set the banner size inside the internal embed')
         .addText(text => {
           text.inputEl.type = 'number';
-          text.setValue(`${embedHeight}`);
-          text.setPlaceholder(`${DEFAULT_VALUES.embedHeight}`);
-          text.onChange(async (val) => this.saveSettings({ embedHeight: val ? parseInt(val) : null }));
+          text.setValue(`${internalEmbedHeight}`);
+          text.setPlaceholder(`${DEFAULT_VALUES.internalEmbedHeight}`);
+          text.onChange(async (val) => this.saveSettings({ internalEmbedHeight: val ? parseInt(val) : null }));
+        });
+    }
+
+    // Show banner in preview embed
+    new Setting(containerEl)
+      .setName('Show banner in preview embed')
+      .setDesc(createFragment(frag => {
+        frag.appendText('Choose whether to display the banner in the page preview embed. This is the embed that appears from the ');
+        frag.createEl('span', { text: 'Page Preview ', attr: { style: 'color: --var(text-normal)' }});
+        frag.appendText('core plugin')
+      }))
+      .addToggle(toggle => toggle
+        .setValue(showInPreviewEmbed)
+        .onChange(async (val) => this.saveSettings({ showInPreviewEmbed: val }, { reloadSettings: true })));
+
+    // Preview embed banner height
+    if (this.plugin.settings.showInPreviewEmbed) {
+      new Setting(containerEl)
+        .setName('Preview embed banner height')
+        .setDesc('Set the banner size inside the page preview embed')
+        .addText(text => {
+          text.inputEl.type = 'number';
+          text.setValue(`${previewEmbedHeight}`);
+          text.setPlaceholder(`${DEFAULT_VALUES.previewEmbedHeight}`);
+          text.onChange(async (val) => this.saveSettings({ previewEmbedHeight: val ? parseInt(val) : null }));
         });
     }
 
