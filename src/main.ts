@@ -111,7 +111,8 @@ export default class BannersPlugin extends Plugin {
       .querySelectorAll('.obsidian-banner-wrapper')
       .forEach((wrapper) => {
         wrapper.querySelector('.obsidian-banner').remove();
-        wrapper.removeClasses(['obsidian-banner-wrapper', 'loaded', 'error']);
+        wrapper.querySelector('.obsidian-banner-icon').remove();
+        wrapper.removeClasses(['obsidian-banner-wrapper', 'loaded', 'error', 'has-banner-icon']);
       });
   }
 
