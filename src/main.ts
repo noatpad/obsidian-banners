@@ -94,7 +94,7 @@ export default class BannersPlugin extends Plugin {
 
     this.addCommand({
       id: 'banners:addIcon',
-      name: 'Add/Change icon',
+      name: 'Add/Change emoji icon',
       checkCallback: (checking) => {
         const file = this.workspace.getActiveFile();
         if (checking) { return !!file }

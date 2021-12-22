@@ -25,10 +25,11 @@ export default class IconModal extends FuzzySuggestModal<EmojiPair> {
     this.targetFile = file;
     this.emojis = Object.entries(allEmojis).map(([code, emoji]) => ({ code, emoji }));
     this.limit = 50;
+    this.setPlaceholder('Pick an emoji to use as an icon');
   }
 
   getItems(): EmojiPair[] {
-    return this.emojis;
+    return this.inputEl.value.length ? this.emojis : [];
   }
 
   getItemText(item: EmojiPair): string {
