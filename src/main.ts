@@ -65,7 +65,6 @@ export default class BannersPlugin extends Plugin {
       }
       // Add icon
       if (bannerData?.banner_icon) {
-        console.log(ctx);
         const icon = document.createElement('div');
         ctx.addChild(new Icon(this, icon, el, ctx, bannerData));
       }
@@ -132,7 +131,8 @@ export default class BannersPlugin extends Plugin {
 
   unloadStyles() {
     document.documentElement.style.removeProperty('--banner-height');
-    document.documentElement.style.removeProperty('--banner-embed-height');
+    document.documentElement.style.removeProperty('--banner-internal-embed-height');
+    document.documentElement.style.removeProperty('--banner-preview-embed-height');
   }
 
   // Helper to refresh markdown views
