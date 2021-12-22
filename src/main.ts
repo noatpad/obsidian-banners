@@ -3,9 +3,11 @@ import isURL from 'validator/lib/isURL';
 
 import './styles.scss';
 import Banner from './Banner';
-import SettingsTab, { INITIAL_SETTINGS, DEFAULT_VALUES, SettingsOptions } from './Settings';
-import MetaManager from './MetaManager';
+import Icon from './Icon';
+import IconModal from './IconModal';
 import LocalImageModal from './LocalImageModal';
+import MetaManager from './MetaManager';
+import SettingsTab, { INITIAL_SETTINGS, DEFAULT_VALUES, SettingsOptions } from './Settings';
 
 export interface MPPCPlus extends MarkdownPostProcessorContext {
   containerEl: HTMLElement
@@ -45,25 +47,28 @@ export default class BannersPlugin extends Plugin {
   }
 
   loadProcessor() {
-    this.registerMarkdownPostProcessor(async (el, ctx: MPPCPlus) => {
+    this.registerMarkdownPostProcessor((el, ctx: MPPCPlus) => {
       // Only process the frontmatter
       if (!el.querySelector('pre.frontmatter')) { return }
 
       const { showInInternalEmbed, showInPreviewEmbed } = this.settings;
       const { containerEl, frontmatter } = ctx;
+      const bannerData = this.metaManager.getBannerData(frontmatter);
       const fourLevelsDown = containerEl.parentElement.parentElement.parentElement.parentElement;
       const isInternalEmbed = fourLevelsDown.hasClass('internal-embed');
       const isPreviewEmbed = fourLevelsDown.hasClass('popover');
 
-      // Stop here if no banner data is found or if a disallowed embed banner
-      if (
-        !this.metaManager.getBannerData(frontmatter)?.banner ||
-        (isInternalEmbed && !showInInternalEmbed) ||
-        (isPreviewEmbed && !showInPreviewEmbed)
-      ) { return }
-
-      const banner = document.createElement('div');
-      ctx.addChild(new Banner(this, banner, el, ctx, isInternalEmbed || isPreviewEmbed));
+      // Add banner if allowed
+      if (bannerData?.banner && (!isInternalEmbed || showInInternalEmbed) && (!isPreviewEmbed || showInPreviewEmbed)) {
+        const banner = document.createElement('div');
+        ctx.addChild(new Banner(this, banner, el, ctx, bannerData, isInternalEmbed || isPreviewEmbed));
+      }
+      // Add icon
+      if (bannerData?.banner_icon) {
+        console.log(ctx);
+        const icon = document.createElement('div');
+        ctx.addChild(new Icon(this, icon, el, ctx, bannerData));
+      }
     });
   }
 
@@ -86,8 +91,17 @@ export default class BannersPlugin extends Plugin {
         if (checking) { return !!file }
         this.pasteBanner(file);
       }
-
     });
+
+    this.addCommand({
+      id: 'banners:addIcon',
+      name: 'Add/Change icon',
+      checkCallback: (checking) => {
+        const file = this.workspace.getActiveFile();
+        if (checking) { return !!file }
+        new IconModal(this, file).open();
+      }
+    })
 
     this.addCommand({
       id: 'banners:remove',

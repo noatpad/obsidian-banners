@@ -93,9 +93,58 @@
   }
 }
 
+// Banner Icons
+.has-banner-icon {
+  margin-top: 75px;
+
+  .obsidian-banner-icon {
+    font-size: 4em;
+    margin-top: -1.2em;
+    margin-bottom: -0.3em;
+  }
+
+  .icon-box {
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: ease 0.2s background;
+
+    &:hover {
+      background: #aaa3;
+      cursor: pointer;
+    }
+  }
+
+  // Twemoji
+  img.emoji {
+    height: 1em;
+    width: 1em;
+    vertical-align: -0.1em;
+  }
+
+  // Banner + Icon take things a bit differently
+  &.obsidian-banner-wrapper {
+    margin-top: calc(var(--banner-height) + 10px);
+
+    .obsidian-banner-icon {
+      position: absolute;
+      z-index: 1;
+    }
+
+    .frontmatter {
+      top: 16px;
+    }
+
+    + div {
+      padding-top: 0.2em;
+    }
+  }
+}
+
 // Local image modal
-.banner-suggestion-item {
-  padding: 6px 10px;
+.banner-local-image-modal {
+  .banner-suggestion-item {
+    padding: 6px 10px;
+  }
 
   .suggestion-text {
     height: 0;
@@ -118,6 +167,21 @@
       width: 100%;
       object-fit: cover;
     }
+  }
+}
+
+// Icon modal
+.banner-icon-modal {
+  span.regular-emoji {
+    font-size: 1.2em;
+    vertical-align: bottom;
+  }
+
+  img.emoji {
+    margin-right: 0.5em;
+    height: 1.2em;
+    width: 1.2em;
+    vertical-align: middle;
   }
 }
 

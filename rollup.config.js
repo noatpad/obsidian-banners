@@ -3,6 +3,7 @@ import copy from 'rollup-plugin-copy';
 import typescript from '@rollup/plugin-typescript';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import json from '@rollup/plugin-json';
 import scss from 'rollup-plugin-scss';
 
 const TEST_VAULT = `${os.homedir()}/Documents/Obsidian/Test Grounds/.obsidian/plugins/banners`;
@@ -19,6 +20,7 @@ const plugins = [
   typescript(),
   nodeResolve({ browser: true }),
   commonjs(),
+  json(),
   scss({ output: 'dist/styles.css', sass: require('sass') })
 ];
 

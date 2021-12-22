@@ -10,6 +10,7 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
     "lib": [
       "dom",
       "es5",

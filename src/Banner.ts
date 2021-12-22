@@ -3,7 +3,7 @@ import clamp from 'lodash/clamp';
 import { html } from 'common-tags';
 
 import BannersPlugin, { MPPCPlus } from './main';
-import MetaManager from './MetaManager';
+import MetaManager, { BannerMetadata } from './MetaManager';
 
 interface XY {
   x: number,
@@ -18,6 +18,7 @@ export default class Banner extends MarkdownRenderChild {
   metaManager: MetaManager;
 
   ctx: MPPCPlus;
+  bannerData: BannerMetadata
   isEmbed: boolean;
   isDragging: boolean;
   prevPos: XY
@@ -27,6 +28,7 @@ export default class Banner extends MarkdownRenderChild {
     el: HTMLDivElement,
     wrapper: HTMLElement,
     ctx: MPPCPlus,
+    bannerData: BannerMetadata,
     isEmbed: boolean
   ) {
     super(el);
@@ -37,6 +39,7 @@ export default class Banner extends MarkdownRenderChild {
     this.metaManager = plugin.metaManager;
 
     this.ctx = ctx;
+    this.bannerData = bannerData;
     this.isEmbed = isEmbed;
     this.isDragging = false;
     this.prevPos = null;
@@ -45,15 +48,8 @@ export default class Banner extends MarkdownRenderChild {
   // Prepare and render banner
   onload() {
     const { allowMobileDrag, style } = this.plugin.settings;
-    const {
-      containerEl: contentEl,
-      frontmatter
-    } = this.ctx;
-    const {
-      banner: src,
-      banner_x = 0.5,
-      banner_y = 0.5
-    } = this.metaManager.getBannerData(frontmatter);
+    const { containerEl: contentEl } = this.ctx;
+    const { banner: src, banner_x = 0.5, banner_y = 0.5 } = this.bannerData;
 
     this.wrapper.addClass('obsidian-banner-wrapper');
     this.containerEl.addClasses(['obsidian-banner', style]);

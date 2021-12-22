@@ -23,16 +23,17 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
     this.settings = plugin.settings;
     this.metaManager = plugin.metaManager;
 
+    this.containerEl.addClass('banner-local-image-modal');
     this.targetFile = file;
     this.limit = this.plugin.getSettingValue('localSuggestionsLimit');
     this.setPlaceholder('Pick an image to use as a banner');
   }
 
   getItems(): TFile[] {
-    const { bannersFolder } = this.settings;
+    const folder = this.plugin.getSettingValue('bannersFolder');
     return this.vault.getFiles().filter(f => (
       IMAGE_FORMATS.includes(f.extension) &&
-      (!bannersFolder || f.parent.path.contains(bannersFolder))
+      (!folder || f.parent.path.contains(folder))
     ));
   }
 
@@ -57,8 +58,8 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
   }
 
   async onChooseItem(image: TFile) {
-    const banner = this.plugin.getSettingValue('frontmatterField');
+    const field = this.plugin.getSettingValue('frontmatterField');
     const link = this.metadataCache.fileToLinktext(image, this.targetFile.path);
-    await this.metaManager.upsertBannerData(this.targetFile, { [banner]: `"[[${link}]]"` });
+    await this.metaManager.upsertBannerData(this.targetFile, { [field]: `"[[${link}]]"` });
   }
 }

@@ -5,7 +5,8 @@ import BannersPlugin from './main';
 export interface BannerMetadata {
   banner: string,
   banner_x: number,
-  banner_y: number
+  banner_y: number,
+  banner_icon: string
 }
 
 const HAS_YAML_REGEX = /^-{3}(\n|\r|\r\n)((.*)(\n|\r|\r\n))*-{3}/;
@@ -29,9 +30,10 @@ export default class MetaManager {
     const {
       [fieldName]: banner,
       [`${fieldName}_x`]: banner_x,
-      [`${fieldName}_y`]: banner_y
+      [`${fieldName}_y`]: banner_y,
+      [`${fieldName}_icon`]: banner_icon
     } = frontmatter;
-    return { banner, banner_x, banner_y };
+    return { banner, banner_x, banner_y, banner_icon };
   }
 
   // Get banner metadata from a file
@@ -131,6 +133,6 @@ export default class MetaManager {
   // Get all banner fields
   getAllBannerFields(): string[] {
     const base = this.plugin.getSettingValue('frontmatterField');
-    return ['', '_x', '_y'].map(suffix => `${base}${suffix}`);
+    return ['', '_x', '_y', '_icon'].map(suffix => `${base}${suffix}`);
   }
 }

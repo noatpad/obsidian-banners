@@ -10,6 +10,7 @@ export interface SettingsOptions {
   showInPreviewEmbed: boolean,
   previewEmbedHeight: number,
   frontmatterField: string,
+  useTwemoji: boolean,
   showPreviewInLocalModal: boolean,
   localSuggestionsLimit: number,
   bannersFolder: string,
@@ -24,6 +25,7 @@ export const INITIAL_SETTINGS: SettingsOptions = {
   showInPreviewEmbed: true,
   previewEmbedHeight: null,
   frontmatterField: null,
+  useTwemoji: true,
   showPreviewInLocalModal: true,
   localSuggestionsLimit: null,
   bannersFolder: null,
@@ -71,6 +73,7 @@ export default class SettingsTab extends PluginSettingTab {
       showInPreviewEmbed,
       previewEmbedHeight,
       frontmatterField,
+      useTwemoji,
       showPreviewInLocalModal,
       localSuggestionsLimit,
       bannersFolder,
@@ -173,6 +176,22 @@ export default class SettingsTab extends PluginSettingTab {
         .setValue(frontmatterField)
         .setPlaceholder(DEFAULT_VALUES.frontmatterField)
         .onChange(async (val) => this.saveSettings({ frontmatterField: val || null }, { refreshViews: true })));
+
+    this.createHeader(
+      'Banner Icons',
+      'Give people a lil\' notion of what your note is about'
+    );
+
+    new Setting(containerEl)
+      .setName('Use Twemoji')
+      .setDesc(createFragment(frag => {
+        frag.appendText('Twitter\'s emoji have better support here. ');
+        frag.createEl('b', { text: 'NOTE: ' })
+        frag.appendText('This is only applied in the Icon modal and the banner icon in the preview view');
+      }))
+      .addToggle(toggle => toggle
+        .setValue(useTwemoji)
+        .onChange(async (val) => this.saveSettings({ useTwemoji: val }, { refreshViews: true })));
 
     this.createHeader(
       'Local Image Modal',
