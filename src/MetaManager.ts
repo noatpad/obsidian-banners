@@ -44,11 +44,20 @@ export default class MetaManager {
   }
 
   // Upsert banner data into a file's frontmatter
-  async upsertBannerData(fileOrPath: TFile | string, data: {[key: string]: string | number}) {
+  async upsertBannerData(fileOrPath: TFile | string, data: Partial<BannerMetadata>) {
     const file = (fileOrPath instanceof TFile) ? fileOrPath : this.getFileByPath(fileOrPath);
     if (!file) { return }
 
-    const fields = Object.entries(data);
+    const { banner, banner_x, banner_y, banner_icon } = data;
+    const baseName = this.plugin.getSettingValue('frontmatterField');
+    const trueFields = {
+      ...(banner && { [baseName]: banner }),
+      ...(banner_x && { [`${baseName}_x`]: banner_x }),
+      ...(banner_y && { [`${baseName}_y`]: banner_y }),
+      ...(banner_icon && { [`${baseName}_icon`]: banner_icon })
+    };
+
+    const fieldsArr = Object.entries(trueFields);
     const content = await this.vault.read(file);
     const hasYaml = HAS_YAML_REGEX.test(content);
     const lines = content.split('\n');
@@ -56,24 +65,24 @@ export default class MetaManager {
       // Search through the frontmatter to update target fields if they exist
       const start = lines.indexOf('---');
       const end = lines.indexOf('---', start + 1);
-      for (let i = start + 1; i < end && fields.length; i++) {
+      for (let i = start + 1; i < end && fieldsArr.length; i++) {
         const [key] = lines[i].split(': ');
-        const targetIndex = fields.findIndex(([k]) => k === key);
+        const targetIndex = fieldsArr.findIndex(([k]) => k === key);
         if (targetIndex === -1) { continue }
 
-        lines[i] = `${key}: ${data[key]}`;
-        fields.splice(targetIndex, 1);
+        lines[i] = `${key}: ${trueFields[key]}`;
+        fieldsArr.splice(targetIndex, 1);
       }
 
       // Create new fields with their value if it didn't exist before
-      if (fields.length) {
-        lines.splice(end, 0, this.formatYamlFields(fields));
+      if (fieldsArr.length) {
+        lines.splice(end, 0, this.formatYamlFields(fieldsArr));
       }
     } else {
       // Create frontmatter structure if none is found
       lines.unshift(stripIndents`
         ---
-        ${this.formatYamlFields(fields)}
+        ${this.formatYamlFields(fieldsArr)}
         ---
       `);
     }
@@ -130,7 +139,7 @@ export default class MetaManager {
       .join('\n');
   }
 
-  // Get all banner fields
+  // Helper to get all banner fields
   getAllBannerFields(): string[] {
     const base = this.plugin.getSettingValue('frontmatterField');
     return ['', '_x', '_y', '_icon'].map(suffix => `${base}${suffix}`);

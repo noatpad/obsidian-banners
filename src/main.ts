@@ -151,8 +151,7 @@ export default class BannersPlugin extends Plugin {
       new Notice('Your clipboard didn\'t had a valid URL! Please try again (and check the console if you wanna debug).');
       console.error({ clipboard });
     } else {
-      const banner = this.getSettingValue('frontmatterField');
-      await this.metaManager.upsertBannerData(file, { [banner]: clipboard })
+      await this.metaManager.upsertBannerData(file, { banner: clipboard });
       new Notice('Pasted a new banner!');
     }
   }

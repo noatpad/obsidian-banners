@@ -45,7 +45,6 @@ export default class IconModal extends FuzzySuggestModal<EmojiPair> {
   }
 
   async onChooseItem(item: EmojiPair) {
-    const field = this.plugin.getSettingValue('frontmatterField');
-    await this.metaManager.upsertBannerData(this.targetFile, { [`${field}_icon`]: item.emoji });
+    await this.metaManager.upsertBannerData(this.targetFile, { banner_icon: item.emoji });
   }
 }

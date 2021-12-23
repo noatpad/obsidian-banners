@@ -141,8 +141,7 @@ export default class Banner extends MarkdownRenderChild {
       .split(' ')
       .map(n => Math.round(parseFloat(n) * 1000) / 100000);
 
-    const baseName = this.plugin.getSettingValue('frontmatterField');
-    await this.metaManager.upsertBannerData(sourcePath, { [`${baseName}_x`]: x, [`${baseName}_y`]: y });
+    await this.metaManager.upsertBannerData(sourcePath, { banner_x: x, banner_y: y });
   }
 
   // Helper to get the URL path to the image file
