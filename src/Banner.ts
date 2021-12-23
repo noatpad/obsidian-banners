@@ -146,9 +146,9 @@ export default class Banner extends MarkdownRenderChild {
 
   // Helper to get the URL path to the image file
   parseSource(src: string): string {
-    // Internal link format - "[[<link>]]"
-    if (/^\[\[.+\]\]$/.test(src)) {
-      const link = src.slice(2, -2)
+    // Internal embed link format - "[[<link>]]"
+    if (/^\!\[\[.+\]\]$/.test(src)) {
+      const link = src.slice(3, -2)
       const file = this.metadataCache.getFirstLinkpathDest(link, this.ctx.sourcePath);
       return file ? this.vault.getResourcePath(file) : link;
     }
