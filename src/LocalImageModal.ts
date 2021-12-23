@@ -3,7 +3,6 @@ import { FuzzyMatch, FuzzySuggestModal, MetadataCache, TFile, Vault } from 'obsi
 
 import BannersPlugin from './main';
 import MetaManager from './MetaManager';
-import { SettingsOptions } from './Settings';
 
 const IMAGE_FORMATS = ['apng', 'avif', 'gif', 'jpg', 'jpeg', 'jpe', 'jif', 'jfif', 'png', 'webp'];
 
@@ -11,7 +10,6 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
   plugin: BannersPlugin;
   vault: Vault;
   metadataCache: MetadataCache;
-  settings: SettingsOptions;
   metaManager: MetaManager;
   targetFile: TFile;
 
@@ -20,7 +18,6 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
     this.plugin = plugin;
     this.vault = plugin.app.vault;
     this.metadataCache = plugin.app.metadataCache;
-    this.settings = plugin.settings;
     this.metaManager = plugin.metaManager;
 
     this.containerEl.addClass('banner-local-image-modal');
@@ -44,7 +41,7 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
   renderSuggestion(match: FuzzyMatch<TFile>, el: HTMLElement) {
     super.renderSuggestion(match, el);
 
-    const { showPreviewInLocalModal } = this.settings;
+    const { showPreviewInLocalModal } = this.plugin.settings;
     if (showPreviewInLocalModal) {
       const content = el.innerHTML;
       el.addClass('banner-suggestion-item');
