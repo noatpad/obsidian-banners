@@ -14,8 +14,8 @@
     overflow: hidden;
 
     &.gradient:not(.error) {
-      mask-image: linear-gradient(to bottom, black, transparent);
-      -webkit-mask-image: linear-gradient(to bottom, black, transparent);
+      mask-image: linear-gradient(to bottom, black 50%, transparent);
+      -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent);
     }
 
     .banner-message {
