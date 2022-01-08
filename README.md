@@ -8,6 +8,8 @@ Within an open note, you can use the **Add/Change banner with local image** comm
 
 If you want to remove the banner, you can run the **Remove banner** command to do just that.
 
+You can also add a banner icon, using **Add/Change emoji icon** & selecting an emoji of your choice. You can also change an existing emoji by clicking on it in the preview.
+
 ## Settings
 #### Banners
 - **Banner height**: Specify how tall the banner image should be for each note.
@@ -18,11 +20,19 @@ If you want to remove the banner, you can run the **Remove banner** command to d
 ![solid-style](https://raw.githubusercontent.com/noatpad/obsidian-banners/master/images/solid.png)
 ![gradient-style](https://raw.githubusercontent.com/noatpad/obsidian-banners/master/images/gradient.png)
 
+- **Show banner in internal embed**: Choose if the banner should be displayed in the inline internal embed within a file.
+- **Preview internal banner height**: If **Show banner in internal embed** is on, this setting determines how tall the banner image in the embed should be.
+
 - **Show banner in preview embed**: Choose if the banner should be displayed in the preview embed for the *Page Preview* plugin.
 
 ![embed](https://raw.githubusercontent.com/noatpad/obsidian-banners/master/images/embed.png)
 
-- **Embed banner height**: If **Show banner in preview embed** is on, this setting determines how tall the banner image in the embed should be.
+- **Preview embed banner height**: If **Show banner in preview embed** is on, this setting determines how tall the banner image in the embed should be.
+
+- **Frontmatter field name**: If set, use a customizable frontmatter field to use for banner data. For example, the default value `banner` will use the fields `banner_x`, `banner_y`, and so on.
+
+#### Banner Icons
+- **Use Twemoji**: If set, it will use Twemoji (Twitter's emoji set) instead of the stock emoji on your device. This is on by default as there is better emoji support using this.
 
 #### Local Image Modal
 - **Show preview images**: Enable this to allow preview images to be seen when searching through the modal.
@@ -57,7 +67,7 @@ Once you run `npm i`, you can build the files into `dist/` easily by running `np
 
 You can also have it watch your files and update your plugin within your vault while you develop by running `npm run dev`. Just make sure to set `TEST_VAULT` in `./rollup.config.js` to your testing vault beforehand.
 ## Things I *might* do down the road
-- [ ] Add settings for file embeds, similar to hover-preview embed settings
+- [x] Add settings for file embeds, similar to hover-preview embed settings
 - [ ] Allow content's vertical displacement height to be different than banner height (this can be nice for aesthetic choices with the *Gradient* style)
 - [ ] Note-specific settings (override global style & height settings per note)
   - [ ] Drag bottom of banner to determine note-specific banner height
