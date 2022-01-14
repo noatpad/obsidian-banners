@@ -59,15 +59,16 @@ export default class BannersPlugin extends Plugin {
       const isInternalEmbed = fourLevelsDown?.hasClass('internal-embed') ?? false;
       const isPreviewEmbed = fourLevelsDown?.hasClass('popover') ?? false;
 
-      // Add banner if allowed
-      if (bannerData?.banner && (!isInternalEmbed || showInInternalEmbed) && (!isPreviewEmbed || showInPreviewEmbed)) {
-        const banner = document.createElement('div');
-        ctx.addChild(new Banner(this, banner, el, ctx, bannerData, isInternalEmbed || isPreviewEmbed));
-      }
       // Add icon
       if (bannerData?.banner_icon) {
         const icon = document.createElement('div');
         ctx.addChild(new Icon(this, icon, el, ctx, bannerData));
+      }
+
+      // Add banner if allowed
+      if (bannerData?.banner && (!isInternalEmbed || showInInternalEmbed) && (!isPreviewEmbed || showInPreviewEmbed)) {
+        const banner = document.createElement('div');
+        ctx.addChild(new Banner(this, banner, el, ctx, bannerData, isInternalEmbed || isPreviewEmbed));
       }
     });
   }
