@@ -9,6 +9,7 @@ Within an open note, you can use the **Add/Change banner with local image** comm
 If you want to remove the banner, you can run the **Remove banner** command to do just that.
 
 You can also add a banner icon, using **Add/Change emoji icon** & selecting an emoji of your choice. You can also change an existing emoji by clicking on it in the preview.
+![icon](https://raw.githubusercontent.com/noatpad/obsidian-banners/master/images/icon.png)
 
 ## Settings
 #### Banners
@@ -22,12 +23,11 @@ You can also add a banner icon, using **Add/Change emoji icon** & selecting an e
 
 - **Show banner in internal embed**: Choose if the banner should be displayed in the inline internal embed within a file.
 - **Preview internal banner height**: If **Show banner in internal embed** is on, this setting determines how tall the banner image in the embed should be.
+![inception](https://raw.githubusercontent.com/noatpad/obsidian-banners/master/images/inception.png)
 
 - **Show banner in preview embed**: Choose if the banner should be displayed in the preview embed for the *Page Preview* plugin.
-
-![embed](https://raw.githubusercontent.com/noatpad/obsidian-banners/master/images/embed.png)
-
 - **Preview embed banner height**: If **Show banner in preview embed** is on, this setting determines how tall the banner image in the embed should be.
+![embed](https://raw.githubusercontent.com/noatpad/obsidian-banners/master/images/embed.png)
 
 - **Frontmatter field name**: If set, use a customizable frontmatter field to use for banner data. For example, the default value `banner` will use the fields `banner_x`, `banner_y`, and so on.
 
