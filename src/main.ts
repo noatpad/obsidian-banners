@@ -54,8 +54,7 @@ export default class BannersPlugin extends Plugin {
       const { showInInternalEmbed, showInPreviewEmbed } = this.settings;
       const { containerEl, frontmatter } = ctx;
       const bannerData = this.metaManager.getBannerData(frontmatter);
-      const isPDFExport = containerEl.parentElement.hasClass('print');
-      const fourLevelsDown = isPDFExport ? null : containerEl.parentElement.parentElement.parentElement.parentElement;
+      const fourLevelsDown = containerEl?.parentElement?.parentElement?.parentElement?.parentElement;
       const isInternalEmbed = fourLevelsDown?.hasClass('internal-embed') ?? false;
       const isPreviewEmbed = fourLevelsDown?.hasClass('popover') ?? false;
 
