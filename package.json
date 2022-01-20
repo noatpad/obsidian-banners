@@ -15,6 +15,7 @@
   ],
   "dependencies": {
     "common-tags": "^1.8.0",
+    "emoji-regex": "^10.0.0",
     "lodash": "^4.17.21",
     "node-emoji": "^1.11.0",
     "obsidian": "^0.12.11",

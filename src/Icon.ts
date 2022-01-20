@@ -1,9 +1,12 @@
 import { MarkdownRenderChild, MetadataCache } from 'obsidian';
 import twemoji from 'twemoji';
+import emojiRegex from 'emoji-regex';
 
 import BannersPlugin, { MPPCPlus } from './main';
 import IconModal from './IconModal';
 import { BannerMetadata } from './MetaManager';
+
+const EMOJI_REGEX = emojiRegex();
 
 export default class Icon extends MarkdownRenderChild {
   wrapper: HTMLElement;
@@ -51,9 +54,9 @@ export default class Icon extends MarkdownRenderChild {
     this.wrapper.prepend(this.containerEl);
   }
 
-  // Clever way to only get the first emoji or letter of a string
   getIconText(): string {
     const { banner_icon } = this.bannerData;
-    return Array.from(banner_icon.split(/[\ufe00-\ufe0f]/).join(''))[0];
+    const emojis = banner_icon.match(EMOJI_REGEX);
+    return emojis?.join('') ?? banner_icon[0];
   }
 }
