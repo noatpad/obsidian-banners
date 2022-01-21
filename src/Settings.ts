@@ -2,6 +2,8 @@ import { PluginSettingTab, Setting } from 'obsidian';
 import BannersPlugin from './main';
 
 type StyleOption = 'solid' | 'gradient';
+type IconHorizontalOption = 'left' | 'center' | 'right';
+type IconVerticalOption = 'above' | 'center' | 'below';
 export interface SettingsOptions {
   height: number,
   style: StyleOption,
@@ -10,12 +12,14 @@ export interface SettingsOptions {
   showInPreviewEmbed: boolean,
   previewEmbedHeight: number,
   frontmatterField: string,
+  iconHorizontalAlignment: IconHorizontalOption,
+  iconVerticalAlignment: IconVerticalOption,
   useTwemoji: boolean,
   showPreviewInLocalModal: boolean,
   localSuggestionsLimit: number,
   bannersFolder: string,
   allowMobileDrag: boolean
-}
+};
 
 export const INITIAL_SETTINGS: SettingsOptions = {
   height: null,
@@ -25,12 +29,14 @@ export const INITIAL_SETTINGS: SettingsOptions = {
   showInPreviewEmbed: true,
   previewEmbedHeight: null,
   frontmatterField: null,
+  iconHorizontalAlignment: 'left',
+  iconVerticalAlignment: 'center',
   useTwemoji: true,
   showPreviewInLocalModal: true,
   localSuggestionsLimit: null,
   bannersFolder: null,
   allowMobileDrag: false
-}
+};
 
 export const DEFAULT_VALUES: Partial<SettingsOptions> = {
   height: 250,
@@ -39,12 +45,24 @@ export const DEFAULT_VALUES: Partial<SettingsOptions> = {
   frontmatterField: 'banner',
   localSuggestionsLimit: 10,
   bannersFolder: '/'
-}
+};
 
 const STYLE_OPTIONS: Record<StyleOption, string> = {
   solid: 'Solid',
   gradient: 'Gradient'
-}
+};
+
+const ICON_HORIZONTAL_OPTIONS: Record<IconHorizontalOption, string> = {
+  left: 'Left',
+  center: 'Center',
+  right: 'Right',
+};
+
+const ICON_VERTICAL_OPTIONS: Record<IconVerticalOption, string> = {
+  above: 'Above',
+  center: 'Center',
+  below: 'Below'
+};
 
 export default class SettingsTab extends PluginSettingTab {
   plugin: BannersPlugin;
@@ -73,6 +91,8 @@ export default class SettingsTab extends PluginSettingTab {
       showInPreviewEmbed,
       previewEmbedHeight,
       frontmatterField,
+      iconHorizontalAlignment,
+      iconVerticalAlignment,
       useTwemoji,
       showPreviewInLocalModal,
       localSuggestionsLimit,
@@ -181,6 +201,22 @@ export default class SettingsTab extends PluginSettingTab {
       'Banner Icons',
       'Give people a lil\' notion of what your note is about'
     );
+
+    new Setting(containerEl)
+      .setName('Horizontal icon alignment')
+      .setDesc('Align the icon horizontally')
+      .addDropdown(dd => dd
+        .addOptions(ICON_HORIZONTAL_OPTIONS)
+        .setValue(iconHorizontalAlignment)
+        .onChange(async (val: IconHorizontalOption) => this.saveSettings({ iconHorizontalAlignment: val }, { refreshViews: true })));
+
+    new Setting(containerEl)
+      .setName('Vertical icon alignment')
+      .setDesc('Align the icon vertically, relative to a banner (if any)')
+      .addDropdown(dd => dd
+        .addOptions(ICON_VERTICAL_OPTIONS)
+        .setValue(iconVerticalAlignment)
+        .onChange(async (val: IconVerticalOption) => this.saveSettings({ iconVerticalAlignment: val }, { refreshViews: true })));
 
     new Setting(containerEl)
       .setName('Use Twemoji')

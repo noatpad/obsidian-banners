@@ -97,15 +97,17 @@
 .has-banner-icon {
   .obsidian-banner-icon {
     display: flex;
+    position: relative;
     font-size: 4em;
+
+    &.h-left { justify-content: flex-start; }
+    &.h-center { justify-content: center; }
+    &.h-right { justify-content: flex-end; }
   }
 
   .icon-box {
     display: inline-flex;
-    justify-content: center;
     align-items: center;
-    height: calc(1em + 8px);
-    width: calc(1em + 8px);
     padding: 4px;
     border-radius: 4px;
     transition: ease 0.2s background;
@@ -128,8 +130,9 @@
     margin-top: calc(var(--banner-height) - 20px);
 
     .obsidian-banner-icon {
-      position: relative;
-      margin-top: -0.5em;
+      &.v-above { margin-top: calc(-1em - 8px); }
+      &.v-center { margin-top: calc(-0.5em - 4px); }
+      &.v-below { margin-top: 0; }
     }
   }
 }

@@ -33,17 +33,19 @@ export default class Icon extends MarkdownRenderChild {
   }
 
   onload() {
-    const { useTwemoji } = this.plugin.settings;
+    const { iconHorizontalAlignment, iconVerticalAlignment, useTwemoji } = this.plugin.settings;
+    const { banner_icon } = this.bannerData;
 
     this.wrapper.addClass('has-banner-icon');
-    this.containerEl.addClass('obsidian-banner-icon');
+    this.containerEl.addClass('obsidian-banner-icon', `h-${iconHorizontalAlignment}`, `v-${iconVerticalAlignment}`);
 
     const iconBox = document.createElement('span');
+    const iconText = banner_icon.match(EMOJI_REGEX)?.join('') ?? banner_icon[0];
     iconBox.className = 'icon-box';
     if (useTwemoji) {
-      iconBox.innerHTML = twemoji.parse(this.getIconText());
+      iconBox.innerHTML = twemoji.parse(iconText);
     } else {
-      iconBox.textContent = this.getIconText();
+      iconBox.textContent = iconText;
     }
     iconBox.onclick = async () => {
       const { sourcePath } = this.ctx;
@@ -52,11 +54,5 @@ export default class Icon extends MarkdownRenderChild {
 
     this.containerEl.append(iconBox);
     this.wrapper.prepend(this.containerEl);
-  }
-
-  getIconText(): string {
-    const { banner_icon } = this.bannerData;
-    const emojis = banner_icon.match(EMOJI_REGEX);
-    return emojis?.join('') ?? banner_icon[0];
   }
 }
