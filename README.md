@@ -32,6 +32,8 @@ You can also add a banner icon, using **Add/Change emoji icon** & selecting an e
 - **Frontmatter field name**: If set, use a customizable frontmatter field to use for banner data. For example, the default value `banner` will use the fields `banner_x`, `banner_y`, and so on.
 
 #### Banner Icons
+- **Horizontal alignment**: Align the icon horizontally within the note's boundaries. If set to *Custom*, you can input a custom offset, relative to the note's left boundary. This can be any valid [CSS length value](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units#lengths).
+- **Vertical alignment**: Align the icon vertically relative to a banner's bottom edge, if a banner is present. If set to *Custom*, you can input a custom offset, relative to the center of a banner's lower edge if any. This can be any valid [CSS length value](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units#lengths).
 - **Use Twemoji**: If set, it will use Twemoji (Twitter's emoji set) instead of the stock emoji on your device. This is on by default as there is better emoji support using this.
 
 #### Local Image Modal
