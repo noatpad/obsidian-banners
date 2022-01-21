@@ -5,6 +5,7 @@ import emojiRegex from 'emoji-regex';
 import BannersPlugin, { MPPCPlus } from './main';
 import IconModal from './IconModal';
 import { BannerMetadata } from './MetaManager';
+import { DEFAULT_VALUES } from './Settings';
 
 const EMOJI_REGEX = emojiRegex();
 
@@ -51,8 +52,17 @@ export default class Icon extends MarkdownRenderChild {
       const { sourcePath } = this.ctx;
       new IconModal(this.plugin, this.metadataCache.getFirstLinkpathDest(sourcePath, '/')).open();
     }
+    iconBox.style.transform = this.getIconTransform();
 
     this.containerEl.append(iconBox);
     this.wrapper.prepend(this.containerEl);
+  }
+
+  private getIconTransform() {
+    const { iconHorizontalAlignment, iconVerticalAlignment } = this.plugin.settings;
+    const { iconHorizontalTransform: dH, iconVerticalTransform: dV } = DEFAULT_VALUES;
+    const h = iconHorizontalAlignment === 'custom' ? this.plugin.getSettingValue('iconHorizontalTransform') : dH;
+    const v = iconVerticalAlignment === 'custom' ? this.plugin.getSettingValue('iconVerticalTransform') : dV;
+    return h !== dH || v !== dV ? `translate(${h}, ${v})` : null;
   }
 }

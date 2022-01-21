@@ -131,7 +131,7 @@
 
     .obsidian-banner-icon {
       &.v-above { margin-top: calc(-1em - 8px); }
-      &.v-center { margin-top: calc(-0.5em - 4px); }
+      &.v-center, &.v-custom { margin-top: calc(-0.5em - 4px); }
       &.v-below { margin-top: 0; }
     }
   }
@@ -183,20 +183,26 @@
 }
 
 // Settings
-.banner-setting-header {
-  display: block;
-  padding: 6px 0;
+.banner-settings {
+  .banner-setting-header {
+    display: block;
+    padding: 6px 0;
 
-  p {
-    margin: 0;
-    font-size: 1.2em;
+    p {
+      margin: 0;
+      font-size: 1.2em;
+    }
+
+    .banner-setting-header-description {
+      margin-top: 2px;
+      font-size: 0.7em;
+      color: var(--text-muted);
+      line-height: 18px;
+    }
   }
 
-  .banner-setting-header-description {
-    margin-top: 2px;
-    font-size: 0.7em;
-    color: var(--text-muted);
-    line-height: 18px;
+  .setting-item-control {
+    gap: 8px;
   }
 }
 

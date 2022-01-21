@@ -2,8 +2,8 @@ import { PluginSettingTab, Setting } from 'obsidian';
 import BannersPlugin from './main';
 
 type StyleOption = 'solid' | 'gradient';
-type IconHorizontalOption = 'left' | 'center' | 'right';
-type IconVerticalOption = 'above' | 'center' | 'below';
+type IconHorizontalOption = 'left' | 'center' | 'right' | 'custom';
+type IconVerticalOption = 'above' | 'center' | 'below' | 'custom';
 export interface SettingsOptions {
   height: number,
   style: StyleOption,
@@ -13,7 +13,9 @@ export interface SettingsOptions {
   previewEmbedHeight: number,
   frontmatterField: string,
   iconHorizontalAlignment: IconHorizontalOption,
+  iconHorizontalTransform: string,
   iconVerticalAlignment: IconVerticalOption,
+  iconVerticalTransform: string,
   useTwemoji: boolean,
   showPreviewInLocalModal: boolean,
   localSuggestionsLimit: number,
@@ -30,7 +32,9 @@ export const INITIAL_SETTINGS: SettingsOptions = {
   previewEmbedHeight: null,
   frontmatterField: null,
   iconHorizontalAlignment: 'left',
+  iconHorizontalTransform: null,
   iconVerticalAlignment: 'center',
+  iconVerticalTransform: null,
   useTwemoji: true,
   showPreviewInLocalModal: true,
   localSuggestionsLimit: null,
@@ -43,6 +47,8 @@ export const DEFAULT_VALUES: Partial<SettingsOptions> = {
   internalEmbedHeight: 200,
   previewEmbedHeight: 120,
   frontmatterField: 'banner',
+  iconHorizontalTransform: '0px',
+  iconVerticalTransform: '0px',
   localSuggestionsLimit: 10,
   bannersFolder: '/'
 };
@@ -56,12 +62,14 @@ const ICON_HORIZONTAL_OPTIONS: Record<IconHorizontalOption, string> = {
   left: 'Left',
   center: 'Center',
   right: 'Right',
+  custom: 'Custom'
 };
 
 const ICON_VERTICAL_OPTIONS: Record<IconVerticalOption, string> = {
   above: 'Above',
   center: 'Center',
-  below: 'Below'
+  below: 'Below',
+  custom: 'Custom'
 };
 
 export default class SettingsTab extends PluginSettingTab {
@@ -70,6 +78,7 @@ export default class SettingsTab extends PluginSettingTab {
   constructor(plugin: BannersPlugin) {
     super(plugin.app, plugin);
     this.plugin = plugin;
+    this.containerEl.addClass('banner-settings');
   }
 
   async saveSettings(changed: Partial<SettingsOptions>, { reloadSettings = false, refreshViews = false } = {}) {
@@ -92,7 +101,9 @@ export default class SettingsTab extends PluginSettingTab {
       previewEmbedHeight,
       frontmatterField,
       iconHorizontalAlignment,
+      iconHorizontalTransform,
       iconVerticalAlignment,
+      iconVerticalTransform,
       useTwemoji,
       showPreviewInLocalModal,
       localSuggestionsLimit,
@@ -180,16 +191,16 @@ export default class SettingsTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName('Frontmatter field name')
       .setDesc(createFragment(frag => {
-        frag.appendText('Set a customizable frontmatter field to use for banner data');
+        frag.appendText('Set a customizable frontmatter field to use for banner data.');
         frag.createEl('br');
-        frag.appendText('For example, the default value ')
-        frag.createEl('code', { text: DEFAULT_VALUES.frontmatterField })
-        frag.appendText(' will use the fields ')
-        frag.createEl('code', { text: DEFAULT_VALUES.frontmatterField })
+        frag.appendText('For example, the default value ');
+        frag.createEl('code', { text: DEFAULT_VALUES.frontmatterField });
+        frag.appendText(' will use the fields ');
+        frag.createEl('code', { text: DEFAULT_VALUES.frontmatterField });
         frag.appendText(', ');
-        frag.createEl('code', { text: `${DEFAULT_VALUES.frontmatterField}_x` })
+        frag.createEl('code', { text: `${DEFAULT_VALUES.frontmatterField}_x` });
         frag.appendText(', ');
-        frag.createEl('code', { text: `${DEFAULT_VALUES.frontmatterField}_y` })
+        frag.createEl('code', { text: `${DEFAULT_VALUES.frontmatterField}_y` });
         frag.appendText(', and so on...');
       }))
       .addText(text => text
@@ -202,21 +213,55 @@ export default class SettingsTab extends PluginSettingTab {
       'Give people a lil\' notion of what your note is about'
     );
 
-    new Setting(containerEl)
-      .setName('Horizontal icon alignment')
-      .setDesc('Align the icon horizontally')
-      .addDropdown(dd => dd
-        .addOptions(ICON_HORIZONTAL_OPTIONS)
-        .setValue(iconHorizontalAlignment)
-        .onChange(async (val: IconHorizontalOption) => this.saveSettings({ iconHorizontalAlignment: val }, { refreshViews: true })));
+    // Horizontal icon alignment
+    const settingHIA = new Setting(containerEl)
+      .setName('Horizontal alignment')
+      .setDesc(createFragment(frag => {
+        frag.appendText('Align the icon horizontally.');
+        frag.createEl('br');;
+        frag.appendText('If set to ');
+        frag.createEl('b', { text: 'Custom' });
+        frag.appendText(', you can set an offset, relative to the left side of the note. This can be any valid ');
+        frag.createEl('a', { text: 'CSS length value', href: 'https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units#lengths' });
+        frag.appendText(', such as ');
+        frag.createEl('code', { text: '10px' });
+        frag.appendText(', ');
+        frag.createEl('code', { text: '-30%' });
+        frag.appendText(', ');
+        frag.createEl('code', { text: 'calc(1em + 10px)' });
+        frag.appendText(', and so on...');
+      }));
+    if (iconHorizontalAlignment === 'custom') {
+      settingHIA.addText(text => text
+        .setValue(iconHorizontalTransform)
+        .setPlaceholder(DEFAULT_VALUES.iconHorizontalTransform)
+        .onChange(async (val) => this.saveSettings({ iconHorizontalTransform: val || null }, { refreshViews: true })));
+    }
+    settingHIA.addDropdown(dd => dd
+      .addOptions(ICON_HORIZONTAL_OPTIONS)
+      .setValue(iconHorizontalAlignment)
+      .onChange(async (val: IconHorizontalOption) => this.saveSettings({ iconHorizontalAlignment: val }, { reloadSettings: true, refreshViews: true })));
 
-    new Setting(containerEl)
-      .setName('Vertical icon alignment')
-      .setDesc('Align the icon vertically, relative to a banner (if any)')
-      .addDropdown(dd => dd
-        .addOptions(ICON_VERTICAL_OPTIONS)
-        .setValue(iconVerticalAlignment)
-        .onChange(async (val: IconVerticalOption) => this.saveSettings({ iconVerticalAlignment: val }, { refreshViews: true })));
+    // Vertical icon alignment
+    const settingVIA = new Setting(containerEl)
+      .setName('Vertical alignment')
+      .setDesc(createFragment(frag => {
+        frag.appendText('Align the icon vertically, relative to a banner (if any).');
+        frag.createEl('br');;
+        frag.appendText('If set to ');
+        frag.createEl('b', { text: 'Custom' });
+        frag.appendText(', you can set an offset, relative to the center of a banner\'s lower edge. This follows the same format as the setting above.');
+      }));
+    if (iconVerticalAlignment === 'custom') {
+      settingVIA.addText(text => text
+        .setValue(iconVerticalTransform)
+        .setPlaceholder(DEFAULT_VALUES.iconVerticalTransform)
+        .onChange(async (val) => this.saveSettings({ iconVerticalTransform: val || null }, { refreshViews: true })));
+    }
+    settingVIA.addDropdown(dd => dd
+      .addOptions(ICON_VERTICAL_OPTIONS)
+      .setValue(iconVerticalAlignment)
+      .onChange(async (val: IconVerticalOption) => this.saveSettings({ iconVerticalAlignment: val }, { reloadSettings: true, refreshViews: true })));
 
     new Setting(containerEl)
       .setName('Use Twemoji')
