@@ -339,7 +339,7 @@ export default class SettingsTab extends PluginSettingTab {
 
   createHeader(text: string, desc: string = null) {
     const header = this.containerEl.createDiv({ cls: 'setting-item setting-item-heading banner-setting-header' });
-    header.createEl('p', { text });
+    header.createEl('p', { text, cls: 'banner-setting-header-title' });
     if (desc) {
       header.createEl('p', { text: desc, cls: 'banner-setting-header-description' });
     }
