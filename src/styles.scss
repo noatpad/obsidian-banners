@@ -2,7 +2,7 @@
 
 // Main banner wrapper
 .obsidian-banner-wrapper {
-  margin-top: calc(var(--banner-height) + 10px);
+  margin-top: var(--banner-height);
 
   > .obsidian-banner {
     position: absolute;
@@ -95,20 +95,17 @@
 
 // Banner Icons
 .has-banner-icon {
-  margin-top: 75px;
-
   .obsidian-banner-icon {
+    display: flex;
     font-size: 4em;
-    margin-top: -1.2em;
-    margin-bottom: -0.3em;
   }
 
   .icon-box {
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    height: calc(4rem + 8px);
-    width: calc(4rem + 8px);
+    height: calc(1em + 8px);
+    width: calc(1em + 8px);
     padding: 4px;
     border-radius: 4px;
     transition: ease 0.2s background;
@@ -128,19 +125,11 @@
 
   // Banner + Icon take things a bit differently
   &.obsidian-banner-wrapper {
-    margin-top: calc(var(--banner-height) + 10px);
+    margin-top: calc(var(--banner-height) - 20px);
 
     .obsidian-banner-icon {
-      position: absolute;
-      z-index: 1;
-    }
-
-    .frontmatter {
-      top: 16px;
-    }
-
-    + div {
-      padding-top: 0.2em;
+      position: relative;
+      margin-top: -0.5em;
     }
   }
 }
@@ -208,6 +197,21 @@
   }
 }
 
+// Mobile
+.is-mobile {
+  .has-banner-icon {
+    margin-top: 20px;
+  }
+
+  .obsidian-banner-wrapper {
+    margin-top: var(--banner-height);
+  }
+
+  .obsidian-banner-wrapper:not(.has-banner-icon) {
+    margin-top: calc(var(--banner-height) + 20px);
+  }
+}
+
 // Export to PDF
 @media print {
   .obsidian-banner-wrapper {
@@ -217,7 +221,6 @@
       position: initial;
       margin-bottom: 20px;
     }
-
   }
 
   .has-banner-icon,
