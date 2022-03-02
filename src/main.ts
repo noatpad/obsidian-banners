@@ -1,7 +1,7 @@
 import { MarkdownView, MetadataCache, Notice, Plugin, TFile, Vault, Workspace } from 'obsidian';
 import isURL from 'validator/lib/isURL';
 
-import './styles/index.scss';
+import './styles/styles.scss';
 import IconModal from './IconModal';
 import LocalImageModal from './LocalImageModal';
 import MetaManager from './MetaManager';
