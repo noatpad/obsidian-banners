@@ -1,19 +1,16 @@
-import { MarkdownPostProcessorContext, MarkdownView, MetadataCache, Notice, Plugin, TFile, Vault, Workspace } from 'obsidian';
+import { MarkdownView, MetadataCache, Notice, Plugin, TFile, Vault, Workspace } from 'obsidian';
 import isURL from 'validator/lib/isURL';
 
-import './styles.scss';
-import Banner from './Banner';
-import Icon from './Icon';
+import './styles/index.scss';
 import IconModal from './IconModal';
 import LocalImageModal from './LocalImageModal';
 import MetaManager from './MetaManager';
-import SettingsTab, { INITIAL_SETTINGS, DEFAULT_VALUES, SettingsOptions } from './Settings';
+import SettingsTab, { INITIAL_SETTINGS, DEFAULT_VALUES, ISettingsOptions } from './Settings';
+import getPostProcessor from './cm5';
+import getExtension from './cm6';
 
-export interface MPPCPlus extends MarkdownPostProcessorContext {
-  containerEl: HTMLElement
-}
 export default class BannersPlugin extends Plugin {
-  settings: SettingsOptions;
+  settings: ISettingsOptions;
   workspace: Workspace;
   vault: Vault;
   metadataCache: MetadataCache
@@ -31,6 +28,7 @@ export default class BannersPlugin extends Plugin {
     this.metaManager = new MetaManager(this);
 
     this.loadProcessor();
+    this.loadExtension();
     this.loadCommands();
     this.loadStyles();
 
@@ -47,29 +45,13 @@ export default class BannersPlugin extends Plugin {
   }
 
   loadProcessor() {
-    this.registerMarkdownPostProcessor((el, ctx: MPPCPlus) => {
-      // Only process the frontmatter
-      if (!el.querySelector('pre.frontmatter')) { return }
+    const processor = getPostProcessor(this);
+    this.registerMarkdownPostProcessor(processor);
+  }
 
-      const { showInInternalEmbed, showInPreviewEmbed } = this.settings;
-      const { containerEl, frontmatter } = ctx;
-      const bannerData = this.metaManager.getBannerData(frontmatter);
-      const fourLevelsDown = containerEl?.parentElement?.parentElement?.parentElement?.parentElement;
-      const isInternalEmbed = fourLevelsDown?.hasClass('internal-embed') ?? false;
-      const isPreviewEmbed = fourLevelsDown?.hasClass('popover') ?? false;
-
-      // Add icon
-      if (bannerData?.banner_icon) {
-        const icon = document.createElement('div');
-        ctx.addChild(new Icon(this, icon, el, ctx, bannerData));
-      }
-
-      // Add banner if allowed
-      if (bannerData?.banner && (!isInternalEmbed || showInInternalEmbed) && (!isPreviewEmbed || showInPreviewEmbed)) {
-        const banner = document.createElement('div');
-        ctx.addChild(new Banner(this, banner, el, ctx, bannerData, isInternalEmbed || isPreviewEmbed));
-      }
-    });
+  loadExtension() {
+    const extension = getExtension(this);
+    this.registerEditorExtension(extension);
   }
 
   loadCommands() {
@@ -108,10 +90,16 @@ export default class BannersPlugin extends Plugin {
       name: 'Remove banner',
       checkCallback: (checking) => {
         const file = this.workspace.getActiveFile();
-        if (checking) { return !!file && !!this.metaManager.getBannerDataFromFile(file)?.banner }
+        if (checking) {
+          if (!file) { return false }
+          const { frontmatter } = this.metadataCache.getFileCache(file);
+          return !!this.metaManager.getBannerData(frontmatter)?.src;
+        }
         this.removeBanner(file);
       }
     });
+
+    // TODO: Add remove icon command
   }
 
   loadStyles() {
@@ -124,9 +112,9 @@ export default class BannersPlugin extends Plugin {
     this.workspace.containerEl
       .querySelectorAll('.obsidian-banner-wrapper')
       .forEach((wrapper) => {
-        wrapper.querySelector('.obsidian-banner').remove();
-        wrapper.querySelector('.obsidian-banner-icon').remove();
-        wrapper.removeClasses(['obsidian-banner-wrapper', 'loaded', 'error', 'has-banner-icon']);
+        wrapper.querySelector('.obsidian-banner')?.remove();
+        wrapper.querySelector('.obsidian-banner-icon')?.remove();
+        wrapper.removeClasses(['obsidian-banner-wrapper', 'has-banner-icon']);
       });
   }
 
@@ -138,6 +126,7 @@ export default class BannersPlugin extends Plugin {
 
   // Helper to refresh markdown views
   refreshViews() {
+    this.workspace.updateOptions();
     this.workspace.getLeavesOfType('markdown').forEach((leaf) => {
       if (leaf.getViewState().state.mode.includes('preview')) {
         (leaf.view as MarkdownView).previewMode.rerender(true);
@@ -152,7 +141,8 @@ export default class BannersPlugin extends Plugin {
       new Notice('Your clipboard didn\'t had a valid URL! Please try again (and check the console if you wanna debug).');
       console.error({ clipboard });
     } else {
-      await this.metaManager.upsertBannerData(file, { banner: clipboard });
+      // TODO: Enclose the value in quotes
+      await this.metaManager.upsertBannerData(file, { src: clipboard });
       new Notice('Pasted a new banner!');
     }
   }
@@ -164,7 +154,7 @@ export default class BannersPlugin extends Plugin {
   }
 
   // Helper to get setting value (or the default setting value if not set)
-  getSettingValue<K extends keyof SettingsOptions>(key: K): Partial<SettingsOptions>[K] {
+  getSettingValue<K extends keyof ISettingsOptions>(key: K): Partial<ISettingsOptions>[K] {
     return this.settings[key] ?? DEFAULT_VALUES[key];
   }
 }

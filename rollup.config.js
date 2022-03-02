@@ -39,6 +39,15 @@ export default {
     exports: 'default',
     banner,
   },
-  external: ['obsidian'],
+  external: [
+    'obsidian',
+    'electron',
+    'codemirror',
+    '@codemirror/language',
+    '@codemirror/rangeset',
+    '@codemirror/stream-parser',
+    '@codemirror/state',
+    '@codemirror/view'
+  ],
   plugins
 };

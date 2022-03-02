@@ -1,0 +1,253 @@
+@use './spinner';
+
+// Banner
+.obsidian-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--banner-height);
+  width: 100%;
+  overflow: hidden;
+
+  &.gradient:not(.error) {
+    mask-image: linear-gradient(to bottom, black 50%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent);
+  }
+
+  .banner-message {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    border: 2px solid var(--background-modifier-border);
+
+    p {
+      margin: 6px 8px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+  }
+
+  .banner-image {
+    position: relative;
+    object-fit: cover;
+    max-width: none;
+    cursor: grab;
+    height: 100%;
+    width: 100%;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  // Hide loading indicator when image has loaded
+  // Hide image upon an error loading it
+  &.loaded .banner-message,
+  &.error .banner-image {
+    display: none;
+  }
+}
+
+// [Reading View] Banner wrapper (YAML with banner)
+.obsidian-banner-wrapper {
+  margin-top: var(--banner-height);
+}
+
+// [Live Preview] Spacer for banners
+.obsidian-banner-spacer {
+  height: var(--banner-height);
+}
+
+// Banner Icon
+// TODO: Fix spacing in internal/preview embeds
+.obsidian-banner-icon {
+  display: flex;
+  position: relative;
+  font-size: 4em;
+
+  &.h-left { justify-content: flex-start; }
+  &.h-center { justify-content: center; }
+  &.h-right { justify-content: flex-end; }
+
+  .icon-box {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px;
+    border-radius: 4px;
+    transition: ease 0.2s background;
+
+    &:hover {
+      background: #aaa3;
+      cursor: pointer;
+    }
+  }
+
+  // Twemoji
+  img.emoji {
+    height: 1em;
+    width: 1em;
+    vertical-align: -0.1em;
+  }
+}
+
+// Internal embeds
+.internal-embed .markdown-embed-content .obsidian-banner-wrapper {
+  margin-top: var(--banner-internal-embed-height);
+
+  > .obsidian-banner {
+    height: var(--banner-internal-embed-height);
+
+    img { cursor: initial; }
+  }
+}
+
+// Preview embeds
+.popover .markdown-embed-content .obsidian-banner-wrapper {
+  margin-top: var(--banner-preview-embed-height);
+
+  > .obsidian-banner {
+    height: var(--banner-preview-embed-height);
+
+    img { cursor: initial; }
+  }
+}
+
+// [Reading View] Banner + Icon
+.obsidian-banner-wrapper.has-banner-icon {
+  margin-top: calc(var(--banner-height) - 20px);
+
+  .obsidian-banner-icon {
+    &.v-above { margin-top: calc(-1em - 8px); }
+    &.v-center,
+    &.v-custom { margin-top: calc(-0.5em - 4px); }
+    &.v-below { margin-top: 0; }
+  }
+}
+
+// [Live Preview] Banner + Icon
+.cm6-banner-icon.has-banner {
+  &.v-above {
+    margin-top: calc(-1em - 22px);
+    margin-bottom: 14px;
+  }
+  &.v-center,
+  &.v-custom { margin-top: calc(-0.5em - 18px); }
+  &.v-below { margin-top: 0; }
+}
+
+// Local Image Modal
+.banner-local-image-modal {
+  .banner-suggestion-item {
+    padding: 6px 10px;
+  }
+
+  .suggestion-text {
+    height: 0;
+    margin: 0;
+    padding-left: 10px;
+  }
+
+  .suggestion-image-wrapper {
+    position: relative;
+    height: 200px;
+    width: 100%;
+    margin: 6px 0;
+    overflow: hidden;
+
+    img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      object-fit: cover;
+    }
+  }
+}
+
+// Icon Modal
+.banner-icon-modal {
+  span.regular-emoji {
+    font-size: 1.2em;
+    vertical-align: bottom;
+  }
+
+  img.emoji {
+    margin-right: 0.5em;
+    height: 1.2em;
+    width: 1.2em;
+    vertical-align: middle;
+  }
+}
+
+// Settings
+.banner-settings {
+  .banner-setting-header {
+    display: block;
+    padding: 6px 0;
+
+    p {
+      margin: 0;
+      font-size: 1.2em;
+    }
+
+    .banner-setting-header-title {
+      font-size: 1.3em;
+    }
+
+    .banner-setting-header-description {
+      margin-top: 2px;
+      font-size: 0.7em;
+      color: var(--text-muted);
+      line-height: 18px;
+    }
+  }
+
+  .setting-item-control {
+    gap: 8px;
+  }
+}
+
+// Mobile
+.is-mobile {
+  .has-banner-icon {
+    margin-top: 20px;
+  }
+
+  .obsidian-banner-wrapper {
+    margin-top: var(--banner-height);
+  }
+
+  .obsidian-banner-wrapper:not(.has-banner-icon) {
+    margin-top: calc(var(--banner-height) + 20px);
+  }
+}
+
+// PDF Export
+@media print {
+  .obsidian-banner-wrapper {
+    margin-top: 0;
+
+    > .obsidian-banner {
+      position: initial;
+      margin-bottom: 20px;
+    }
+  }
+
+  .has-banner-icon,
+  .has-banner-icon .obsidian-banner-icon,
+  .obsidian-banner-wrapper.has-banner-icon {
+    margin-top: 0;
+  }
+
+  .obsidian-banner-wrapper.has-banner-icon .obsidian-banner-icon {
+    position: initial;
+  }
+}

@@ -56,6 +56,6 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
 
   async onChooseItem(image: TFile) {
     const link = this.metadataCache.fileToLinktext(image, this.targetFile.path);
-    await this.metaManager.upsertBannerData(this.targetFile, { banner: `"![[${link}]]"` });
+    await this.metaManager.upsertBannerData(this.targetFile, { src: `"![[${link}]]"` });
   }
 }

@@ -5,16 +5,13 @@ import allEmojis from 'node-emoji/lib/emoji.json';
 import BannersPlugin from './main';
 import MetaManager from './MetaManager';
 
-interface EmojiPair {
-  code: string,
-  emoji: string
-}
+interface IEmojiPair { code: string, emoji: string }
 
-export default class IconModal extends FuzzySuggestModal<EmojiPair> {
+export default class IconModal extends FuzzySuggestModal<IEmojiPair> {
   plugin: BannersPlugin;
   metaManager: MetaManager;
   targetFile: TFile;
-  emojis: EmojiPair[];
+  emojis: IEmojiPair[];
 
   constructor(plugin: BannersPlugin, file: TFile) {
     super(plugin.app);
@@ -28,15 +25,15 @@ export default class IconModal extends FuzzySuggestModal<EmojiPair> {
     this.setPlaceholder('Pick an emoji to use as an icon');
   }
 
-  getItems(): EmojiPair[] {
+  getItems(): IEmojiPair[] {
     return this.inputEl.value.length ? this.emojis : [];
   }
 
-  getItemText(item: EmojiPair): string {
+  getItemText(item: IEmojiPair): string {
     return item.code;
   }
 
-  renderSuggestion(match: FuzzyMatch<EmojiPair>, el: HTMLElement): void {
+  renderSuggestion(match: FuzzyMatch<IEmojiPair>, el: HTMLElement): void {
     super.renderSuggestion(match, el);
     const { useTwemoji } = this.plugin.settings;
     const { emoji } = match.item;
@@ -44,7 +41,7 @@ export default class IconModal extends FuzzySuggestModal<EmojiPair> {
     el.insertAdjacentHTML('afterbegin', html);
   }
 
-  async onChooseItem(item: EmojiPair) {
-    await this.metaManager.upsertBannerData(this.targetFile, { banner_icon: item.emoji });
+  async onChooseItem(item: IEmojiPair) {
+    await this.metaManager.upsertBannerData(this.targetFile, { icon: item.emoji });
   }
 }

@@ -1,10 +1,11 @@
 import { PluginSettingTab, Setting } from 'obsidian';
+
 import BannersPlugin from './main';
 
 type StyleOption = 'solid' | 'gradient';
 type IconHorizontalOption = 'left' | 'center' | 'right' | 'custom';
 type IconVerticalOption = 'above' | 'center' | 'below' | 'custom';
-export interface SettingsOptions {
+export interface ISettingsOptions {
   height: number,
   style: StyleOption,
   showInInternalEmbed: boolean,
@@ -23,7 +24,7 @@ export interface SettingsOptions {
   allowMobileDrag: boolean
 };
 
-export const INITIAL_SETTINGS: SettingsOptions = {
+export const INITIAL_SETTINGS: ISettingsOptions = {
   height: null,
   style: 'solid',
   showInInternalEmbed: true,
@@ -42,7 +43,7 @@ export const INITIAL_SETTINGS: SettingsOptions = {
   allowMobileDrag: false
 };
 
-export const DEFAULT_VALUES: Partial<SettingsOptions> = {
+export const DEFAULT_VALUES: Partial<ISettingsOptions> = {
   height: 250,
   internalEmbedHeight: 200,
   previewEmbedHeight: 120,
@@ -81,7 +82,7 @@ export default class SettingsTab extends PluginSettingTab {
     this.containerEl.addClass('banner-settings');
   }
 
-  async saveSettings(changed: Partial<SettingsOptions>, { reloadSettings = false, refreshViews = false } = {}) {
+  async saveSettings(changed: Partial<ISettingsOptions>, { reloadSettings = false, refreshViews = false } = {}) {
     this.plugin.settings = { ...this.plugin.settings, ...changed };
     await this.plugin.saveData(this.plugin.settings);
     this.plugin.loadStyles();
@@ -337,7 +338,7 @@ export default class SettingsTab extends PluginSettingTab {
         .onChange(async (val) => this.saveSettings({ allowMobileDrag: val }, { refreshViews: true })));
   }
 
-  createHeader(text: string, desc: string = null) {
+  private createHeader(text: string, desc: string = null) {
     const header = this.containerEl.createDiv({ cls: 'setting-item setting-item-heading banner-setting-header' });
     header.createEl('p', { text, cls: 'banner-setting-header-title' });
     if (desc) {

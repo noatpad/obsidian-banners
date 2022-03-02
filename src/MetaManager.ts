@@ -1,12 +1,13 @@
-import { FrontMatterCache, MetadataCache, TFile, Vault } from 'obsidian';
+import { MetadataCache, TFile, Vault } from 'obsidian';
 import { stripIndents } from 'common-tags';
 
 import BannersPlugin from './main';
-export interface BannerMetadata {
-  banner: string,
-  banner_x: number,
-  banner_y: number,
-  banner_icon: string
+
+export interface IBannerMetadata {
+  src: string,
+  x: number,
+  y: number,
+  icon: string
 }
 
 const HAS_YAML_REGEX = /^-{3}(\n|\r|\r\n)((.*)(\n|\r|\r\n))*-{3}/;
@@ -23,38 +24,37 @@ export default class MetaManager {
   }
 
   // Get banner metadata from frontmatter
-  getBannerData(frontmatter: FrontMatterCache): BannerMetadata {
+  getBannerData(frontmatter: {[key: string]: string}): IBannerMetadata {
     if (!frontmatter) { return }
 
     const fieldName = this.plugin.getSettingValue('frontmatterField');
     const {
-      [fieldName]: banner,
-      [`${fieldName}_x`]: banner_x,
-      [`${fieldName}_y`]: banner_y,
-      [`${fieldName}_icon`]: banner_icon
+      [fieldName]: src,
+      [`${fieldName}_x`]: x,
+      [`${fieldName}_y`]: y,
+      [`${fieldName}_icon`]: icon
     } = frontmatter;
-    return { banner, banner_x, banner_y, banner_icon };
-  }
-
-  // Get banner metadata from a file
-  getBannerDataFromFile(fileOrPath: TFile | string): BannerMetadata {
-    const file = (fileOrPath instanceof TFile) ? fileOrPath : this.getFileByPath(fileOrPath);
-    if (!file) { return }
-    return this.getBannerData(this.metadata.getFileCache(file)?.frontmatter);
+    return {
+      src,
+      x: x !== undefined ? parseFloat(x) : undefined,
+      y: y !== undefined ? parseFloat(y) : undefined,
+      icon
+    };
   }
 
   // Upsert banner data into a file's frontmatter
-  async upsertBannerData(fileOrPath: TFile | string, data: Partial<BannerMetadata>) {
+  async upsertBannerData(fileOrPath: TFile | string, data: Partial<IBannerMetadata>) {
     const file = (fileOrPath instanceof TFile) ? fileOrPath : this.getFileByPath(fileOrPath);
     if (!file) { return }
 
-    const { banner, banner_x, banner_y, banner_icon } = data;
+    // Get banner data based on the designated prefix for banner data fields
+    const { src, x, y, icon } = data;
     const baseName = this.plugin.getSettingValue('frontmatterField');
     const trueFields = {
-      ...(banner && { [baseName]: banner }),
-      ...(banner_x && { [`${baseName}_x`]: banner_x }),
-      ...(banner_y && { [`${baseName}_y`]: banner_y }),
-      ...(banner_icon && { [`${baseName}_icon`]: banner_icon })
+      ...(src && { [baseName]: src }),
+      ...(x && { [`${baseName}_x`]: x }),
+      ...(y && { [`${baseName}_y`]: y }),
+      ...(icon && { [`${baseName}_icon`]: icon })
     };
 
     const fieldsArr = Object.entries(trueFields);
@@ -91,6 +91,7 @@ export default class MetaManager {
     await this.vault.modify(file, newContent);
   }
 
+  // Remove banner data from a file's frontmatter
   async removeBannerData(fileOrPath: TFile | string, fields: string[] = this.getAllBannerFields()) {
     const file = (fileOrPath instanceof TFile) ? fileOrPath : this.getFileByPath(fileOrPath);
     if (!file) { return }
@@ -140,7 +141,7 @@ export default class MetaManager {
   }
 
   // Helper to get all banner fields
-  getAllBannerFields(): string[] {
+ private getAllBannerFields(): string[] {
     const base = this.plugin.getSettingValue('frontmatterField');
     return ['', '_x', '_y', '_icon'].map(suffix => `${base}${suffix}`);
   }

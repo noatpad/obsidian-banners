@@ -1,167 +1,134 @@
-import { MarkdownRenderChild, MetadataCache, TFile, Vault } from 'obsidian';
+import { TFile } from 'obsidian';
 import clamp from 'lodash/clamp';
 import { html } from 'common-tags';
 
-import BannersPlugin, { MPPCPlus } from './main';
-import MetaManager, { BannerMetadata } from './MetaManager';
+import BannersPlugin from './main';
+import { IBannerMetadata } from './MetaManager';
 
-interface XY {
-  x: number,
-  y: number
-}
+interface IDragData { x: number, y: number, isDragging: boolean };
+type MTEvent = MouseEvent | TouchEvent;
 
-export default class Banner extends MarkdownRenderChild {
-  wrapper: HTMLElement;
-  plugin: BannersPlugin;
-  metadataCache: MetadataCache;
-  vault: Vault;
-  metaManager: MetaManager;
+// Get current mouse position of event
+const getMousePos = (e: MTEvent) => {
+  const { clientX, clientY } = (e instanceof MouseEvent) ? e : e.targetTouches[0];
+  return { x: clientX, y: clientY };
+};
 
-  ctx: MPPCPlus;
-  bannerData: BannerMetadata
-  isEmbed: boolean;
-  isDragging: boolean;
-  prevPos: XY
+// Begin image drag
+const handleDragStart = (e: MTEvent, dragData: IDragData) => {
+  const { x, y } = getMousePos(e);
+  dragData.x = x;
+  dragData.y = y;
+  dragData.isDragging = true;
+};
 
-  constructor(
-    plugin: BannersPlugin,
-    el: HTMLDivElement,
-    wrapper: HTMLElement,
-    ctx: MPPCPlus,
-    bannerData: BannerMetadata,
-    isEmbed: boolean
-  ) {
-    super(el);
-    this.wrapper = wrapper;
-    this.plugin = plugin;
-    this.metadataCache = plugin.app.metadataCache;
-    this.vault = plugin.vault;
-    this.metaManager = plugin.metaManager;
+// Dragging image
+// TODO: See if it's possible to rework drag so that it's consistent to the image's dimensions
+const handleDragMove = (e: MTEvent, dragData: IDragData) => {
+  if (!dragData.isDragging) { return }
 
-    this.ctx = ctx;
-    this.bannerData = bannerData;
-    this.isEmbed = isEmbed;
-    this.isDragging = false;
-    this.prevPos = null;
+  // Calculate delta and update current mouse position
+  const img = e.target as HTMLImageElement;
+  const { x, y } = getMousePos(e);
+  const delta = {
+    x: (dragData.x - x) / img.clientWidth * 100,
+    y: (dragData.y - y) / img.clientHeight * 100
+  };
+  dragData.x = x;
+  dragData.y = y;
+
+  const [currentX, currentY] = img.style.objectPosition
+    .split(' ')
+    .map(n => parseFloat(n));
+
+  // Update object position styling depending on banner dimensions
+  const { clientHeight, clientWidth, naturalHeight, naturalWidth } = img;
+  if (naturalHeight / naturalWidth >= clientHeight / clientWidth) {
+    const newY = clamp(currentY + delta.y, 0, 100);
+    img.style.objectPosition = `${currentX}% ${newY}%`;
+  } else {
+    const newX = clamp(currentX + delta.x, 0, 100);
+    img.style.objectPosition = `${newX}% ${currentY}%`;
+  }
+};
+
+// Finish image drag
+const handleDragEnd = async (img: HTMLImageElement, path: string, dragData: IDragData, plugin: BannersPlugin) => {
+  if (!dragData.isDragging) { return }
+  dragData.isDragging = false;
+
+  // Upsert data to file's frontmatter
+  const [x, y] = img.style.objectPosition
+    .split(' ')
+    .map(n => Math.round(parseFloat(n) * 1000) / 100000);
+  await plugin.metaManager.upsertBannerData(path, { x, y });
+};
+
+// Helper to get the URL path to the image file
+const parseSource = (plugin: BannersPlugin, src: string, filepath: string): string => {
+  // Internal embed link format - "![[<link>]]"
+  if (/^\!\[\[.+\]\]$/.test(src)) {
+    const link = src.slice(3, -2)
+    const file = plugin.metadataCache.getFirstLinkpathDest(link, filepath);
+    return file ? plugin.vault.getResourcePath(file) : link;
   }
 
-  // Prepare and render banner
-  onload() {
-    const { allowMobileDrag, style } = this.plugin.settings;
-    const { containerEl: contentEl } = this.ctx;
-    const { banner: src, banner_x = 0.5, banner_y = 0.5 } = this.bannerData;
+  // Absolute paths (legacy), relative paths (legacy), & URLs
+  const path = src.startsWith('/') ? src.slice(1) : src;
+  const file = plugin.vault.getAbstractFileByPath(path);
+  return (file instanceof TFile) ? plugin.vault.getResourcePath(file) : src;
+};
 
-    this.wrapper.addClass('obsidian-banner-wrapper');
-    this.containerEl.addClasses(['obsidian-banner', style]);
+const getBannerElements = (
+  plugin: BannersPlugin,
+  bannerData: IBannerMetadata,
+  filepath: string,
+  wrapper: HTMLElement,
+  contentEl: HTMLElement,
+  isEmbed: boolean = false
+): HTMLElement[] => {
+  const { src, x = 0.5, y = 0.5 } = bannerData;
+  const dragData: IDragData = { x: null, y: null, isDragging: false };
 
-    const messageBox = document.createElement('div');
-    messageBox.className = 'banner-message';
-    messageBox.innerHTML = html`
-      <div class="spinner">
-        <div class="bounce1"></div>
-        <div class="bounce2"></div>
-        <div class="bounce3"></div>
-      </div>
-    `;
+  const messageBox = document.createElement('div');
+  messageBox.className = 'banner-message';
+  messageBox.innerHTML = html`
+    <div class="spinner">
+      <div class="bounce1"></div>
+      <div class="bounce2"></div>
+      <div class="bounce3"></div>
+    </div>
+  `;
 
-    const img = document.createElement('img');
-    img.className = 'banner-image full-width';
-    img.style.objectPosition = `${banner_x * 100}% ${banner_y * 100}%`;
-    img.draggable = false;
-    img.onload = () => {
-      this.wrapper.addClass('loaded');
-    }
-    img.onerror = () => {
-      messageBox.innerHTML = `<p>Error loading banner image! Is the <code>${this.plugin.getSettingValue('frontmatterField')}</code> field valid?</p>`;
-      this.wrapper.addClass('error');
-    }
-
-    // Only enable banner drag adjustment in non-embed views
-    if (!this.isEmbed) {
-      img.onmousedown = (e) => this.handleDragStart(e);
-      img.onmousemove = (e) => this.handleDragMove(e);
-      contentEl.parentElement.onmouseup = () => this.handleDragEnd(img);
-
-      if (allowMobileDrag) {
-        img.ontouchstart = (e) => this.handleDragStart(e);
-        img.ontouchmove = (e) => this.handleDragMove(e);
-        contentEl.parentElement.ontouchend = () => this.handleDragEnd(img);
-      }
-    }
-
-    img.src = this.parseSource(src);
-    this.containerEl.append(messageBox, img);
-    this.wrapper.prepend(this.containerEl);
+  const img = document.createElement('img');
+  const clampedX = clamp(x, 0, 1);
+  const clampedY = clamp(y, 0, 1);
+  img.className = 'banner-image full-width';
+  img.style.objectPosition = `${clampedX * 100}% ${clampedY * 100}%`;
+  img.draggable = false;
+  img.onload = () => wrapper.addClass('loaded');
+  img.onerror = () => {
+    messageBox.innerHTML = `<p>Error loading banner image! Is the <code>${plugin.getSettingValue('frontmatterField')}</code> field valid?</p>`;
+    wrapper.addClass('error');
   }
 
-  handleDragStart(e: MouseEvent | TouchEvent) {
-    this.prevPos = this.getMousePos(e, this.containerEl);
-    this.isDragging = true;
-  }
+  // Only allow dragging for banners not within embed views
+  if (!isEmbed) {
+    img.onmousedown = (e) => handleDragStart(e, dragData);
+    img.onmousemove = (e) => handleDragMove(e, dragData);
+    contentEl.parentElement.onmouseup = () => handleDragEnd(img, filepath, dragData, plugin);
 
-  handleDragMove(e: MouseEvent | TouchEvent) {
-    const img = e.target as HTMLImageElement;
-    const wrapper = img.parentElement;
-
-    // Only continue if dragging
-    if (!this.isDragging) { return }
-
-    // Get delta of mouse drag
-    const currentPos = this.getMousePos(e, this.containerEl);
-    const delta = {
-      x: (currentPos.x - this.prevPos.x) / wrapper.clientWidth * 100,
-      y: (currentPos.y - this.prevPos.y) / wrapper.clientHeight * 100
-    };
-    this.prevPos = currentPos;
-
-
-    // Only adjust the relevant scroll axis
-    const [x, y] = img.style.objectPosition
-      .split(' ')
-      .map(n => parseFloat(n));
-
-    if ((img.naturalHeight / img.naturalWidth) >= (wrapper.clientHeight / wrapper.clientWidth)) {
-      const newY = clamp(y - delta.y, 0, 100);
-      img.style.objectPosition = `${x}% ${newY}%`;
-    } else {
-      const newX = clamp(x - delta.x, 0, 100);
-      img.style.objectPosition = `${newX}% ${y}%`;
+    // Only allow dragging in mobile when desired from settings
+    if (plugin.settings.allowMobileDrag) {
+      img.ontouchstart = (e) => handleDragStart(e, dragData);
+      img.ontouchmove = (e) => handleDragMove(e, dragData);
+      contentEl.parentElement.ontouchend = () => handleDragEnd(img, filepath, dragData, plugin);
     }
   }
 
-  async handleDragEnd(img: HTMLImageElement) {
-    const { sourcePath } = this.ctx;
+  img.src = parseSource(plugin, src, filepath);
 
-    // Only continue when finishing drag
-    if (!this.isDragging) { return }
-    this.isDragging = false;
+  return [messageBox, img];
+};
 
-    // Update banner data
-    const [x, y] = img.style.objectPosition
-      .split(' ')
-      .map(n => Math.round(parseFloat(n) * 1000) / 100000);
-
-    await this.metaManager.upsertBannerData(sourcePath, { banner_x: x, banner_y: y });
-  }
-
-  // Helper to get the URL path to the image file
-  parseSource(src: string): string {
-    // Internal embed link format - "[[<link>]]"
-    if (/^\!\[\[.+\]\]$/.test(src)) {
-      const link = src.slice(3, -2)
-      const file = this.metadataCache.getFirstLinkpathDest(link, this.ctx.sourcePath);
-      return file ? this.vault.getResourcePath(file) : link;
-    }
-
-    // Absolute paths (legacy), relative paths (legacy), & URLs
-    const path = src.startsWith('/') ? src.slice(1) : src;
-    const file = this.vault.getAbstractFileByPath(path);
-    return (file instanceof TFile) ? this.vault.getResourcePath(file) : src;
-  }
-
-  // Helper to get mouse position
-  getMousePos(e: MouseEvent | TouchEvent, div: HTMLElement): XY {
-    const { pageX, pageY } = (e instanceof MouseEvent) ? e : e.targetTouches[0];
-    return { x: pageX - div.offsetTop, y: pageY - div.offsetLeft };
-  }
-}
+export default getBannerElements;
