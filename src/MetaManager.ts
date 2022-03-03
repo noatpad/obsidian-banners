@@ -23,7 +23,7 @@ export default class MetaManager {
 
   // Get banner metadata from frontmatter
   getBannerData(frontmatter: Record<string, string>): IBannerMetadata {
-    if (!frontmatter) { return }
+    if (!frontmatter) { return null }
 
     const fieldName = this.plugin.getSettingValue('frontmatterField');
     const {
@@ -48,14 +48,14 @@ export default class MetaManager {
     // Get banner data based on the designated prefix for banner data fields
     const { src, x, y, icon } = data;
     const baseName = this.plugin.getSettingValue('frontmatterField');
-    const trueFields = {
+    const trueFields: Partial<IBannerMetadata> = {
       ...(src && { [baseName]: src }),
       ...(x && { [`${baseName}_x`]: x }),
       ...(y && { [`${baseName}_y`]: y }),
       ...(icon && { [`${baseName}_icon`]: icon })
     };
 
-    const fieldsArr = Object.entries(trueFields);
+    const fieldsArr = Object.keys(trueFields) as [keyof IBannerMetadata];
     const content = await this.vault.read(file);
     const lines = content.split('\n');
     const hasYaml = lines[0] === '---';
@@ -65,8 +65,8 @@ export default class MetaManager {
       for (i = 1; i < lines.length && fieldsArr.length; i++) {
         if (lines[i].startsWith('---')) { break }
 
-        const [key] = lines[i].split(': ');
-        const targetIndex = fieldsArr.findIndex(([k]) => k === key);
+        const [key] = lines[i].split(': ') as [keyof IBannerMetadata, string];
+        const targetIndex = fieldsArr.indexOf(key);
         if (targetIndex === -1) { continue }
 
         lines[i] = `${key}: ${trueFields[key]}`;
@@ -75,19 +75,20 @@ export default class MetaManager {
 
       // Create new fields with their value if it didn't exist before
       if (fieldsArr.length) {
-        lines.splice(i, 0, ...this.formatYamlFields(fieldsArr));
+        lines.splice(i, 0, ...this.formatYamlFields(fieldsArr, trueFields));
         i += fieldsArr.length;
       }
 
       // Add YAML ending separator if needed
-      if (lines[i] !== '---') {
+      const end = lines.indexOf('---', i);
+      if (end === -1) {
         lines.splice(i, 0, '---');
       }
     } else {
       // Create frontmatter structure if none is found
       lines.unshift(stripIndents`
         ---
-        ${this.formatYamlFields(fieldsArr).join('\n')}
+        ${this.formatYamlFields(fieldsArr, trueFields).join('\n')}
         ---
       `);
     }
@@ -139,8 +140,9 @@ export default class MetaManager {
   }
 
   // Format into valid YAML fields
-  formatYamlFields(fields: any[]): string[] {
-    return fields.sort((a, b) => a[0].localeCompare(b[0]))
+  formatYamlFields(fields: [keyof IBannerMetadata], data: Partial<IBannerMetadata>): string[] {
+    return fields.map((key) => [key, `${data[key]}`])
+      .sort((a, b) => a[0].localeCompare(b[0]))
       .map(([key, val]) => `${key}: ${val}`);
   }
 

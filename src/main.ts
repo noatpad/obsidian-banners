@@ -24,13 +24,13 @@ export default class BannersPlugin extends Plugin {
     this.workspace = this.app.workspace;
     this.vault = this.app.vault;
     this.metadataCache = this.app.metadataCache;
-
     this.metaManager = new MetaManager(this);
 
     this.loadProcessor();
     this.loadExtension();
     this.loadCommands();
     this.loadStyles();
+    this.loadFilePrecheck();
 
     this.addSettingTab(new SettingsTab(this));
 
@@ -108,6 +108,14 @@ export default class BannersPlugin extends Plugin {
     document.documentElement.style.setProperty('--banner-preview-embed-height', `${this.getSettingValue('previewEmbedHeight')}px`);
   }
 
+  loadFilePrecheck() {
+    // Wrap banner source in quotes to prevent errors later in CM6 extension
+    const files = this.workspace.getLeavesOfType('markdown').map((leaf) => (leaf.view as MarkdownView).file);
+    const uniqueFiles = [...new Set(files)];
+    uniqueFiles.forEach((file) => this.lintBannerSource(file));
+    this.workspace.on('file-open', (file) => this.lintBannerSource(file));
+  }
+
   unloadBanners() {
     this.workspace.containerEl
       .querySelectorAll('.obsidian-banner-wrapper')
@@ -151,6 +159,14 @@ export default class BannersPlugin extends Plugin {
   removeBanner(file: TFile) {
     this.metaManager.removeBannerData(file);
     new Notice(`Removed banner for ${file.name}!`);
+  }
+
+  // Helper to wrap banner source in quotes if not already (Patch for previous versions)
+  lintBannerSource(file: TFile) {
+    const { frontmatter } = this.metadataCache.getFileCache(file);
+    const src = this.metaManager.getBannerData(frontmatter)?.src;
+    if (!src || (src.startsWith('"') && src.endsWith('"'))) { return }
+    this.metaManager.upsertBannerData(file, { src: `"${src}"` });
   }
 
   // Helper to get setting value (or the default setting value if not set)

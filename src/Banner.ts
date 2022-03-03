@@ -74,7 +74,7 @@ const parseSource = (plugin: BannersPlugin, src: string, filepath: string): stri
     return file ? plugin.vault.getResourcePath(file) : link;
   }
 
-  // Absolute paths (legacy), relative paths (legacy), & URLs
+  // Absolute paths, relative paths, & URLs
   const path = src.startsWith('/') ? src.slice(1) : src;
   const file = plugin.vault.getAbstractFileByPath(path);
   return (file instanceof TFile) ? plugin.vault.getResourcePath(file) : src;
