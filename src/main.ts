@@ -149,8 +149,7 @@ export default class BannersPlugin extends Plugin {
       new Notice('Your clipboard didn\'t had a valid URL! Please try again (and check the console if you wanna debug).');
       console.error({ clipboard });
     } else {
-      // TODO: Enclose the value in quotes
-      await this.metaManager.upsertBannerData(file, { src: clipboard });
+      await this.metaManager.upsertBannerData(file, { src: `"${clipboard}"` });
       new Notice('Pasted a new banner!');
     }
   }
