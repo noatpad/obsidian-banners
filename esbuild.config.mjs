@@ -10,9 +10,19 @@ const banner =
 Please visit the repository linked to view the source code:
 https://github.com/noatpad/obsidian-banners
 */`;
-
 const prod = process.argv[2] === 'prod';
 const outdir = prod ? 'dist/' : process.env.DEVDIR;
+
+if (!outdir) {
+	console.error(
+		'\x1b[41m\x1b[1m', 'ERROR!', '\x1b[0m ', 'Output directory not set!',
+		'\n',
+		'Make sure that you have an .env file in the root of your project directory.',
+		'\n',
+		'Assure that the `DEVDIR` variable is set to the path of your test vault, like `<path to vault>/.obsidian/plugins/banners`'
+	);
+	process.exit(1);
+}
 
 const renameStyleFile = () => fs.renameSync(`${outdir}/main.css`, `${outdir}/styles.css`);
 
