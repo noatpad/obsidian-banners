@@ -10,8 +10,6 @@ export interface IBannerMetadata {
   icon: string
 }
 
-const HAS_YAML_REGEX = /^-{3}(\n|\r|\r\n)((.*)(\n|\r|\r\n))*-{3}/;
-
 export default class MetaManager {
   plugin: BannersPlugin;
   metadata: MetadataCache
@@ -24,7 +22,7 @@ export default class MetaManager {
   }
 
   // Get banner metadata from frontmatter
-  getBannerData(frontmatter: {[key: string]: string}): IBannerMetadata {
+  getBannerData(frontmatter: Record<string, string>): IBannerMetadata {
     if (!frontmatter) { return }
 
     const fieldName = this.plugin.getSettingValue('frontmatterField');
@@ -59,13 +57,14 @@ export default class MetaManager {
 
     const fieldsArr = Object.entries(trueFields);
     const content = await this.vault.read(file);
-    const hasYaml = HAS_YAML_REGEX.test(content);
     const lines = content.split('\n');
+    const hasYaml = lines[0] === '---';
     if (hasYaml) {
       // Search through the frontmatter to update target fields if they exist
-      const start = lines.indexOf('---');
-      const end = lines.indexOf('---', start + 1);
-      for (let i = start + 1; i < end && fieldsArr.length; i++) {
+      let i;
+      for (i = 1; i < lines.length && fieldsArr.length; i++) {
+        if (lines[i].startsWith('---')) { break }
+
         const [key] = lines[i].split(': ');
         const targetIndex = fieldsArr.findIndex(([k]) => k === key);
         if (targetIndex === -1) { continue }
@@ -76,13 +75,19 @@ export default class MetaManager {
 
       // Create new fields with their value if it didn't exist before
       if (fieldsArr.length) {
-        lines.splice(end, 0, this.formatYamlFields(fieldsArr));
+        lines.splice(i, 0, ...this.formatYamlFields(fieldsArr));
+        i += fieldsArr.length;
+      }
+
+      // Add YAML ending separator if needed
+      if (lines[i] !== '---') {
+        lines.splice(i, 0, '---');
       }
     } else {
       // Create frontmatter structure if none is found
       lines.unshift(stripIndents`
         ---
-        ${this.formatYamlFields(fieldsArr)}
+        ${this.formatYamlFields(fieldsArr).join('\n')}
         ---
       `);
     }
@@ -134,10 +139,9 @@ export default class MetaManager {
   }
 
   // Format into valid YAML fields
-  formatYamlFields(fields: any[]): string {
+  formatYamlFields(fields: any[]): string[] {
     return fields.sort((a, b) => a[0].localeCompare(b[0]))
-      .map(([key, val]) => `${key}: ${val}`)
-      .join('\n');
+      .map(([key, val]) => `${key}: ${val}`);
   }
 
   // Helper to get all banner fields

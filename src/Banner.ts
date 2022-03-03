@@ -53,6 +53,7 @@ const handleDragMove = (e: MTEvent, dragData: IDragData) => {
 };
 
 // Finish image drag
+// TODO: Determine if drag is horizontal or vertical, and upsert accordingly
 const handleDragEnd = async (img: HTMLImageElement, path: string, dragData: IDragData, plugin: BannersPlugin) => {
   if (!dragData.isDragging) { return }
   dragData.isDragging = false;
