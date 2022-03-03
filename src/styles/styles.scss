@@ -66,7 +66,6 @@
 }
 
 // Banner Icon
-// TODO: Fix spacing in internal/preview embeds
 .obsidian-banner-icon {
   display: flex;
   position: relative;
@@ -79,7 +78,8 @@
   .icon-box {
     display: inline-flex;
     align-items: center;
-    padding: 4px;
+    height: calc(1em + 12px);
+    padding: 6px;
     border-radius: 4px;
     transition: ease 0.2s background;
 
@@ -124,22 +124,31 @@
   margin-top: calc(var(--banner-height) - 20px);
 
   .obsidian-banner-icon {
-    &.v-above { margin-top: calc(-1em - 8px); }
+    &.v-above { margin-top: calc(-1em - 12px); }
     &.v-center,
-    &.v-custom { margin-top: calc(-0.5em - 4px); }
-    &.v-below { margin-top: 0; }
+    &.v-custom { margin-top: calc(-0.5em - 6px); }
+    &.v-below {
+      padding-top: 12px;
+      margin-top: 0;
+    }
   }
 }
 
 // [Live Preview] Banner + Icon
 .cm6-banner-icon.has-banner {
   &.v-above {
-    margin-top: calc(-1em - 22px);
+    margin-top: calc(-1em - 26px);
     margin-bottom: 14px;
   }
   &.v-center,
-  &.v-custom { margin-top: calc(-0.5em - 18px); }
+  &.v-custom { margin-top: calc(-0.5em - 20px); }
   &.v-below { margin-top: 0; }
+
+  &.v-center,
+  &.v-custom,
+  &.v-below {
+    margin-bottom: 7px;
+  }
 }
 
 // Local Image Modal
