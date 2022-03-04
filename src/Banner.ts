@@ -5,7 +5,7 @@ import { html } from 'common-tags';
 import BannersPlugin from './main';
 import { IBannerMetadata } from './MetaManager';
 
-interface IDragData { x: number, y: number, isDragging: boolean };
+interface IDragData { x: number, y: number, isDragging: boolean, vertical: boolean };
 type MTEvent = MouseEvent | TouchEvent;
 
 // Get current mouse position of event
@@ -17,9 +17,11 @@ const getMousePos = (e: MTEvent) => {
 // Begin image drag
 const handleDragStart = (e: MTEvent, dragData: IDragData) => {
   const { x, y } = getMousePos(e);
+  const { clientHeight, clientWidth, naturalHeight, naturalWidth } = e.target as HTMLImageElement;
   dragData.x = x;
   dragData.y = y;
   dragData.isDragging = true;
+  dragData.vertical = (naturalHeight / naturalWidth >= clientHeight / clientWidth);
 };
 
 // Dragging image
@@ -42,8 +44,7 @@ const handleDragMove = (e: MTEvent, dragData: IDragData) => {
     .map(n => parseFloat(n));
 
   // Update object position styling depending on banner dimensions
-  const { clientHeight, clientWidth, naturalHeight, naturalWidth } = img;
-  if (naturalHeight / naturalWidth >= clientHeight / clientWidth) {
+  if (dragData.vertical) {
     const newY = clamp(currentY + delta.y, 0, 100);
     img.style.objectPosition = `${currentX}% ${newY}%`;
   } else {
@@ -53,7 +54,6 @@ const handleDragMove = (e: MTEvent, dragData: IDragData) => {
 };
 
 // Finish image drag
-// TODO: Determine if drag is horizontal or vertical, and upsert accordingly
 const handleDragEnd = async (img: HTMLImageElement, path: string, dragData: IDragData, plugin: BannersPlugin) => {
   if (!dragData.isDragging) { return }
   dragData.isDragging = false;
@@ -62,7 +62,7 @@ const handleDragEnd = async (img: HTMLImageElement, path: string, dragData: IDra
   const [x, y] = img.style.objectPosition
     .split(' ')
     .map(n => Math.round(parseFloat(n) * 1000) / 100000);
-  await plugin.metaManager.upsertBannerData(path, { x, y });
+  await plugin.metaManager.upsertBannerData(path, dragData.vertical ? { y } : { x });
 };
 
 // Helper to get the URL path to the image file
@@ -89,7 +89,7 @@ const getBannerElements = (
   isEmbed: boolean = false
 ): HTMLElement[] => {
   const { src, x = 0.5, y = 0.5 } = bannerData;
-  const dragData: IDragData = { x: null, y: null, isDragging: false };
+  const dragData: IDragData = { x: null, y: null, isDragging: false, vertical: true };
 
   const messageBox = document.createElement('div');
   messageBox.className = 'banner-message';
