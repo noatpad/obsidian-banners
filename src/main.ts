@@ -56,22 +56,12 @@ export default class BannersPlugin extends Plugin {
 
   loadCommands() {
     this.addCommand({
-      id: 'banners:addLocal',
+      id: 'banners:addBanner',
       name: 'Add/Change banner with local image',
       checkCallback: (checking) => {
         const file = this.workspace.getActiveFile();
         if (checking) { return !!file }
         new LocalImageModal(this, file).open();
-      }
-    });
-
-    this.addCommand({
-      id: 'banners:addClipboard',
-      name: 'Add/Change banner from clipboard',
-      checkCallback: (checking) => {
-        const file = this.workspace.getActiveFile();
-        if (checking) { return !!file }
-        this.pasteBanner(file);
       }
     });
 
@@ -83,7 +73,17 @@ export default class BannersPlugin extends Plugin {
         if (checking) { return !!file }
         new IconModal(this, file).open();
       }
-    })
+    });
+
+    this.addCommand({
+      id: 'banners:pasteBanner',
+      name: 'Paste banner from clipboard',
+      checkCallback: (checking) => {
+        const file = this.workspace.getActiveFile();
+        if (checking) { return !!file }
+        this.pasteBanner(file);
+      }
+    });
 
     this.addCommand({
       id: 'banners:removeBanner',
@@ -109,7 +109,7 @@ export default class BannersPlugin extends Plugin {
         }
         this.removeIcon(file);
       }
-    })
+    });
   }
 
   loadStyles() {
