@@ -33,12 +33,11 @@ const getExtension = (plugin: BannersPlugin) => ViewPlugin.fromClass(class imple
     // Get all frontmatter fields to later process
     const frontmatter: {[key: string]: string} = {};
     let key;
-    // TODO: Improve this by only grabbing the first value token
     while (cursor.nextSibling() && cursor.name !== YAML_SEPARATOR_TOKEN) {
       const { from, to, name } = cursor;
       if (name === YAML_DEF_NAME_TOKEN) {
         key = view.state.sliceDoc(from, to);
-      } else if (YAML_DEF_VAL_TOKENS.includes(name)) {
+      } else if (YAML_DEF_VAL_TOKENS.includes(name) && !frontmatter[key]) {
         const isStr = name === YAML_DEF_STR_TOKEN;
         const val = view.state.sliceDoc(from + (isStr ? 1 : 0), to - (isStr ? 1 : 0));
         frontmatter[key] = val;
