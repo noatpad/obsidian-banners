@@ -9,6 +9,7 @@ export interface IBannerMetadata {
   y: number,
   icon: string
 }
+type BannerMetadataKey = keyof IBannerMetadata;
 
 export default class MetaManager {
   plugin: BannersPlugin;
@@ -38,6 +39,13 @@ export default class MetaManager {
       y: y !== undefined ? parseFloat(y) : undefined,
       icon
     };
+  }
+
+  // Get banner metadata from a given file
+  getBannerDataFromFile(file: TFile): IBannerMetadata {
+    if (!file) { return null }
+    const { frontmatter } = this.metadata.getFileCache(file);
+    return this.getBannerData(frontmatter);
   }
 
   // Upsert banner data into a file's frontmatter
@@ -98,32 +106,38 @@ export default class MetaManager {
   }
 
   // Remove banner data from a file's frontmatter
-  async removeBannerData(fileOrPath: TFile | string, fields: string[] = this.getAllBannerFields()) {
-    const file = (fileOrPath instanceof TFile) ? fileOrPath : this.getFileByPath(fileOrPath);
-    if (!file) { return }
+  // async removeBannerData(fileOrPath: TFile | string, fields: string[] = this.getAllBannerFields()) {
+  async removeBannerData(file: TFile, targetFields: BannerMetadataKey[] = ['src', 'x', 'y', 'icon']) {
+    // Get the true fields to target
+    const srcIndex = targetFields.indexOf('src');
+    if (srcIndex > -1) {
+      targetFields.splice(srcIndex, 1, '' as BannerMetadataKey);
+    }
+    const base = this.plugin.getSettingValue('frontmatterField');
+    const trueFields = targetFields.map(suffix => `${base}${suffix ? `_${suffix}` : ''}`);
 
     // If there's no (relevant) YAML to remove, stop here
-    const { frontmatter } = this.metadata.getFileCache(file);
-    const frontmatterKeys = Object.keys(frontmatter ?? {});
-    if (!frontmatter || !fields.some(f => frontmatterKeys.includes(f))) { return }
+    const { frontmatter: { position, ...fields }} = this.metadata.getFileCache(file);
+    const frontmatterKeys = Object.keys(fields ?? {});
+    if (!fields || !trueFields.some(f => frontmatterKeys.includes(f))) { return }
 
     const content = await this.vault.read(file);
     const lines = content.split('\n');
-    const { line: start } = frontmatter.position.start;
-    let { line: end } = frontmatter.position.end;
+    const { line: start } = position.start;
+    let { line: end } = position.end;
 
     // Determine if the entire YAML should be removed or only part of it
-    if (frontmatterKeys.every(f => fields.includes(f) || f === 'position')) {
+    if (frontmatterKeys.every(f => trueFields.includes(f))) {
       lines.splice(start, end - start + 1);
     } else {
-      // Iterate through each YAML field-line and remove the desired ones
-      for (let i = start + 1; i < end && fields.length; i++) {
+      // Iterate through each YAML field-line `and remove the desired ones
+      for (let i = start + 1; i < end && trueFields.length; i++) {
         const [key] = lines[i].split(': ');
-        const fieldIndex = fields.indexOf(key);
+        const fieldIndex = trueFields.indexOf(key);
         if (fieldIndex === -1) { continue }
 
         lines.splice(i, 1);
-        fields.splice(fieldIndex, 1);
+        trueFields.splice(fieldIndex, 1);
         i--;
         end--;
       }
@@ -144,11 +158,5 @@ export default class MetaManager {
     return fields.map((key) => [key, `${data[key]}`])
       .sort((a, b) => a[0].localeCompare(b[0]))
       .map(([key, val]) => `${key}: ${val}`);
-  }
-
-  // Helper to get all banner fields
- private getAllBannerFields(): string[] {
-    const base = this.plugin.getSettingValue('frontmatterField');
-    return ['', '_x', '_y', '_icon'].map(suffix => `${base}${suffix}`);
   }
 }

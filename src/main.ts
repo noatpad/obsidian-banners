@@ -86,20 +86,30 @@ export default class BannersPlugin extends Plugin {
     })
 
     this.addCommand({
-      id: 'banners:remove',
+      id: 'banners:removeBanner',
       name: 'Remove banner',
       checkCallback: (checking) => {
         const file = this.workspace.getActiveFile();
         if (checking) {
           if (!file) { return false }
-          const { frontmatter } = this.metadataCache.getFileCache(file);
-          return !!this.metaManager.getBannerData(frontmatter)?.src;
+          return !!this.metaManager.getBannerDataFromFile(file)?.src;
         }
         this.removeBanner(file);
       }
     });
 
-    // TODO: Add remove icon command
+    this.addCommand({
+      id: 'banners:removeIcon',
+      name: 'Remove icon',
+      checkCallback: (checking) => {
+        const file = this.workspace.getActiveFile();
+        if (checking) {
+          if (!file) { return false }
+          return !!this.metaManager.getBannerDataFromFile(file)?.icon;
+        }
+        this.removeIcon(file);
+      }
+    })
   }
 
   loadStyles() {
@@ -156,8 +166,14 @@ export default class BannersPlugin extends Plugin {
 
   // Helper to remove banner
   removeBanner(file: TFile) {
-    this.metaManager.removeBannerData(file);
+    this.metaManager.removeBannerData(file, ['src', 'x', 'y']);
     new Notice(`Removed banner for ${file.name}!`);
+  }
+
+  // Helper to remove banner icon
+  removeIcon(file: TFile) {
+    this.metaManager.removeBannerData(file, ['icon']);
+    new Notice(`Removed banner icon for ${file.name}!`);
   }
 
   // Helper to wrap banner source in quotes if not already (Patch for previous versions)

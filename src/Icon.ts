@@ -16,7 +16,6 @@ const getIconTransform = (plugin: BannersPlugin): string => {
   return h !== dH || v !== dV ? `translate(${h}, ${v})` : null;
 }
 
-// TODO: Fix spacing with text/regular emoji
 const getIconElement = (plugin: BannersPlugin, icon: string, file: TFile): HTMLElement => {
   const box = document.createElement('span');
   box.addClass('icon-box');
