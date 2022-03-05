@@ -177,8 +177,13 @@ export default class BannersPlugin extends Plugin {
   // Helper to toggle banner position locking
   async toggleBannerLock(file: TFile) {
     const { lock = false } = this.metaManager.getBannerDataFromFile(file);
-    await this.metaManager.upsertBannerData(file, { lock: !lock });
-    new Notice(lock ? `Unlocked banner position for ${file.name}!` : `Locked banner position for ${file.name}!`);
+    if (lock) {
+      await this.metaManager.removeBannerData(file, ['lock']);
+      new Notice(`Unlocked banner position for ${file.name}!`);
+    } else {
+      await this.metaManager.upsertBannerData(file, { lock: true });
+      new Notice(`Locked banner position for ${file.name}!`);
+    }
   }
 
   // Helper to remove banner
