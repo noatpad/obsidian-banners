@@ -4,9 +4,15 @@ import { html } from 'common-tags';
 
 import BannersPlugin from './main';
 import { IBannerMetadata } from './MetaManager';
+import { BannerDragModOption } from './Settings';
 
-interface IDragData { x: number, y: number, isDragging: boolean, vertical: boolean };
 type MTEvent = MouseEvent | TouchEvent;
+interface IDragData {
+  x: number,
+  y: number,
+  isDragging: boolean,
+  vertical: boolean
+};
 
 // Get current mouse position of event
 const getMousePos = (e: MTEvent) => {
@@ -14,8 +20,9 @@ const getMousePos = (e: MTEvent) => {
   return { x: clientX, y: clientY };
 };
 
-// Begin image drag
-const handleDragStart = (e: MTEvent, dragData: IDragData) => {
+// Begin image drag (and if a modifier key is required, only do so when pressed)
+const handleDragStart = (e: MTEvent, dragData: IDragData, modRequired: BannerDragModOption) => {
+  if (!isModPressed(e, modRequired) && e instanceof MouseEvent) { return }
   const { x, y } = getMousePos(e);
   const { clientHeight, clientWidth, naturalHeight, naturalWidth } = e.target as HTMLImageElement;
   dragData.x = x;
@@ -65,6 +72,17 @@ const handleDragEnd = async (img: HTMLImageElement, path: string, dragData: IDra
   await plugin.metaManager.upsertBannerData(path, dragData.vertical ? { y } : { x });
 };
 
+// Helper to check if a modifier key is being pressed down during an event
+const isModPressed = (e: MTEvent, mod: BannerDragModOption) => {
+  switch (mod) {
+    case 'alt': return e.altKey;
+    case 'ctrl': return e.ctrlKey;
+    case 'meta': return e.metaKey;
+    case 'shift': return e.shiftKey;
+    default: return true;
+  }
+}
+
 // Helper to get the URL path to the image file
 const parseSource = (plugin: BannersPlugin, src: string, filepath: string): string => {
   // Internal embed link format - "![[<link>]]"
@@ -88,6 +106,7 @@ const getBannerElements = (
   contentEl: HTMLElement,
   isEmbed: boolean = false
 ): HTMLElement[] => {
+  const { bannerDragModifier } = plugin.settings;
   const { src, x = 0.5, y = 0.5, lock } = bannerData;
   const dragData: IDragData = { x: null, y: null, isDragging: false, vertical: true };
   const canDrag = !isEmbed && !lock;
@@ -116,14 +135,15 @@ const getBannerElements = (
 
   // Only allow dragging for banners not within embed views
   if (canDrag) {
+    // TODO: Only add this class when the correct modifier key is being held down
     img.addClass('draggable');
-    img.onmousedown = (e) => handleDragStart(e, dragData);
+    img.onmousedown = (e) => handleDragStart(e, dragData, bannerDragModifier);
     img.onmousemove = (e) => handleDragMove(e, dragData);
     contentEl.parentElement.onmouseup = () => handleDragEnd(img, filepath, dragData, plugin);
 
     // Only allow dragging in mobile when desired from settings
     if (plugin.settings.allowMobileDrag) {
-      img.ontouchstart = (e) => handleDragStart(e, dragData);
+      img.ontouchstart = (e) => handleDragStart(e, dragData, bannerDragModifier);
       img.ontouchmove = (e) => handleDragMove(e, dragData);
       contentEl.parentElement.ontouchend = () => handleDragEnd(img, filepath, dragData, plugin);
     }

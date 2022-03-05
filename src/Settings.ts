@@ -3,8 +3,10 @@ import { PluginSettingTab, Setting } from 'obsidian';
 import BannersPlugin from './main';
 
 type StyleOption = 'solid' | 'gradient';
+export type BannerDragModOption = 'none' | 'shift' | 'ctrl' | 'alt' | 'meta';
 type IconHorizontalOption = 'left' | 'center' | 'right' | 'custom';
 type IconVerticalOption = 'above' | 'center' | 'below' | 'custom';
+
 export interface ISettingsOptions {
   height: number,
   style: StyleOption,
@@ -13,6 +15,7 @@ export interface ISettingsOptions {
   showInPreviewEmbed: boolean,
   previewEmbedHeight: number,
   frontmatterField: string,
+  bannerDragModifier: BannerDragModOption,
   iconHorizontalAlignment: IconHorizontalOption,
   iconHorizontalTransform: string,
   iconVerticalAlignment: IconVerticalOption,
@@ -32,6 +35,7 @@ export const INITIAL_SETTINGS: ISettingsOptions = {
   showInPreviewEmbed: true,
   previewEmbedHeight: null,
   frontmatterField: null,
+  bannerDragModifier: 'none',
   iconHorizontalAlignment: 'left',
   iconHorizontalTransform: null,
   iconVerticalAlignment: 'center',
@@ -58,6 +62,14 @@ const STYLE_OPTIONS: Record<StyleOption, string> = {
   solid: 'Solid',
   gradient: 'Gradient'
 };
+
+const BANNER_DRAG_MOD_OPTIONS: Record<BannerDragModOption, string> = {
+  none: 'None',
+  shift: '⇧ Shift',
+  ctrl: '⌃ Ctrl',
+  alt: '⎇ Alt',
+  meta: '⌘ Meta'
+}
 
 const ICON_HORIZONTAL_OPTIONS: Record<IconHorizontalOption, string> = {
   left: 'Left',
@@ -101,6 +113,7 @@ export default class SettingsTab extends PluginSettingTab {
       showInPreviewEmbed,
       previewEmbedHeight,
       frontmatterField,
+      bannerDragModifier,
       iconHorizontalAlignment,
       iconHorizontalTransform,
       iconVerticalAlignment,
@@ -208,6 +221,21 @@ export default class SettingsTab extends PluginSettingTab {
         .setValue(frontmatterField)
         .setPlaceholder(DEFAULT_VALUES.frontmatterField)
         .onChange(async (val) => this.saveSettings({ frontmatterField: val || null }, { refreshViews: true })));
+
+    // Banner drag modifier key
+    new Setting(containerEl)
+      .setName('Banner drag modifier key')
+      .setDesc(createFragment(frag => {
+        frag.appendText('Set a modifier key that must be used to drag a banner.');
+        frag.createEl('br');
+        frag.appendText('For example, setting it to ');
+        frag.createEl('b', { text: '⇧ Shift' });
+        frag.appendText(' means that you must hold down Shift as you drag the banner to move it. This can help to avoid accidental banner shifts.');
+      }))
+      .addDropdown(dropdown => dropdown
+        .addOptions(BANNER_DRAG_MOD_OPTIONS)
+        .setValue(bannerDragModifier)
+        .onChange(async (val: BannerDragModOption) => this.saveSettings({ bannerDragModifier: val }, { refreshViews: true })));
 
     this.createHeader(
       'Banner Icons',
