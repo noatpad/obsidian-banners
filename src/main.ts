@@ -178,7 +178,7 @@ export default class BannersPlugin extends Plugin {
   async toggleBannerLock(file: TFile) {
     const { lock = false } = this.metaManager.getBannerDataFromFile(file);
     if (lock) {
-      await this.metaManager.removeBannerData(file, ['lock']);
+      await this.metaManager.removeBannerData(file, 'lock');
       new Notice(`Unlocked banner position for ${file.name}!`);
     } else {
       await this.metaManager.upsertBannerData(file, { lock: true });
@@ -194,7 +194,7 @@ export default class BannersPlugin extends Plugin {
 
   // Helper to remove banner icon
   async removeIcon(file: TFile) {
-    await this.metaManager.removeBannerData(file, ['icon']);
+    await this.metaManager.removeBannerData(file, 'icon');
     new Notice(`Removed banner icon for ${file.name}!`);
   }
 

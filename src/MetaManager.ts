@@ -110,7 +110,9 @@ export default class MetaManager {
   }
 
   // Remove banner data from a file's frontmatter
-  async removeBannerData(file: TFile, targetFields: BannerMetadataKey[] = ['src', 'x', 'y', 'icon', 'lock']) {
+  async removeBannerData(file: TFile, targetFieldOrFields: BannerMetadataKey | BannerMetadataKey[] = ['src', 'x', 'y', 'icon', 'lock']) {
+    const targetFields = Array.isArray(targetFieldOrFields) ? targetFieldOrFields : [targetFieldOrFields];
+
     // Get the true fields to target
     const srcIndex = targetFields.indexOf('src');
     if (srcIndex > -1) {
