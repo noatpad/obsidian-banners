@@ -175,31 +175,31 @@ export default class BannersPlugin extends Plugin {
   }
 
   // Helper to toggle banner position locking
-  toggleBannerLock(file: TFile) {
+  async toggleBannerLock(file: TFile) {
     const { lock = false } = this.metaManager.getBannerDataFromFile(file);
-    this.metaManager.upsertBannerData(file, { lock: !lock });
+    await this.metaManager.upsertBannerData(file, { lock: !lock });
     new Notice(lock ? `Unlocked banner position for ${file.name}!` : `Locked banner position for ${file.name}!`);
   }
 
   // Helper to remove banner
-  removeBanner(file: TFile) {
-    this.metaManager.removeBannerData(file, ['src', 'x', 'y', 'lock']);
+  async removeBanner(file: TFile) {
+    await this.metaManager.removeBannerData(file, ['src', 'x', 'y', 'lock']);
     new Notice(`Removed banner for ${file.name}!`);
   }
 
   // Helper to remove banner icon
-  removeIcon(file: TFile) {
-    this.metaManager.removeBannerData(file, ['icon']);
+  async removeIcon(file: TFile) {
+    await this.metaManager.removeBannerData(file, ['icon']);
     new Notice(`Removed banner icon for ${file.name}!`);
   }
 
   // Helper to wrap banner source in quotes if not already (Patch for previous versions)
-  lintBannerSource(file: TFile) {
+  async lintBannerSource(file: TFile) {
     if (!file) { return }
     const { frontmatter } = this.metadataCache.getFileCache(file);
     const src = this.metaManager.getBannerData(frontmatter)?.src;
     if (!src || (src.startsWith('"') && src.endsWith('"'))) { return }
-    this.metaManager.upsertBannerData(file, { src: `"${src}"` });
+    await this.metaManager.upsertBannerData(file, { src: `"${src}"` });
   }
 
   // Helper to get setting value (or the default setting value if not set)
