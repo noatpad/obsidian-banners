@@ -235,7 +235,10 @@ export default class SettingsTab extends PluginSettingTab {
       .addDropdown(dropdown => dropdown
         .addOptions(BANNER_DRAG_MOD_OPTIONS)
         .setValue(bannerDragModifier)
-        .onChange(async (val: BannerDragModOption) => this.saveSettings({ bannerDragModifier: val }, { refreshViews: true })));
+        .onChange(async (val: BannerDragModOption) => {
+          await this.saveSettings({ bannerDragModifier: val }, { refreshViews: true });
+          this.plugin.isDragModHeld(new KeyboardEvent(''));   // Emulate a keyboard event to reset listener
+        }));
 
     this.createHeader(
       'Banner Icons',

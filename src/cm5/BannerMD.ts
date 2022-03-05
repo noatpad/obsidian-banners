@@ -11,6 +11,7 @@ export default class Banner extends MarkdownRenderChild {
   ctx: IMPPCPlus;
   bannerData: IBannerMetadata
   isEmbed: boolean;
+  removeListeners: () => void;
 
   constructor(
     plugin: BannersPlugin,
@@ -25,6 +26,7 @@ export default class Banner extends MarkdownRenderChild {
     this.ctx = ctx;
     this.bannerData = bannerData;
     this.isEmbed = isEmbed;
+    this.removeListeners = () => {};
   }
 
   onload() {
@@ -34,8 +36,13 @@ export default class Banner extends MarkdownRenderChild {
     this.wrapper.addClass('obsidian-banner-wrapper');
     this.containerEl.addClass('obsidian-banner', 'cm5-banner', style);
 
-    const elements = getBannerElements(this.plugin, this.bannerData, sourcePath, this.containerEl, contentEl, this.isEmbed);
+    const { elements, removeListeners } = getBannerElements(this.plugin, this.bannerData, sourcePath, this.containerEl, contentEl, this.isEmbed);
     this.containerEl.append(...elements);
+    this.removeListeners = removeListeners;
     this.wrapper.prepend(this.containerEl);
+  }
+
+  onunload(): void {
+    this.removeListeners();
   }
 }

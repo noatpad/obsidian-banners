@@ -4,7 +4,6 @@ import { html } from 'common-tags';
 
 import BannersPlugin from './main';
 import { IBannerMetadata } from './MetaManager';
-import { BannerDragModOption } from './Settings';
 
 type MTEvent = MouseEvent | TouchEvent;
 interface IDragData {
@@ -14,6 +13,13 @@ interface IDragData {
   vertical: boolean
 };
 
+interface IElementListener<E extends keyof HTMLElementEventMap> {
+  target: HTMLElement,
+  ev: E,
+  func: (listener: HTMLElementEventMap[E]) => any
+};
+type ElListener = IElementListener<keyof HTMLElementEventMap>;
+
 // Get current mouse position of event
 const getMousePos = (e: MTEvent) => {
   const { clientX, clientY } = (e instanceof MouseEvent) ? e : e.targetTouches[0];
@@ -21,8 +27,8 @@ const getMousePos = (e: MTEvent) => {
 };
 
 // Begin image drag (and if a modifier key is required, only do so when pressed)
-const handleDragStart = (e: MTEvent, dragData: IDragData, modRequired: BannerDragModOption) => {
-  if (!isModPressed(e, modRequired) && e instanceof MouseEvent) { return }
+const handleDragStart = (e: MTEvent, dragData: IDragData, isModHeld: boolean) => {
+  if (!isModHeld && e instanceof MouseEvent) { return }
   const { x, y } = getMousePos(e);
   const { clientHeight, clientWidth, naturalHeight, naturalWidth } = e.target as HTMLImageElement;
   dragData.x = x;
@@ -72,17 +78,6 @@ const handleDragEnd = async (img: HTMLImageElement, path: string, dragData: IDra
   await plugin.metaManager.upsertBannerData(path, dragData.vertical ? { y } : { x });
 };
 
-// Helper to check if a modifier key is being pressed down during an event
-const isModPressed = (e: MTEvent, mod: BannerDragModOption) => {
-  switch (mod) {
-    case 'alt': return e.altKey;
-    case 'ctrl': return e.ctrlKey;
-    case 'meta': return e.metaKey;
-    case 'shift': return e.shiftKey;
-    default: return true;
-  }
-}
-
 // Helper to get the URL path to the image file
 const parseSource = (plugin: BannersPlugin, src: string, filepath: string): string => {
   // Internal embed link format - "![[<link>]]"
@@ -105,8 +100,7 @@ const getBannerElements = (
   wrapper: HTMLElement,
   contentEl: HTMLElement,
   isEmbed: boolean = false
-): HTMLElement[] => {
-  const { bannerDragModifier } = plugin.settings;
+): { elements: HTMLElement[], removeListeners: () => void } => {
   const { src, x = 0.5, y = 0.5, lock } = bannerData;
   const dragData: IDragData = { x: null, y: null, isDragging: false, vertical: true };
   const canDrag = !isEmbed && !lock;
@@ -134,24 +128,37 @@ const getBannerElements = (
   }
 
   // Only allow dragging for banners not within embed views
+  const listeners: ElListener[] = [];
   if (canDrag) {
-    // TODO: Only add this class when the correct modifier key is being held down
-    img.addClass('draggable');
-    img.onmousedown = (e) => handleDragStart(e, dragData, bannerDragModifier);
-    img.onmousemove = (e) => handleDragMove(e, dragData);
-    contentEl.parentElement.onmouseup = () => handleDragEnd(img, filepath, dragData, plugin);
+    img.classList.toggle('draggable', plugin.holdingDragModKey);
+
+    // Image drag
+    const imgDragStart = (e: MTEvent) => handleDragStart(e, dragData, plugin.holdingDragModKey);
+    const imgDragMove = (e: MTEvent) => handleDragMove(e, dragData);
+    const imgDragEnd = () => handleDragEnd(img, filepath, dragData, plugin);
+    listeners.push(
+      { target: img, ev: 'mousedown', func: imgDragStart },
+      { target: img, ev: 'mousemove', func: imgDragMove },
+      { target: contentEl.parentElement, ev: 'mouseup', func: imgDragEnd }
+    );
 
     // Only allow dragging in mobile when desired from settings
     if (plugin.settings.allowMobileDrag) {
-      img.ontouchstart = (e) => handleDragStart(e, dragData, bannerDragModifier);
-      img.ontouchmove = (e) => handleDragMove(e, dragData);
-      contentEl.parentElement.ontouchend = () => handleDragEnd(img, filepath, dragData, plugin);
+      listeners.push(
+        { target: img, ev: 'touchstart', func: imgDragStart },
+        { target: img, ev: 'touchmove', func: imgDragMove },
+        { target: contentEl.parentElement, ev: 'touchend', func: imgDragEnd }
+      );
     }
   }
 
+  // Prepare listeners
+  listeners.forEach(({ target, ev, func }) => target.addEventListener(ev, func));
+  const removeListeners = () => listeners.forEach(({ target, ev, func }) => target.removeEventListener(ev, func));
+
   img.src = parseSource(plugin, src, filepath);
 
-  return [messageBox, img];
+  return { elements: [messageBox, img], removeListeners };
 };
 
 export default getBannerElements;

@@ -9,6 +9,7 @@ export default class BannerWidget extends WidgetType {
   bannerData: IBannerMetadata;
   filepath: string;
   contentEl: HTMLElement;
+  removeListeners: () => void;
 
   constructor(plugin: BannersPlugin, bannerData: IBannerMetadata, filepath: string, contentEl: HTMLElement) {
     super();
@@ -16,6 +17,7 @@ export default class BannerWidget extends WidgetType {
     this.bannerData = bannerData;
     this.filepath = filepath;
     this.contentEl = contentEl;
+    this.removeListeners = () => {};
   }
 
   eq(widget: BannerWidget): boolean {
@@ -34,8 +36,13 @@ export default class BannerWidget extends WidgetType {
     const wrap = document.createElement('div');
     wrap.addClass('obsidian-banner', 'cm6-banner', plugin.settings.style);
 
-    const bannerElements = getBannerElements(plugin, bannerData, filepath, wrap, contentEl);
-    wrap.append(...bannerElements);
+    const { elements, removeListeners } = getBannerElements(plugin, bannerData, filepath, wrap, contentEl);
+    wrap.append(...elements);
+    this.removeListeners = removeListeners;
     return wrap;
+  }
+
+  destroy() {
+    this.removeListeners();
   }
 }

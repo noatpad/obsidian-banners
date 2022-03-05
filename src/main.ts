@@ -14,8 +14,9 @@ export default class BannersPlugin extends Plugin {
   workspace: Workspace;
   vault: Vault;
   metadataCache: MetadataCache
-
   metaManager: MetaManager;
+
+  holdingDragModKey: boolean
 
   async onload() {
     console.log('Loading Banners...');
@@ -25,7 +26,9 @@ export default class BannersPlugin extends Plugin {
     this.vault = this.app.vault;
     this.metadataCache = this.app.metadataCache;
     this.metaManager = new MetaManager(this);
+    this.holdingDragModKey = false;
 
+    this.loadListeners();
     this.loadProcessor();
     this.loadExtension();
     this.loadCommands();
@@ -40,8 +43,14 @@ export default class BannersPlugin extends Plugin {
   async onunload() {
     console.log('Unloading Banners...');
 
+    this.unloadListeners();
     this.unloadBanners();
     this.unloadStyles();
+  }
+
+  loadListeners() {
+    window.addEventListener('keydown', this.isDragModHeld);
+    window.addEventListener('keyup', this.isDragModHeld);
   }
 
   loadProcessor() {
@@ -136,6 +145,11 @@ export default class BannersPlugin extends Plugin {
     this.workspace.on('file-open', (file) => this.lintBannerSource(file));
   }
 
+  unloadListeners() {
+    window.removeEventListener('keydown', this.isDragModHeld);
+    window.removeEventListener('keyup', this.isDragModHeld);
+  }
+
   unloadBanners() {
     this.workspace.containerEl
       .querySelectorAll('.obsidian-banner-wrapper')
@@ -150,6 +164,20 @@ export default class BannersPlugin extends Plugin {
     document.documentElement.style.removeProperty('--banner-height');
     document.documentElement.style.removeProperty('--banner-internal-embed-height');
     document.documentElement.style.removeProperty('--banner-preview-embed-height');
+  }
+
+  // Helper to check if the drag modifier key is being held down or not, if specified
+  isDragModHeld = (e: KeyboardEvent) => {
+    let ret: boolean;
+    switch (this.settings.bannerDragModifier) {
+      case 'alt': ret = e.altKey; break;
+      case 'ctrl': ret = e.ctrlKey; break;
+      case 'meta': ret = e.metaKey; break;
+      case 'shift': ret = e.shiftKey; break;
+      default: ret = true;
+    }
+    this.holdingDragModKey = ret;
+    document.querySelectorAll('.banner-image').forEach((el) => el.toggleClass('draggable', ret));
   }
 
   // Helper to refresh markdown views
