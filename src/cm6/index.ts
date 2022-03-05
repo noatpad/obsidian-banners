@@ -10,7 +10,7 @@ import IconWidget from './IconWidget';
 const YAML_SEPARATOR_TOKEN = 'def_hmd-frontmatter';
 const YAML_DEF_NAME_TOKEN = 'atom_hmd-frontmatter';
 const YAML_DEF_STR_TOKEN = 'hmd-frontmatter_string';
-const YAML_DEF_VAL_TOKENS = ['hmd-frontmatter', 'hmd-frontmatter_number', YAML_DEF_STR_TOKEN];
+const YAML_DEF_VAL_TOKENS = ['hmd-frontmatter', 'hmd-frontmatter_number', 'hmd-frontmatter_keyword', YAML_DEF_STR_TOKEN];
 
 const getExtension = (plugin: BannersPlugin) => ViewPlugin.fromClass(class implements PluginValue {
   decor: DecorationSet;
@@ -35,6 +35,7 @@ const getExtension = (plugin: BannersPlugin) => ViewPlugin.fromClass(class imple
     let key;
     while (cursor.nextSibling() && cursor.name !== YAML_SEPARATOR_TOKEN) {
       const { from, to, name } = cursor;
+      // console.log(name, view.state.sliceDoc(from, to));
       if (name === YAML_DEF_NAME_TOKEN) {
         key = view.state.sliceDoc(from, to);
       } else if (YAML_DEF_VAL_TOKENS.includes(name) && !frontmatter[key]) {

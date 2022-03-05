@@ -88,8 +88,9 @@ const getBannerElements = (
   contentEl: HTMLElement,
   isEmbed: boolean = false
 ): HTMLElement[] => {
-  const { src, x = 0.5, y = 0.5 } = bannerData;
+  const { src, x = 0.5, y = 0.5, lock } = bannerData;
   const dragData: IDragData = { x: null, y: null, isDragging: false, vertical: true };
+  const canDrag = !isEmbed && !lock;
 
   const messageBox = document.createElement('div');
   messageBox.className = 'banner-message';
@@ -114,7 +115,8 @@ const getBannerElements = (
   }
 
   // Only allow dragging for banners not within embed views
-  if (!isEmbed) {
+  if (canDrag) {
+    img.addClass('draggable');
     img.onmousedown = (e) => handleDragStart(e, dragData);
     img.onmousemove = (e) => handleDragMove(e, dragData);
     contentEl.parentElement.onmouseup = () => handleDragEnd(img, filepath, dragData, plugin);

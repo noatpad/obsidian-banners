@@ -9,6 +9,7 @@
   height: var(--banner-height);
   width: 100%;
   overflow: hidden;
+  user-select: none;
 
   &.gradient:not(.error) {
     mask-image: linear-gradient(to bottom, black 50%, transparent);
@@ -38,13 +39,11 @@
     position: relative;
     object-fit: cover;
     max-width: none;
-    cursor: grab;
     height: 100%;
     width: 100%;
 
-    &:active {
-      cursor: grabbing;
-    }
+    &.draggable { cursor: grab; }
+    &.draggable:active { cursor: grabbing; }
   }
 
   // Hide loading indicator when image has loaded
@@ -66,10 +65,12 @@
 }
 
 // Banner Icon
+// TODO: Fix not being able to click the banner below the icon because of this div
 .obsidian-banner-icon {
   display: flex;
   position: relative;
   font-size: 4em;
+  user-select: none;
 
   &.h-left { justify-content: flex-start; }
   &.h-center { justify-content: center; }

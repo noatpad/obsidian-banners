@@ -7,7 +7,8 @@ export interface IBannerMetadata {
   src: string,
   x: number,
   y: number,
-  icon: string
+  icon: string,
+  lock: boolean
 }
 type BannerMetadataKey = keyof IBannerMetadata;
 
@@ -23,7 +24,7 @@ export default class MetaManager {
   }
 
   // Get banner metadata from frontmatter
-  getBannerData(frontmatter: Record<string, string>): IBannerMetadata {
+  getBannerData(frontmatter: Record<string, string|number|boolean>): IBannerMetadata {
     if (!frontmatter) { return null }
 
     const fieldName = this.plugin.getSettingValue('frontmatterField');
@@ -31,13 +32,15 @@ export default class MetaManager {
       [fieldName]: src,
       [`${fieldName}_x`]: x,
       [`${fieldName}_y`]: y,
-      [`${fieldName}_icon`]: icon
+      [`${fieldName}_icon`]: icon,
+      [`${fieldName}_lock`]: lock
     } = frontmatter;
     return {
-      src,
-      x: x !== undefined ? parseFloat(x) : undefined,
-      y: y !== undefined ? parseFloat(y) : undefined,
-      icon
+      src: src as string,
+      x: (typeof x === 'number') ? x : parseFloat(x as string),
+      y: (typeof y === 'number') ? y : parseFloat(y as string),
+      icon: icon as string,
+      lock: (typeof lock === 'boolean') ? lock : lock === 'true'
     };
   }
 
@@ -54,13 +57,14 @@ export default class MetaManager {
     if (!file) { return }
 
     // Get banner data based on the designated prefix for banner data fields
-    const { src, x, y, icon } = data;
+    const { src, x, y, icon, lock } = data;
     const baseName = this.plugin.getSettingValue('frontmatterField');
     const trueFields: Partial<IBannerMetadata> = {
-      ...(src && { [baseName]: src }),
-      ...(x && { [`${baseName}_x`]: x }),
-      ...(y && { [`${baseName}_y`]: y }),
-      ...(icon && { [`${baseName}_icon`]: icon })
+      ...(src !== undefined && { [baseName]: src }),
+      ...(x !== undefined && { [`${baseName}_x`]: x }),
+      ...(y !== undefined && { [`${baseName}_y`]: y }),
+      ...(icon !== undefined && { [`${baseName}_icon`]: icon }),
+      ...(lock !== undefined && { [`${baseName}_lock`]: lock })
     };
 
     const fieldsArr = Object.keys(trueFields) as [keyof IBannerMetadata];
@@ -106,8 +110,7 @@ export default class MetaManager {
   }
 
   // Remove banner data from a file's frontmatter
-  // async removeBannerData(fileOrPath: TFile | string, fields: string[] = this.getAllBannerFields()) {
-  async removeBannerData(file: TFile, targetFields: BannerMetadataKey[] = ['src', 'x', 'y', 'icon']) {
+  async removeBannerData(file: TFile, targetFields: BannerMetadataKey[] = ['src', 'x', 'y', 'icon', 'lock']) {
     // Get the true fields to target
     const srcIndex = targetFields.indexOf('src');
     if (srcIndex > -1) {

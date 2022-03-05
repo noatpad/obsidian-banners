@@ -86,6 +86,16 @@ export default class BannersPlugin extends Plugin {
     });
 
     this.addCommand({
+      id: 'banners:lockBanner',
+      name: 'Lock/Unlock banner position',
+      checkCallback: (checking) => {
+        const file = this.workspace.getActiveFile();
+        if (checking) { return !!file }
+        this.toggleBannerLock(file);
+      }
+    })
+
+    this.addCommand({
       id: 'banners:removeBanner',
       name: 'Remove banner',
       checkCallback: (checking) => {
@@ -164,9 +174,16 @@ export default class BannersPlugin extends Plugin {
     }
   }
 
+  // Helper to toggle banner position locking
+  toggleBannerLock(file: TFile) {
+    const { lock = false } = this.metaManager.getBannerDataFromFile(file);
+    this.metaManager.upsertBannerData(file, { lock: !lock });
+    new Notice(lock ? `Unlocked banner position for ${file.name}!` : `Locked banner position for ${file.name}!`);
+  }
+
   // Helper to remove banner
   removeBanner(file: TFile) {
-    this.metaManager.removeBannerData(file, ['src', 'x', 'y']);
+    this.metaManager.removeBannerData(file, ['src', 'x', 'y', 'lock']);
     new Notice(`Removed banner for ${file.name}!`);
   }
 

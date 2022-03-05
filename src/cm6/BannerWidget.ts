@@ -19,11 +19,12 @@ export default class BannerWidget extends WidgetType {
   }
 
   eq(widget: BannerWidget): boolean {
-    const { bannerData, filepath } = widget;
+    const { bannerData: { src, x, y, lock }, filepath } = widget;
     return (
-      this.bannerData.src === bannerData.src &&
-      this.bannerData.x === bannerData.x &&
-      this.bannerData.y === bannerData.y &&
+      this.bannerData.src === src &&
+      this.bannerData.x === x &&
+      this.bannerData.y === y &&
+      this.bannerData.lock === lock &&
       this.filepath === filepath
     );
   }
