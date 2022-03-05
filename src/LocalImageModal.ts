@@ -1,8 +1,9 @@
 import { html } from 'common-tags';
-import { FuzzyMatch, FuzzySuggestModal, MetadataCache, TFile, Vault } from 'obsidian';
+import { FuzzyMatch, FuzzySuggestModal, MetadataCache, Notice, TFile, TFolder, Vault } from 'obsidian';
 
 import BannersPlugin from './main';
 import MetaManager from './MetaManager';
+import { DEFAULT_VALUES } from './Settings';
 
 const IMAGE_FORMATS = ['apng', 'avif', 'gif', 'jpg', 'jpeg', 'jpe', 'jif', 'jfif', 'png', 'webp'];
 
@@ -27,11 +28,25 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
   }
 
   getItems(): TFile[] {
-    const folder = this.plugin.getSettingValue('bannersFolder');
-    return this.vault.getFiles().filter(f => (
-      IMAGE_FORMATS.includes(f.extension) &&
-      (!folder || f.parent.path.contains(folder))
-    ));
+    const path = this.plugin.getSettingValue('bannersFolder');
+
+    // Search all files if using the default setting
+    if (path === DEFAULT_VALUES.bannersFolder) {
+      return this.vault.getFiles().filter(f => IMAGE_FORMATS.includes(f.extension));
+    }
+
+    // Only search the designated folder when specified
+    const folder = this.vault.getAbstractFileByPath(path);
+    if (!folder || !(folder instanceof TFolder)) {
+      new Notice(createFragment(frag => {
+        frag.appendText('ERROR! Make sure that you set the ');
+        frag.createEl('b', { text: 'Banners folder' });
+        frag.appendText(' to a valid folder in the settings.');
+      }), 7000);
+      this.close();
+      return [];
+    }
+    return this.getImagesInFolder(folder);
   }
 
   getItemText(item: TFile): string {
@@ -57,5 +72,19 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
   async onChooseItem(image: TFile) {
     const link = this.metadataCache.fileToLinktext(image, this.targetFile.path);
     await this.metaManager.upsertBannerData(this.targetFile, { src: `"![[${link}]]"` });
+  }
+
+  private getImagesInFolder(folder: TFolder): TFile[] {
+    const files: TFile[] = [];
+    folder.children.forEach((abFile) => {
+      if (abFile instanceof TFolder) {
+        files.push(...this.getImagesInFolder(folder));
+      }
+      const file = abFile as TFile;
+      if (IMAGE_FORMATS.includes(file.extension)) {
+        files.push(file);
+      }
+    });
+    return files;
   }
 }
