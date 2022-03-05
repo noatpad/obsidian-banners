@@ -178,6 +178,7 @@ export default class BannersPlugin extends Plugin {
 
   // Helper to wrap banner source in quotes if not already (Patch for previous versions)
   lintBannerSource(file: TFile) {
+    if (!file) { return }
     const { frontmatter } = this.metadataCache.getFileCache(file);
     const src = this.metaManager.getBannerData(frontmatter)?.src;
     if (!src || (src.startsWith('"') && src.endsWith('"'))) { return }
