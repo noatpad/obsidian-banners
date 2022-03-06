@@ -65,11 +65,11 @@
 }
 
 // Banner Icon
-// TODO: Fix not being able to click the banner below the icon because of this div
 .obsidian-banner-icon {
   display: flex;
   position: relative;
   font-size: 4em;
+  pointer-events: none;
   user-select: none;
 
   &.h-left { justify-content: flex-start; }
@@ -82,6 +82,7 @@
     height: calc(1em + 12px);
     padding: 6px;
     border-radius: 4px;
+    pointer-events: initial;
     transition: ease 0.2s background;
 
     &:hover {
