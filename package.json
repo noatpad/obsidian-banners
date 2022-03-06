@@ -36,7 +36,7 @@
     "@types/validator": "^13.6.3",
     "builtin-modules": "^3.2.0",
     "dotenv": "^16.0.0",
-    "esbuild": "^0.14.23",
+    "esbuild": "^0.13.0",
     "esbuild-sass-plugin": "^2.2.4",
     "sass": "^1.37.5",
     "tslib": "^2.2.0",

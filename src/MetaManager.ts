@@ -35,7 +35,6 @@ export default class MetaManager {
       [`${fieldName}_icon`]: icon,
       [`${fieldName}_lock`]: lock
     } = frontmatter;
-    console.log(x, y);
     return {
       src: src as string,
       x: this.parseBannerPos(x as string | number),
