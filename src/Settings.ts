@@ -237,7 +237,7 @@ export default class SettingsTab extends PluginSettingTab {
         .setValue(bannerDragModifier)
         .onChange(async (val: BannerDragModOption) => {
           await this.saveSettings({ bannerDragModifier: val }, { refreshViews: true });
-          this.plugin.isDragModHeld(new KeyboardEvent(''));   // Emulate a keyboard event to reset listener
+          this.plugin.toggleBannerCursor(val === 'none');
         }));
 
     this.createHeader(

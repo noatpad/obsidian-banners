@@ -130,7 +130,7 @@ const getBannerElements = (
   // Only allow dragging for banners not within embed views
   const listeners: ElListener[] = [];
   if (canDrag) {
-    img.classList.toggle('draggable', plugin.holdingDragModKey);
+    img.classList.toggle('draggable', plugin.settings.bannerDragModifier === 'none' || plugin.holdingDragModKey);
 
     // Image drag
     const imgDragStart = (e: MTEvent) => handleDragStart(e, dragData, plugin.holdingDragModKey);

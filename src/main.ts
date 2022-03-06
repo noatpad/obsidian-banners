@@ -28,12 +28,12 @@ export default class BannersPlugin extends Plugin {
     this.metaManager = new MetaManager(this);
     this.holdingDragModKey = false;
 
-    this.loadListeners();
     this.loadProcessor();
     this.loadExtension();
     this.loadCommands();
     this.loadStyles();
-    this.loadFilePrecheck();
+    this.loadListeners();
+    this.loadPrecheck();
 
     this.addSettingTab(new SettingsTab(this));
 
@@ -49,6 +49,7 @@ export default class BannersPlugin extends Plugin {
   }
 
   loadListeners() {
+    // Banner cursor toggling
     window.addEventListener('keydown', this.isDragModHeld);
     window.addEventListener('keyup', this.isDragModHeld);
   }
@@ -137,7 +138,7 @@ export default class BannersPlugin extends Plugin {
     document.documentElement.style.setProperty('--banner-preview-embed-height', `${this.getSettingValue('previewEmbedHeight')}px`);
   }
 
-  loadFilePrecheck() {
+  loadPrecheck() {
     // Wrap banner source in quotes to prevent errors later in CM6 extension
     const files = this.workspace.getLeavesOfType('markdown').map((leaf) => (leaf.view as MarkdownView).file);
     const uniqueFiles = [...new Set(files)];
@@ -177,7 +178,7 @@ export default class BannersPlugin extends Plugin {
       default: ret = true;
     }
     this.holdingDragModKey = ret;
-    document.querySelectorAll('.banner-image').forEach((el) => el.toggleClass('draggable', ret));
+    this.toggleBannerCursor(ret);
   }
 
   // Helper to refresh markdown views
@@ -200,6 +201,12 @@ export default class BannersPlugin extends Plugin {
       await this.metaManager.upsertBannerData(file, { src: `"${clipboard}"` });
       new Notice('Pasted a new banner!');
     }
+  }
+
+  // Helper to apply grab cursor for banner images
+  // TODO: This feels fragile, perhaps look for a better way
+  toggleBannerCursor = (val: boolean) => {
+    document.querySelectorAll('.banner-image').forEach((el) => el.toggleClass('draggable', val));
   }
 
   // Helper to toggle banner position locking
