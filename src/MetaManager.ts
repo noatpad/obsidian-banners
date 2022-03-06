@@ -35,10 +35,11 @@ export default class MetaManager {
       [`${fieldName}_icon`]: icon,
       [`${fieldName}_lock`]: lock
     } = frontmatter;
+    console.log(x, y);
     return {
       src: src as string,
-      x: (typeof x === 'number') ? x : parseFloat(x as string),
-      y: (typeof y === 'number') ? y : parseFloat(y as string),
+      x: this.parseBannerPos(x as string | number),
+      y: this.parseBannerPos(y as string | number),
       icon: icon as string,
       lock: (typeof lock === 'boolean') ? lock : lock === 'true'
     };
@@ -156,6 +157,13 @@ export default class MetaManager {
   getFileByPath(path: string): TFile {
     const file = this.vault.getAbstractFileByPath(path);
     return (file instanceof TFile) ? file : null;
+  }
+
+  // Parse banner position
+  parseBannerPos(val: number|string): number {
+    if (val === undefined) { return undefined }
+    if (typeof val === 'number') { return val }
+    return parseFloat(val);
   }
 
   // Format into valid YAML fields
