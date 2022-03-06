@@ -2,8 +2,8 @@ import { MarkdownView, MetadataCache, Notice, Plugin, TFile, Vault, Workspace } 
 import isURL from 'validator/lib/isURL';
 
 import './styles/styles.scss';
-import IconModal from './IconModal';
-import LocalImageModal from './LocalImageModal';
+import IconModal from './modals/IconModal';
+import LocalImageModal from './modals/LocalImageModal';
 import MetaManager from './MetaManager';
 import SettingsTab, { INITIAL_SETTINGS, DEFAULT_VALUES, ISettingsOptions } from './Settings';
 import getPostProcessor from './cm5';

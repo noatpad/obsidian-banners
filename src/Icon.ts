@@ -3,7 +3,7 @@ import emojiRegex from 'emoji-regex';
 import twemoji from 'twemoji';
 
 import BannersPlugin from './main';
-import IconModal from './IconModal';
+import IconModal from './modals/IconModal';
 import { DEFAULT_VALUES } from './Settings';
 
 const EMOJI_REGEX = emojiRegex();

@@ -2,8 +2,8 @@ import { FuzzyMatch, FuzzySuggestModal, TFile } from 'obsidian';
 import twemoji from 'twemoji';
 import allEmojis from 'node-emoji/lib/emoji.json';
 
-import BannersPlugin from './main';
-import MetaManager from './MetaManager';
+import BannersPlugin from '../main';
+import MetaManager from '../MetaManager';
 
 interface IEmojiPair { code: string, emoji: string }
 

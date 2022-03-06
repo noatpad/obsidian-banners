@@ -1,9 +1,9 @@
 import { html } from 'common-tags';
 import { FuzzyMatch, FuzzySuggestModal, MetadataCache, Notice, TFile, TFolder, Vault } from 'obsidian';
 
-import BannersPlugin from './main';
-import MetaManager from './MetaManager';
-import { DEFAULT_VALUES } from './Settings';
+import BannersPlugin from '../main';
+import MetaManager from '../MetaManager';
+import { DEFAULT_VALUES } from '../Settings';
 
 const IMAGE_FORMATS = ['apng', 'avif', 'gif', 'jpg', 'jpeg', 'jpe', 'jif', 'jfif', 'png', 'webp'];
 
