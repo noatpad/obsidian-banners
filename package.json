@@ -1,6 +1,6 @@
 {
   "name": "obsidian-banners",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "An Obsidian plugin to display banner images in your notes",
   "author": "Danny Hernandez",
   "main": "src/main.ts",
