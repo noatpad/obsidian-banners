@@ -26,6 +26,13 @@ if (!outdir) {
 
 const renameStyleFile = () => fs.renameSync(`${outdir}/main.css`, `${outdir}/styles.css`);
 
+const moveStaticFiles = () => {
+	fs.copyFileSync('./manifest.json', `${outdir}/manifest.json`);
+	try {
+		fs.writeFileSync(`${outdir}/.hotreload`, '', { flag: 'wx' });
+	} catch {}
+}
+
 esbuild.build({
   banner: { js: banner },
   entryPoints: ['src/main.ts'],
@@ -63,6 +70,7 @@ esbuild.build({
 		onRebuild(error) {
 			if (error) { return }
 			renameStyleFile();
+			moveStaticFiles();
 		}
 	},
   minify: prod,
