@@ -1,9 +1,12 @@
 import { FuzzyMatch, FuzzySuggestModal, TFile } from 'obsidian';
+import emojiRegex from 'emoji-regex';
 import twemoji from 'twemoji';
 import allEmojis from 'node-emoji/lib/emoji.json';
 
 import BannersPlugin from '../main';
 import MetaManager from '../MetaManager';
+
+const EMOJI_REGEX = emojiRegex();
 
 interface IEmojiPair { code: string, emoji: string }
 
@@ -31,6 +34,14 @@ export default class IconModal extends FuzzySuggestModal<IEmojiPair> {
 
   getItemText(item: IEmojiPair): string {
     return item.code;
+  }
+
+  getSuggestions(query: string): FuzzyMatch<IEmojiPair>[] {
+    const emojiText = query.match(EMOJI_REGEX)?.join('');
+    return emojiText ? ([{
+      item: { code: 'Paste inputted emoji(s)', emoji: emojiText },
+      match: { score: 1, matches: [] }
+    }]) : super.getSuggestions(query);
   }
 
   renderSuggestion(match: FuzzyMatch<IEmojiPair>, el: HTMLElement): void {
