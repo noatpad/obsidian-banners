@@ -158,6 +158,7 @@ const getBannerElements = (
 
   img.src = parseSource(plugin, src, filepath);
 
+  // TODO: Return array instead
   return { elements: [messageBox, img], removeListeners };
 };
 

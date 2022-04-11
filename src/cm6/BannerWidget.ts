@@ -3,31 +3,35 @@ import { WidgetType } from "@codemirror/view";
 import BannersPlugin from "../main";
 import { IBannerMetadata } from "../MetaManager";
 import getBannerElements from "../Banner";
+import { PartialSettings } from "../Settings";
 
 export default class BannerWidget extends WidgetType {
   plugin: BannersPlugin;
   bannerData: IBannerMetadata;
   filepath: string;
   contentEl: HTMLElement;
+  settingsFacet: PartialSettings;
   removeListeners: () => void;
 
-  constructor(plugin: BannersPlugin, bannerData: IBannerMetadata, filepath: string, contentEl: HTMLElement) {
+  constructor(plugin: BannersPlugin, bannerData: IBannerMetadata, filepath: string, contentEl: HTMLElement, settingsFacet: PartialSettings) {
     super();
     this.plugin = plugin;
     this.bannerData = bannerData;
     this.filepath = filepath;
     this.contentEl = contentEl;
+    this.settingsFacet = settingsFacet;
     this.removeListeners = () => {};
   }
 
   eq(widget: BannerWidget): boolean {
-    const { bannerData: { src, x, y, lock }, filepath } = widget;
+    const { bannerData: { src, x, y, lock }, filepath, settingsFacet } = widget;
     return (
       this.bannerData.src === src &&
       this.bannerData.x === x &&
       this.bannerData.y === y &&
       this.bannerData.lock === lock &&
-      this.filepath === filepath
+      this.filepath === filepath &&
+      this.settingsFacet === settingsFacet
     );
   }
 

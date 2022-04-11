@@ -161,8 +161,7 @@ export default class MetaManager {
   // Parse banner position
   parseBannerPos(val: number|string): number {
     if (val === undefined) { return undefined }
-    if (typeof val === 'number') { return val }
-    return parseFloat(val);
+    return (typeof val === 'number') ? val : parseFloat(val);
   }
 
   // Format into valid YAML fields

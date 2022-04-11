@@ -26,6 +26,12 @@ export interface ISettingsOptions {
   bannersFolder: string,
   allowMobileDrag: boolean
 };
+export type PartialSettings = Partial<ISettingsOptions>;
+
+interface ISaveOptions {
+  reloadSettings?: boolean,
+  refreshViews?: boolean
+}
 
 export const INITIAL_SETTINGS: ISettingsOptions = {
   height: null,
@@ -47,7 +53,7 @@ export const INITIAL_SETTINGS: ISettingsOptions = {
   allowMobileDrag: false
 };
 
-export const DEFAULT_VALUES: Partial<ISettingsOptions> = {
+export const DEFAULT_VALUES: PartialSettings = {
   height: 250,
   internalEmbedHeight: 200,
   previewEmbedHeight: 120,
@@ -94,11 +100,12 @@ export default class SettingsTab extends PluginSettingTab {
     this.containerEl.addClass('banner-settings');
   }
 
-  async saveSettings(changed: Partial<ISettingsOptions>, { reloadSettings = false, refreshViews = false } = {}) {
+  async saveSettings(changed: PartialSettings, options: ISaveOptions = {}) {
     this.plugin.settings = { ...this.plugin.settings, ...changed };
     await this.plugin.saveData(this.plugin.settings);
     this.plugin.loadStyles();
 
+    const { refreshViews, reloadSettings } = options;
     if (reloadSettings) { this.display() }
     if (refreshViews) { this.plugin.refreshViews() }
   }

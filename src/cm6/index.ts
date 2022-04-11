@@ -1,32 +1,36 @@
 import { editorViewField } from 'obsidian';
 import { Decoration, DecorationSet, EditorView, PluginValue, ViewPlugin, ViewUpdate } from '@codemirror/view';
 import { syntaxTree } from '@codemirror/language';
+import { EditorState } from '@codemirror/state';
 
 import BannersPlugin from '../main';
 import BannerWidget from './BannerWidget';
 import SpacerWidget from './SpacerWidget';
 import IconWidget from './IconWidget';
+import { bannerDecorFacet, iconDecorFacet } from './helpers';
 
 const YAML_SEPARATOR_TOKEN = 'def_hmd-frontmatter';
 const YAML_DEF_NAME_TOKEN = 'atom_hmd-frontmatter';
 const YAML_DEF_STR_TOKEN = 'hmd-frontmatter_string';
 const YAML_DEF_VAL_TOKENS = ['hmd-frontmatter', 'hmd-frontmatter_number', 'hmd-frontmatter_keyword', YAML_DEF_STR_TOKEN];
 
-const getExtension = (plugin: BannersPlugin) => ViewPlugin.fromClass(class implements PluginValue {
+const getViewPlugin = (plugin: BannersPlugin) => ViewPlugin.fromClass(class BannerPV implements PluginValue {
   decor: DecorationSet;
 
   constructor(view: EditorView) {
-    this.decor = this.decorate(view);
+    this.decor = this.decorate(view.state);
   }
 
   update(_update: ViewUpdate) {
-    if (!_update.docChanged) { return }
-    this.decor = this.decorate(_update.view);
+    const { docChanged, view, state, startState } = _update;
+    if (docChanged || state.facet(bannerDecorFacet) !== startState.facet(bannerDecorFacet) || state.facet(iconDecorFacet) !== startState.facet(iconDecorFacet)) {
+      this.decor = this.decorate(view.state);
+    }
   }
 
-  decorate(view: EditorView): DecorationSet {
+  decorate(state: EditorState): DecorationSet {
     // If there's no YAML, stop here
-    const cursor =  syntaxTree(view.state).cursor();
+    const cursor =  syntaxTree(state).cursor();
     cursor.firstChild();
     if (cursor.name !== YAML_SEPARATOR_TOKEN) { return Decoration.none }
 
@@ -35,32 +39,35 @@ const getExtension = (plugin: BannersPlugin) => ViewPlugin.fromClass(class imple
     let key;
     while (cursor.nextSibling() && cursor.name !== YAML_SEPARATOR_TOKEN) {
       const { from, to, name } = cursor;
-      // console.log(name, view.state.sliceDoc(from, to));
       if (name === YAML_DEF_NAME_TOKEN) {
-        key = view.state.sliceDoc(from, to);
+        key = state.sliceDoc(from, to);
       } else if (YAML_DEF_VAL_TOKENS.includes(name) && !frontmatter[key]) {
         const isStr = name === YAML_DEF_STR_TOKEN;
-        const val = view.state.sliceDoc(from + (isStr ? 1 : 0), to - (isStr ? 1 : 0));
+        const val = state.sliceDoc(from + (isStr ? 1 : 0), to - (isStr ? 1 : 0));
         frontmatter[key] = val;
       }
     };
 
     const bannerData = plugin.metaManager.getBannerData(frontmatter);
-    const { contentEl, file } = view.state.field(editorViewField);
+    const { src, icon } = bannerData;
+    const { contentEl, file } = state.field(editorViewField);
     const widgets: Decoration[] = [];
 
     // Add banner widgets if applicable
-    if (bannerData.src) {
+    if (src) {
+      const settingsFacet = state.facet(bannerDecorFacet);
       widgets.push(
-        Decoration.widget({ widget: new BannerWidget(plugin, bannerData, file.path, contentEl) }),
+        Decoration.widget({ widget: new BannerWidget(plugin, bannerData, file.path, contentEl, settingsFacet) }),
         Decoration.widget({ widget: new SpacerWidget() })
       );
     }
 
     // Add icon widget if applicable
-    if (bannerData.icon) {
+    if (icon) {
+      const settingsFacet = state.facet(iconDecorFacet);
+      console.log(settingsFacet);
       widgets.push(
-        Decoration.widget({ widget: new IconWidget(plugin, bannerData.icon, file, !!bannerData.src) })
+        Decoration.widget({ widget: new IconWidget(plugin, icon, file, !!src, settingsFacet) })
       );
     }
 
@@ -70,4 +77,4 @@ const getExtension = (plugin: BannersPlugin) => ViewPlugin.fromClass(class imple
   decorations: v => v.decor
 });
 
-export default getExtension;
+export default getViewPlugin;

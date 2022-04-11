@@ -1,19 +1,22 @@
 import { MarkdownView, MetadataCache, Notice, Plugin, TFile, Vault, Workspace } from 'obsidian';
+import { Extension } from '@codemirror/state';
 import isURL from 'validator/lib/isURL';
 
 import './styles/styles.scss';
 import IconModal from './modals/IconModal';
 import LocalImageModal from './modals/LocalImageModal';
 import MetaManager from './MetaManager';
-import SettingsTab, { INITIAL_SETTINGS, DEFAULT_VALUES, ISettingsOptions } from './Settings';
+import SettingsTab, { INITIAL_SETTINGS, DEFAULT_VALUES, ISettingsOptions, PartialSettings } from './Settings';
 import getPostProcessor from './cm5';
-import getExtension from './cm6';
+import getViewPlugin from './cm6';
+import { bannerDecorFacet, iconDecorFacet } from './cm6/helpers';
 
 export default class BannersPlugin extends Plugin {
   settings: ISettingsOptions;
   workspace: Workspace;
   vault: Vault;
-  metadataCache: MetadataCache
+  metadataCache: MetadataCache;
+  extensions: Extension[];
   metaManager: MetaManager;
 
   holdingDragModKey: boolean
@@ -60,8 +63,12 @@ export default class BannersPlugin extends Plugin {
   }
 
   loadExtension() {
-    const extension = getExtension(this);
-    this.registerEditorExtension(extension);
+    this.extensions = [
+      bannerDecorFacet.of(this.settings),
+      iconDecorFacet.of(this.settings),
+      getViewPlugin(this)
+    ];
+    this.registerEditorExtension(this.extensions);
   }
 
   loadCommands() {
@@ -181,14 +188,21 @@ export default class BannersPlugin extends Plugin {
     this.toggleBannerCursor(ret);
   }
 
-  // Helper to refresh markdown views
+  // Helper to refresh views
   refreshViews() {
+    // Reconfigure CM6 extensions and update Live Preview views
+    this.extensions[0] = bannerDecorFacet.of(this.settings);
+    this.extensions[1] = iconDecorFacet.of(this.settings);
     this.workspace.updateOptions();
+
+    // Rerender Reading views
     this.workspace.getLeavesOfType('markdown').forEach((leaf) => {
       if (leaf.getViewState().state.mode.includes('preview')) {
         (leaf.view as MarkdownView).previewMode.rerender(true);
       }
     });
+
+    // TODO: Run isDragModHeld() to reset upon refresh
   }
 
   // Helper to use clipboard for banner
@@ -243,7 +257,7 @@ export default class BannersPlugin extends Plugin {
   }
 
   // Helper to get setting value (or the default setting value if not set)
-  getSettingValue<K extends keyof ISettingsOptions>(key: K): Partial<ISettingsOptions>[K] {
+  getSettingValue<K extends keyof ISettingsOptions>(key: K): PartialSettings[K] {
     return this.settings[key] ?? DEFAULT_VALUES[key];
   }
 }

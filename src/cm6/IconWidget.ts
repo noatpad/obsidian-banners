@@ -3,24 +3,32 @@ import { WidgetType } from '@codemirror/view';
 
 import BannersPlugin from '../main';
 import getIconElement from '../Icon';
+import { PartialSettings } from '../Settings';
 
 export default class IconWidget extends WidgetType {
   plugin: BannersPlugin;
   icon: string;
   file: TFile;
   hasBanner: boolean;
+  settingsFacet: PartialSettings;
 
-  constructor(plugin: BannersPlugin, icon: string, file: TFile, hasBanner: boolean) {
+  constructor(plugin: BannersPlugin, icon: string, file: TFile, hasBanner: boolean, settingsFacet: PartialSettings) {
     super();
     this.plugin = plugin;
     this.icon = icon;
     this.file = file;
     this.hasBanner = hasBanner;
+    this.settingsFacet = settingsFacet;
   }
 
   eq(widget: IconWidget): boolean {
-    const { icon, file, hasBanner } = widget;
-    return this.icon === icon && this.file === file && this.hasBanner === hasBanner;
+    const { icon, file, hasBanner, settingsFacet } = widget;
+    return (
+      this.icon === icon &&
+      this.file === file &&
+      this.hasBanner === hasBanner &&
+      this.settingsFacet === settingsFacet
+    );
   }
 
   toDOM(): HTMLElement {
