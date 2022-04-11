@@ -16,7 +16,7 @@ const getIconTransform = (plugin: BannersPlugin): string => {
   return h !== dH || v !== dV ? `translate(${h}, ${v})` : null;
 }
 
-const getIconElement = (plugin: BannersPlugin, icon: string, file: TFile): HTMLElement => {
+const buildIcon = (plugin: BannersPlugin, icon: string, file: TFile): HTMLElement => {
   const box = document.createElement('span');
   box.addClass('icon-box');
   box.style.transform = getIconTransform(plugin);
@@ -33,4 +33,4 @@ const getIconElement = (plugin: BannersPlugin, icon: string, file: TFile): HTMLE
   return box;
 };
 
-export default getIconElement;
+export default buildIcon;

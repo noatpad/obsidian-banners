@@ -93,7 +93,7 @@ const parseSource = (plugin: BannersPlugin, src: string, filepath: string): stri
   return (file instanceof TFile) ? plugin.vault.getResourcePath(file) : src;
 };
 
-const getBannerElements = (
+const buildBanner = (
   plugin: BannersPlugin,
   bannerData: IBannerMetadata,
   filepath: string,
@@ -161,4 +161,4 @@ const getBannerElements = (
   return [[messageBox, img], removeListeners];
 };
 
-export default getBannerElements;
+export default buildBanner;

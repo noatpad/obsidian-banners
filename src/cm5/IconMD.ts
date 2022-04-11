@@ -1,7 +1,7 @@
 import { MarkdownRenderChild, TFile } from 'obsidian';
 
 import BannersPlugin from '../main';
-import getIconElement from '../Icon';
+import buildIcon from '../Icon';
 
 export default class Icon extends MarkdownRenderChild {
   plugin: BannersPlugin;
@@ -23,7 +23,7 @@ export default class Icon extends MarkdownRenderChild {
     this.wrapper.addClass('has-banner-icon');
     this.containerEl.addClass('obsidian-banner-icon', 'cm5-banner-icon', `h-${ha}`, `v-${va}`);
 
-    const el = getIconElement(this.plugin, this.icon, this.file);
+    const el = buildIcon(this.plugin, this.icon, this.file);
     this.containerEl.append(el);
     this.wrapper.prepend(this.containerEl);
   }

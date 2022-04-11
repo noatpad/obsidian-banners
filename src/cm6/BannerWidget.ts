@@ -2,7 +2,7 @@ import { WidgetType } from "@codemirror/view";
 
 import BannersPlugin from "../main";
 import { IBannerMetadata } from "../MetaManager";
-import getBannerElements from "../Banner";
+import buildBanner from "../Banner";
 import { PartialSettings } from "../Settings";
 
 export default class BannerWidget extends WidgetType {
@@ -40,7 +40,7 @@ export default class BannerWidget extends WidgetType {
     const wrap = document.createElement('div');
     wrap.addClass('obsidian-banner', 'cm6-banner', plugin.settings.style);
 
-    const [elements, removeListeners] = getBannerElements(plugin, bannerData, filepath, wrap, contentEl);
+    const [elements, removeListeners] = buildBanner(plugin, bannerData, filepath, wrap, contentEl);
     wrap.append(...elements);
     this.removeListeners = removeListeners;
     return wrap;

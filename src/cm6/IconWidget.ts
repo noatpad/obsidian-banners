@@ -2,7 +2,7 @@ import { TFile } from 'obsidian';
 import { WidgetType } from '@codemirror/view';
 
 import BannersPlugin from '../main';
-import getIconElement from '../Icon';
+import buildIcon from '../Icon';
 import { PartialSettings } from '../Settings';
 
 export default class IconWidget extends WidgetType {
@@ -41,7 +41,7 @@ export default class IconWidget extends WidgetType {
       wrap.addClass('has-banner');
     }
 
-    const el = getIconElement(this.plugin, this.icon, this.file);
+    const el = buildIcon(this.plugin, this.icon, this.file);
     wrap.append(el);
     return wrap;
   }
