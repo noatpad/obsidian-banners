@@ -175,14 +175,18 @@ export default class BannersPlugin extends Plugin {
   }
 
   // Helper to check if the drag modifier key is being held down or not, if specified
-  isDragModHeld = (e: KeyboardEvent) => {
+  isDragModHeld = (e?: KeyboardEvent) => {
     let ret: boolean;
-    switch (this.settings.bannerDragModifier) {
-      case 'alt': ret = e.altKey; break;
-      case 'ctrl': ret = e.ctrlKey; break;
-      case 'meta': ret = e.metaKey; break;
-      case 'shift': ret = e.shiftKey; break;
-      default: ret = true;
+    if (e) {
+      switch (this.settings.bannerDragModifier) {
+        case 'alt': ret = e.altKey; break;
+        case 'ctrl': ret = e.ctrlKey; break;
+        case 'meta': ret = e.metaKey; break;
+        case 'shift': ret = e.shiftKey; break;
+        default: ret = true;
+      }
+    } else {
+      ret = (this.settings.bannerDragModifier === 'none');
     }
     this.holdingDragModKey = ret;
     this.toggleBannerCursor(ret);
@@ -202,7 +206,8 @@ export default class BannersPlugin extends Plugin {
       }
     });
 
-    // TODO: Run isDragModHeld() to reset upon refresh
+    // Refresh banners' drag state
+    this.isDragModHeld();
   }
 
   // Helper to use clipboard for banner
