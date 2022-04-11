@@ -40,7 +40,7 @@ export default class BannerWidget extends WidgetType {
     const wrap = document.createElement('div');
     wrap.addClass('obsidian-banner', 'cm6-banner', plugin.settings.style);
 
-    const { elements, removeListeners } = getBannerElements(plugin, bannerData, filepath, wrap, contentEl);
+    const [elements, removeListeners] = getBannerElements(plugin, bannerData, filepath, wrap, contentEl);
     wrap.append(...elements);
     this.removeListeners = removeListeners;
     return wrap;

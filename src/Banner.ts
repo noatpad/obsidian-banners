@@ -100,7 +100,7 @@ const getBannerElements = (
   wrapper: HTMLElement,
   contentEl: HTMLElement,
   isEmbed: boolean = false
-): { elements: HTMLElement[], removeListeners: () => void } => {
+): [HTMLElement[], () => void] => {
   const { src, x = 0.5, y = 0.5, lock } = bannerData;
   const dragData: IDragData = { x: null, y: null, isDragging: false, vertical: true };
   const canDrag = !isEmbed && !lock;
@@ -158,8 +158,7 @@ const getBannerElements = (
 
   img.src = parseSource(plugin, src, filepath);
 
-  // TODO: Return array instead
-  return { elements: [messageBox, img], removeListeners };
+  return [[messageBox, img], removeListeners];
 };
 
 export default getBannerElements;
