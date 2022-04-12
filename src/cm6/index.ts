@@ -65,7 +65,6 @@ const getViewPlugin = (plugin: BannersPlugin) => ViewPlugin.fromClass(class Bann
     // Add icon widget if applicable
     if (icon) {
       const settingsFacet = state.facet(iconDecorFacet);
-      console.log(settingsFacet);
       widgets.push(
         Decoration.widget({ widget: new IconWidget(plugin, icon, file, !!src, settingsFacet) })
       );
