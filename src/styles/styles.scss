@@ -59,9 +59,14 @@
   margin-top: var(--banner-height);
 }
 
+// [Live Preview] Patch for banner placement
+.markdown-source-view.mod-cm6 .cm-line:first-child {
+  position: inherit;
+}
+
 // [Live Preview] Spacer for banners
 .obsidian-banner-spacer {
-  height: var(--banner-height);
+  height: calc(var(--banner-height) - 20px);
 }
 
 // Banner Icon
@@ -139,12 +144,12 @@
 // [Live Preview] Banner + Icon
 .cm6-banner-icon.has-banner {
   &.v-above {
-    margin-top: calc(-1em - 26px);
-    margin-bottom: 14px;
+    margin-top: calc(-1em - 46px);
+    margin-bottom: 34px;
   }
   &.v-center,
-  &.v-custom { margin-top: calc(-0.5em - 20px); }
-  &.v-below { margin-top: 0; }
+  &.v-custom { margin-top: calc(-0.5em - 40px); }
+  &.v-below { margin-top: -20px; }
 
   &.v-center,
   &.v-custom,
