@@ -56,17 +56,13 @@
 
 // [Reading View] Banner wrapper (YAML with banner)
 .obsidian-banner-wrapper {
-  margin-top: var(--banner-height);
-}
-
-// [Live Preview] Patch for banner placement
-.markdown-source-view.mod-cm6 .cm-line:first-child {
-  position: inherit;
+  margin-top: calc(var(--banner-height) - 15px);
+  padding-top: 0.5em;
 }
 
 // [Live Preview] Spacer for banners
 .obsidian-banner-spacer {
-  height: calc(var(--banner-height) - 20px);
+  height: calc(var(--banner-height) - 24px);
 }
 
 // Banner Icon
@@ -128,33 +124,50 @@
 
 // [Reading View] Banner + Icon
 .obsidian-banner-wrapper.has-banner-icon {
-  margin-top: calc(var(--banner-height) - 20px);
+  padding-top: 0;
 
   .obsidian-banner-icon {
     &.v-above { margin-top: calc(-1em - 12px); }
     &.v-center,
     &.v-custom { margin-top: calc(-0.5em - 6px); }
-    &.v-below {
-      padding-top: 12px;
-      margin-top: 0;
-    }
+    &.v-below { padding-top: 0.5rem; }
   }
 }
 
 // [Live Preview] Banner + Icon
-.cm6-banner-icon.has-banner {
-  &.v-above {
-    margin-top: calc(-1em - 46px);
-    margin-bottom: 34px;
-  }
+.has-banner .cm6-banner-icon {
+  &.v-above { margin-top: calc(-1em - 12px); }
   &.v-center,
-  &.v-custom { margin-top: calc(-0.5em - 40px); }
-  &.v-below { margin-top: -20px; }
+  &.v-custom { margin-top: calc(-0.5em - 6px); }
+  &.v-below { margin: 0.5rem 0; }
+}
 
-  &.v-center,
-  &.v-custom,
-  &.v-below {
-    margin-bottom: 7px;
+// [Live Preview] Patches for banner placement, YAML fold indicator, & first line spacing
+.markdown-source-view.mod-cm6 .cm-line {
+  &.has-banner,
+  &.has-banner-icon {
+    position: inherit;
+
+    .cm-fold-indicator {
+      position: absolute;
+    }
+  }
+
+  &.has-banner-icon .cm6-banner-icon,
+  &.has-banner:not(.has-banner-icon) .obsidian-banner-spacer {
+    margin-bottom: 1.5rem;
+  }
+
+  @mixin fold-top($top) {
+    .cm-fold-indicator { top: $top; }
+  }
+  &.has-banner-icon:not(.has-banner) { @include fold-top(calc(4em + 60px)); }
+  &.has-banner:not(.has-banner-icon) { @include fold-top(calc(var(--banner-height) + 25px)); }
+  &.has-banner.has-banner-icon {
+    &[data-icon-v="above"] { @include fold-top(calc(var(--banner-height) + 25px)); }
+    &[data-icon-v="center"],
+    &[data-icon-v="custom"] { @include fold-top(calc(var(--banner-height) + 2em + 31px)); }
+    &[data-icon-v="below"] { @include fold-top(calc(var(--banner-height) + 4em + 45px)); }
   }
 }
 

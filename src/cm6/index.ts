@@ -58,7 +58,8 @@ const getViewPlugin = (plugin: BannersPlugin) => ViewPlugin.fromClass(class Bann
       const settingsFacet = state.facet(bannerDecorFacet);
       widgets.push(
         Decoration.widget({ widget: new BannerWidget(plugin, bannerData, file.path, contentEl, settingsFacet) }),
-        Decoration.widget({ widget: new SpacerWidget() })
+        Decoration.widget({ widget: new SpacerWidget() }),
+        Decoration.line({ class: 'has-banner' })
       );
     }
 
@@ -66,11 +67,12 @@ const getViewPlugin = (plugin: BannersPlugin) => ViewPlugin.fromClass(class Bann
     if (icon) {
       const settingsFacet = state.facet(iconDecorFacet);
       widgets.push(
-        Decoration.widget({ widget: new IconWidget(plugin, icon, file, !!src, settingsFacet) })
+        Decoration.widget({ widget: new IconWidget(plugin, icon, file, settingsFacet) }),
+        Decoration.line({ class: "has-banner-icon", attributes: { "data-icon-v": settingsFacet.iconVerticalAlignment }})
       );
     }
 
-    return Decoration.set(widgets.map(w => w.range(0)));
+    return Decoration.set(widgets.map(w => w.range(0)), true);
   }
 }, {
   decorations: v => v.decor
