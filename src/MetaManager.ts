@@ -12,6 +12,8 @@ export interface IBannerMetadata {
 }
 type BannerMetadataKey = keyof IBannerMetadata;
 
+const ALL_BANNER_KEYS: BannerMetadataKey[] = ['src', 'x', 'y', 'icon', 'lock'];
+
 export default class MetaManager {
   plugin: BannersPlugin;
   metadata: MetadataCache
@@ -52,7 +54,6 @@ export default class MetaManager {
   }
 
   // Upsert banner data into a file's frontmatter
-  // TODO: Skip writing to file if nothing changed in the frontmatter
   async upsertBannerData(fileOrPath: TFile | string, data: Partial<IBannerMetadata>) {
     const file = (fileOrPath instanceof TFile) ? fileOrPath : this.getFileByPath(fileOrPath);
     if (!file) { return }
@@ -73,17 +74,23 @@ export default class MetaManager {
     const lines = content.split('\n');
     const yamlStartLine = lines.indexOf('---');
     const hasYaml = yamlStartLine !== -1 && lines.slice(0, yamlStartLine).every(l => !l);
+    let changed = false;
     if (hasYaml) {
       // Search through the frontmatter to update target fields if they exist
       let i;
       for (i = yamlStartLine + 1; i < lines.length && fieldsArr.length; i++) {
         if (lines[i].startsWith('---')) { break }
 
-        const [key] = lines[i].split(': ') as [keyof IBannerMetadata, string];
+        const [key, val] = lines[i].split(': ') as [keyof IBannerMetadata, string];
         const targetIndex = fieldsArr.indexOf(key);
         if (targetIndex === -1) { continue }
 
-        lines[i] = `${key}: ${trueFields[key]}`;
+        const newVal = trueFields[key];
+        if (val !== newVal) {
+          lines[i] = `${key}: ${newVal}`;
+          changed = true;
+        }
+        // lines[i] = `${key}: ${trueFields[key]}`;
         fieldsArr.splice(targetIndex, 1);
       }
 
@@ -91,12 +98,14 @@ export default class MetaManager {
       if (fieldsArr.length) {
         lines.splice(i, 0, ...this.formatYamlFields(fieldsArr, trueFields));
         i += fieldsArr.length;
+        changed = true;
       }
 
       // Add YAML ending separator if needed
       const end = lines.indexOf('---', i);
       if (end === -1) {
         lines.splice(i, 0, '---');
+        changed = true;
       }
     } else {
       // Create frontmatter structure if none is found
@@ -105,14 +114,18 @@ export default class MetaManager {
         ${this.formatYamlFields(fieldsArr, trueFields).join('\n')}
         ---
       `);
+      changed = true;
     }
+
+    // Skip write if no change was made
+    if (!changed) { return }
 
     const newContent = lines.join('\n');
     await this.vault.modify(file, newContent);
   }
 
   // Remove banner data from a file's frontmatter
-  async removeBannerData(file: TFile, targetFieldOrFields: BannerMetadataKey | BannerMetadataKey[] = ['src', 'x', 'y', 'icon', 'lock']) {
+  async removeBannerData(file: TFile, targetFieldOrFields: BannerMetadataKey | BannerMetadataKey[] = ALL_BANNER_KEYS) {
     const targetFields = Array.isArray(targetFieldOrFields) ? targetFieldOrFields : [targetFieldOrFields];
 
     // Get the true fields to target

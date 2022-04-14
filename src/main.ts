@@ -257,9 +257,7 @@ export default class BannersPlugin extends Plugin {
     if (!file) { return }
     const { src } = this.metaManager.getBannerDataFromFile(file);
     if (src && typeof src === 'string') {
-      const newSrc = `${src.startsWith('"') ? '' : '"'}${src}${src.endsWith('"') ? '' : '"'}`;
-      if (src === newSrc) { return }
-      await this.metaManager.upsertBannerData(file, { src: newSrc });
+      await this.metaManager.upsertBannerData(file, { src: `"${src}"` });
     }
   }
 
