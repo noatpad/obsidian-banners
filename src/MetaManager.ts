@@ -52,6 +52,7 @@ export default class MetaManager {
   }
 
   // Upsert banner data into a file's frontmatter
+  // TODO: Skip writing to file if nothing changed in the frontmatter
   async upsertBannerData(fileOrPath: TFile | string, data: Partial<IBannerMetadata>) {
     const file = (fileOrPath instanceof TFile) ? fileOrPath : this.getFileByPath(fileOrPath);
     if (!file) { return }
@@ -67,14 +68,15 @@ export default class MetaManager {
       ...(lock !== undefined && { [`${baseName}_lock`]: lock })
     };
 
-    const fieldsArr = Object.keys(trueFields) as [keyof IBannerMetadata];
+    const fieldsArr = Object.keys(trueFields) as Array<keyof IBannerMetadata>;
     const content = await this.vault.read(file);
     const lines = content.split('\n');
-    const hasYaml = lines[0] === '---';
+    const yamlStartLine = lines.indexOf('---');
+    const hasYaml = yamlStartLine !== -1 && lines.slice(0, yamlStartLine).every(l => !l);
     if (hasYaml) {
       // Search through the frontmatter to update target fields if they exist
       let i;
-      for (i = 1; i < lines.length && fieldsArr.length; i++) {
+      for (i = yamlStartLine + 1; i < lines.length && fieldsArr.length; i++) {
         if (lines[i].startsWith('---')) { break }
 
         const [key] = lines[i].split(': ') as [keyof IBannerMetadata, string];
@@ -165,7 +167,7 @@ export default class MetaManager {
   }
 
   // Format into valid YAML fields
-  formatYamlFields(fields: [keyof IBannerMetadata], data: Partial<IBannerMetadata>): string[] {
+  formatYamlFields(fields: Array<keyof IBannerMetadata>, data: Partial<IBannerMetadata>): string[] {
     return fields.map((key) => [key, `${data[key]}`])
       .sort((a, b) => a[0].localeCompare(b[0]))
       .map(([key, val]) => `${key}: ${val}`);

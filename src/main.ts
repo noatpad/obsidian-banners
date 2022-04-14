@@ -150,7 +150,7 @@ export default class BannersPlugin extends Plugin {
     const files = this.workspace.getLeavesOfType('markdown').map((leaf) => (leaf.view as MarkdownView).file);
     const uniqueFiles = [...new Set(files)];
     uniqueFiles.forEach((file) => this.lintBannerSource(file));
-    this.workspace.on('file-open', (file) => this.lintBannerSource(file));
+    this.registerEvent(this.workspace.on('file-open', (file) => this.lintBannerSource(file)));
   }
 
   unloadListeners() {
@@ -255,10 +255,12 @@ export default class BannersPlugin extends Plugin {
   // Helper to wrap banner source in quotes if not already (Patch for previous versions)
   async lintBannerSource(file: TFile) {
     if (!file) { return }
-    const { frontmatter } = this.metadataCache.getFileCache(file);
-    const src = this.metaManager.getBannerData(frontmatter)?.src;
-    if (!src || (src.startsWith('"') && src.endsWith('"'))) { return }
-    await this.metaManager.upsertBannerData(file, { src: `"${src}"` });
+    const { src } = this.metaManager.getBannerDataFromFile(file);
+    if (src && typeof src === 'string') {
+      const newSrc = `${src.startsWith('"') ? '' : '"'}${src}${src.endsWith('"') ? '' : '"'}`;
+      if (src === newSrc) { return }
+      await this.metaManager.upsertBannerData(file, { src: newSrc });
+    }
   }
 
   // Helper to get setting value (or the default setting value if not set)
