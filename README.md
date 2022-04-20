@@ -13,7 +13,7 @@ You can also add a banner icon, using **Add/Change emoji icon** & selecting an e
 Similarly, you can remove the icon with the **Remove icon** command.
 
 ### Advanced
-Under the hood, this plugin uses your file's YAML frontmatter/metadata to store info about your banner. So you can also input it manually or use other plugins to input it for you. These are the fields you can use thus far (using the default frontmatter field):
+Under the hood, this plugin uses your file's YAML frontmatter/metadata to store info about your banner. So you can also input it manually or use other plugins to input it for you. These are the fields you can use thus far (using the default frontmatter field prefix):
 
 ```yaml
 # The source path of your banner image, can be a URL or an internal link to an image.
@@ -71,7 +71,7 @@ banner_icon: string
   - ***NOTE:** This setting is experimental since it acts a bit funny with the mobile app's already built-in touch gestures.*
 
 ## Compatibility
-I have only tested this plugin using MacOS (Obsidian 0.12.12) and on iOS (Obsidian app 1.0.4). It probably works fine on older versions, but just a heads up.
+This plugin has been tested on desktop from 0.12.12 onwards (previously MacOS and currently Windows) and on mobile from 1.0.4 onwards (iOS). It probably works fine on older versions, but just a heads up.
 
 ## Installation
 - **From the Community Plugins tab**:
@@ -83,19 +83,28 @@ I have only tested this plugin using MacOS (Obsidian 0.12.12) and on iOS (Obsidi
 
 ## FAQ
 #### What are these `banner`, `banner_x`, `banner_y`, ... fields in my note's frontmatter?
-This plugin uses the frontmatter to store data about your note's banner, so it can use it for displaying in preview mode. Right now it simply keeps the filepath/URL to your banner image & the x/y positioning (which is useful when resizing the pane).
+This plugin uses the frontmatter to store data about your note's banner, such as its positioning and such. The fields you can use are listed [here](https://github.com/noatpad/obsidian-banners#advanced) and the prefix can be customized using the **Frontmatter field name** setting.
 
 #### Is this incompatible with other plugins?
-There *might* be a few cases. The banner attaches itself to the frontmatter block, based on how Obsidian's API works. The gotcha here is if a plugin has styling that clashes with Banners' styling, it may causes issues. It's rather situational, but feel free to drop an issue if you encounter something like this.
+There are a few cases, but it depends. Because of how it functions, any plugin that conflicts with Banners' styling may cause issues. It's rather situational, but I'm planning to address some styling fixes for those conflicts down the line.
+
+Currently some plugins reported to conflict with Banners are:
+- [ ] [Breadcrumbs](https://github.com/SkepticMystic/breadcrumbs)
+- [x] [Obsidian Code Block Copy](https://github.com/jdbrice/obsidian-code-block-copy)
+  - *Newer versions of Obsidian have this built-in and without issue*
+- [ ] [Obsidian Code Block Enhancer](https://github.com/nyable/obsidian-code-block-enhancer)
+- [ ] [Obsidian Embedded Note Titles](https://github.com/mgmeyers/obsidian-embedded-note-titles)
 
 ## Develop
 Once you run `npm i`, you can build the files into `dist/` easily by running `npm run build`.
 
-You can also have it watch your files and update your plugin within your vault while you develop by running `npm run dev`. Just make sure to set `TEST_VAULT` in `./rollup.config.js` to your testing vault beforehand.
+You can also have it watch your files and update your plugin within your vault while you develop by running `npm run dev`. Just make sure to set `DEVDIR` in `./esbuild.config.mjs` to your testing vault beforehand.
 ## Things I *might* do down the road
-- [x] Add settings for file embeds, similar to hover-preview embed settings
-- [ ] Allow content's vertical displacement height to be different than banner height (this can be nice for aesthetic choices with the *Gradient* style)
+- [ ] Plugin compatibility fixes and enhancements
 - [ ] Note-specific settings (override global style & height settings per note)
   - [ ] Drag bottom of banner to determine note-specific banner height
+- [ ] Image icons instead of only emoji
+- [ ] Banner titles (a la Notion-style)
+- [ ] Allow content's vertical displacement height to be different than banner height (this can be nice for aesthetic choices with the *Gradient* style)
 - [ ] Copy image files and paste as a banner
 - [ ] Unsplash API integration (select from Unsplash's images straight from Obsidian)
