@@ -112,13 +112,15 @@
 }
 
 // Preview embeds
-.popover .markdown-embed-content .obsidian-banner-wrapper {
-  margin-top: var(--banner-preview-embed-height);
+.popover .markdown-embed-content, .hover-editor.hover-popover .markdown-rendered {
+  .obsidian-banner-wrapper {
+    margin-top: var(--banner-preview-embed-height);
 
-  > .obsidian-banner {
-    height: var(--banner-preview-embed-height);
+    > .obsidian-banner {
+      height: var(--banner-preview-embed-height);
 
-    img { cursor: initial; }
+      img { cursor: initial; }
+    }
   }
 }
 
