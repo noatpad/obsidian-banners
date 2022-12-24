@@ -52,10 +52,16 @@ export default class TitleWidget extends WidgetType {
 
     titleSpan.textContent = this.title;
     titleSpan.contentEditable = 'true';
-    titleSpan.addEventListener('input', (e) => {
-      this.title = titleSpan.textContent;
-      this.metaManager.upsertBannerData(this.file, { title: this.title });
+
+    titleSpan.addEventListener('blur', (e) => {
+      titleSpan.contentEditable = 'false';
+      const newTitle = titleSpan.textContent;
+      if (newTitle !== this.title) {
+        this.title = newTitle;
+        this.metaManager.upsertBannerData(this.file, { title: newTitle });
+      }
     });
+    
     titleSpan.addEventListener('click', (e) => {
       titleSpan.contentEditable = 'true';
       titleSpan.focus();
