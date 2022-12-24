@@ -22,6 +22,7 @@ type ElListener = IElementListener<keyof HTMLElementEventMap>;
 
 // Get current mouse position of event
 const getMousePos = (e: MTEvent) => {
+  console.log(e)
   const { clientX, clientY } = (e instanceof MouseEvent) ? e : e.targetTouches[0];
   return { x: clientX, y: clientY };
 };

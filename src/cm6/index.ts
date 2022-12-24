@@ -7,6 +7,7 @@ import BannersPlugin from '../main';
 import BannerWidget from './BannerWidget';
 import SpacerWidget from './SpacerWidget';
 import IconWidget from './IconWidget';
+import TitleWidget from './HeaderWidget';
 import { bannerDecorFacet, iconDecorFacet } from './helpers';
 
 const YAML_SEPARATOR_TOKEN = 'def_hmd-frontmatter';
@@ -29,13 +30,17 @@ const getViewPlugin = (plugin: BannersPlugin) => ViewPlugin.fromClass(class Bann
   }
 
   decorate(state: EditorState): DecorationSet {
+    const inlineTitle = document.querySelector('.inline-title');
+    if (inlineTitle) {
+      inlineTitle.classList.remove('inline-title');
+    }
     // If there's no YAML, stop here
-    const cursor =  syntaxTree(state).cursor();
+    const cursor = syntaxTree(state).cursor();
     cursor.firstChild();
     if (cursor.name !== YAML_SEPARATOR_TOKEN) { return Decoration.none }
 
     // Get all frontmatter fields to later process
-    const frontmatter: {[key: string]: string} = {};
+    const frontmatter: { [key: string]: string } = {};
     let key;
     while (cursor.nextSibling() && cursor.name !== YAML_SEPARATOR_TOKEN) {
       const { from, to, name } = cursor;
@@ -49,7 +54,7 @@ const getViewPlugin = (plugin: BannersPlugin) => ViewPlugin.fromClass(class Bann
     };
 
     const bannerData = plugin.metaManager.getBannerData(frontmatter);
-    const { src, icon } = bannerData;
+    const { src, icon, title } = bannerData;
     const { contentEl, file } = state.field(editorViewField);
     const widgets: Decoration[] = [];
 
@@ -60,17 +65,29 @@ const getViewPlugin = (plugin: BannersPlugin) => ViewPlugin.fromClass(class Bann
         Decoration.widget({ widget: new BannerWidget(plugin, bannerData, file.path, contentEl, settingsFacet) }),
         Decoration.widget({ widget: new SpacerWidget() }),
         Decoration.line({ class: 'has-banner' })
+        // remove the class inline-title to prevent the title from being displayed in the banner
+
+
       );
     }
-
     // Add icon widget if applicable
-    if (icon) {
+    /*if (icon) {
       const settingsFacet = state.facet(iconDecorFacet);
       widgets.push(
         Decoration.widget({ widget: new IconWidget(plugin, icon, file, settingsFacet) }),
-        Decoration.line({ class: "has-banner-icon", attributes: { "data-icon-v": settingsFacet.iconVerticalAlignment }})
+        Decoration.line({ class: "has-banner-header", attributes: { "data-icon-v": settingsFacet.iconVerticalAlignment } })
       );
     }
+    */
+
+    if (title || icon) {
+      const settingsFacet = state.facet(iconDecorFacet);
+      widgets.push(
+        Decoration.widget({ widget: new TitleWidget(title, icon ?? "", plugin, file, state.facet(iconDecorFacet)) }),
+
+        Decoration.line({ class: "has-header", attributes: { "data-icon-v": settingsFacet.iconVerticalAlignment, contenteditable: "true" } })
+      );
+    } 
 
     return Decoration.set(widgets.map(w => w.range(0)), true);
   }

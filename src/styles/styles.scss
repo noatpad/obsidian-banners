@@ -42,8 +42,13 @@
     height: 100%;
     width: 100%;
 
-    &.draggable { cursor: grab; }
-    &.draggable:active { cursor: grabbing; }
+    &.draggable {
+      cursor: grab;
+    }
+
+    &.draggable:active {
+      cursor: grabbing;
+    }
   }
 
   // Hide loading indicator when image has loaded
@@ -65,17 +70,25 @@
   height: calc(var(--banner-height) - 24px);
 }
 
-// Banner Icon
-.obsidian-banner-icon {
+// Banner Icon && Title
+.obsidian-banner-header {
   display: flex;
   position: relative;
   font-size: 4em;
   pointer-events: none;
   user-select: none;
 
-  &.h-left { justify-content: flex-start; }
-  &.h-center { justify-content: center; }
-  &.h-right { justify-content: flex-end; }
+  &.h-left {
+    justify-content: flex-start;
+  }
+
+  &.h-center {
+    justify-content: center;
+  }
+
+  &.h-right {
+    justify-content: flex-end;
+  }
 
   .icon-box {
     display: inline-flex;
@@ -92,6 +105,12 @@
     }
   }
 
+  .title {
+    pointer-events: initial;
+    font-size: var(--h1-variant) !important;
+  }
+
+  // place title next to icon
   // Twemoji
   img.emoji {
     height: 1em;
@@ -104,10 +123,12 @@
 .internal-embed .markdown-embed-content .obsidian-banner-wrapper {
   margin-top: var(--banner-internal-embed-height);
 
-  > .obsidian-banner {
+  >.obsidian-banner {
     height: var(--banner-internal-embed-height);
 
-    img { cursor: initial; }
+    img {
+      cursor: initial;
+    }
   }
 }
 
@@ -115,37 +136,60 @@
 .popover .markdown-embed-content .obsidian-banner-wrapper {
   margin-top: var(--banner-preview-embed-height);
 
-  > .obsidian-banner {
+  >.obsidian-banner {
     height: var(--banner-preview-embed-height);
 
-    img { cursor: initial; }
+    img {
+      cursor: initial;
+    }
   }
 }
 
 // [Reading View] Banner + Icon
-.obsidian-banner-wrapper.has-banner-icon {
+.obsidian-banner-wrapper.has-banner-header {
   padding-top: 0;
 
+  .title-box {
+    font-size: 5rem !important;
+  }
+
   .obsidian-banner-icon {
-    &.v-above { margin-top: calc(-1em - 12px); }
+    &.v-above {
+      margin-top: calc(-1em - 12px);
+    }
+
     &.v-center,
-    &.v-custom { margin-top: calc(-0.5em - 6px); }
-    &.v-below { padding-top: 0.5rem; }
+    &.v-custom {
+      margin-top: calc(-0.5em - 6px);
+    }
+
+    &.v-below {
+      padding-top: 0.5rem;
+    }
   }
 }
 
 // [Live Preview] Banner + Icon
 .has-banner .cm6-banner-icon {
-  &.v-above { margin-top: calc(-1em - 12px); }
+  &.v-above {
+    margin-top: calc(-1em - 12px);
+  }
+
   &.v-center,
-  &.v-custom { margin-top: calc(-0.5em - 6px); }
-  &.v-below { margin: 0.5rem 0; }
+  &.v-custom {
+    margin-top: calc(-0.5em - 6px);
+  }
+
+  &.v-below {
+    margin: 0.5rem 0;
+  }
 }
 
 // [Live Preview] Patches for banner placement, YAML fold indicator, & first line spacing
 .markdown-source-view.mod-cm6 .cm-line {
+
   &.has-banner,
-  &.has-banner-icon {
+  &.has-banner-header {
     position: inherit;
 
     .cm-fold-indicator {
@@ -153,21 +197,38 @@
     }
   }
 
-  &.has-banner-icon .cm6-banner-icon,
-  &.has-banner:not(.has-banner-icon) .obsidian-banner-spacer {
+  &.has-banner-header .cm6-banner-icon,
+  &.has-banner:not(.has-banner-header) .obsidian-banner-spacer {
     margin-bottom: 1.5rem;
   }
 
   @mixin fold-top($top) {
-    .cm-fold-indicator { top: $top; }
+    .cm-fold-indicator {
+      top: $top;
+    }
   }
-  &.has-banner-icon:not(.has-banner) { @include fold-top(calc(4em + 60px)); }
-  &.has-banner:not(.has-banner-icon) { @include fold-top(calc(var(--banner-height) + 25px)); }
-  &.has-banner.has-banner-icon {
-    &[data-icon-v="above"] { @include fold-top(calc(var(--banner-height) + 25px)); }
+
+  &.has-banner-header:not(.has-banner) {
+    @include fold-top(calc(4em + 60px));
+  }
+
+  &.has-banner:not(.has-banner-header) {
+    @include fold-top(calc(var(--banner-height) + 25px));
+  }
+
+  &.has-banner.has-banner-header {
+    &[data-icon-v="above"] {
+      @include fold-top(calc(var(--banner-height) + 25px));
+    }
+
     &[data-icon-v="center"],
-    &[data-icon-v="custom"] { @include fold-top(calc(var(--banner-height) + 2em + 31px)); }
-    &[data-icon-v="below"] { @include fold-top(calc(var(--banner-height) + 4em + 45px)); }
+    &[data-icon-v="custom"] {
+      @include fold-top(calc(var(--banner-height) + 2em + 31px));
+    }
+
+    &[data-icon-v="below"] {
+      @include fold-top(calc(var(--banner-height) + 4em + 45px));
+    }
   }
 }
 
@@ -246,7 +307,7 @@
 
 // Mobile
 .is-mobile {
-  .has-banner-icon {
+  .has-banner-header {
     margin-top: 20px;
   }
 
@@ -254,7 +315,7 @@
     margin-top: var(--banner-height);
   }
 
-  .obsidian-banner-wrapper:not(.has-banner-icon) {
+  .obsidian-banner-wrapper:not(.has-banner-header) {
     margin-top: calc(var(--banner-height) + 20px);
   }
 }
@@ -264,19 +325,19 @@
   .obsidian-banner-wrapper {
     margin-top: 0;
 
-    > .obsidian-banner {
+    >.obsidian-banner {
       position: initial;
       margin-bottom: 20px;
     }
   }
 
-  .has-banner-icon,
-  .has-banner-icon .obsidian-banner-icon,
-  .obsidian-banner-wrapper.has-banner-icon {
+  .has-banner-header,
+  .has-banner-header .obsidian-banner-icon,
+  .obsidian-banner-wrapper.has-banner-header {
     margin-top: 0;
   }
 
-  .obsidian-banner-wrapper.has-banner-icon .obsidian-banner-icon {
+  .obsidian-banner-wrapper.has-banner-header .obsidian-banner-icon {
     position: initial;
   }
 }

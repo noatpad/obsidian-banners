@@ -27,8 +27,8 @@ jobs:
         with:
           draft: true
           files: |
-            dist/*
+            ./*
             manifest.json
           fail_on_unmatched_files: |
-            dist/*
+            ./*
             manifest.json

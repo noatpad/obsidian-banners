@@ -1,4 +1,5 @@
 import { PluginSettingTab, Setting } from 'obsidian';
+import { title } from 'process';
 
 import BannersPlugin from './main';
 
@@ -6,6 +7,7 @@ type StyleOption = 'solid' | 'gradient';
 export type BannerDragModOption = 'none' | 'shift' | 'ctrl' | 'alt' | 'meta';
 type IconHorizontalOption = 'left' | 'center' | 'right' | 'custom';
 type IconVerticalOption = 'above' | 'center' | 'below' | 'custom';
+type TitlePlacementOption = 'below' | 'next-to-icon';
 
 export interface ISettingsOptions {
   height: number,
@@ -24,7 +26,8 @@ export interface ISettingsOptions {
   showPreviewInLocalModal: boolean,
   localSuggestionsLimit: number,
   bannersFolder: string,
-  allowMobileDrag: boolean
+  allowMobileDrag: boolean,
+  titlePlacement: TitlePlacementOption
 };
 export type PartialSettings = Partial<ISettingsOptions>;
 
@@ -50,7 +53,8 @@ export const INITIAL_SETTINGS: ISettingsOptions = {
   showPreviewInLocalModal: true,
   localSuggestionsLimit: null,
   bannersFolder: null,
-  allowMobileDrag: false
+  allowMobileDrag: false,
+  titlePlacement: 'next-to-icon'
 };
 
 export const DEFAULT_VALUES: PartialSettings = {
@@ -89,6 +93,10 @@ const ICON_VERTICAL_OPTIONS: Record<IconVerticalOption, string> = {
   center: 'Center',
   below: 'Below',
   custom: 'Custom'
+};
+const TITLE_PLACEMENT_OPTIONS: Record<TitlePlacementOption, string> = {
+  'below': 'Below icon',
+  'next-to-icon': 'Next to icon on the right'
 };
 
 export default class SettingsTab extends PluginSettingTab {
@@ -129,7 +137,8 @@ export default class SettingsTab extends PluginSettingTab {
       showPreviewInLocalModal,
       localSuggestionsLimit,
       bannersFolder,
-      allowMobileDrag
+      allowMobileDrag,
+      titlePlacement
     } = this.plugin.settings;
     containerEl.empty();
 
@@ -188,7 +197,7 @@ export default class SettingsTab extends PluginSettingTab {
       .setName('Show banner in preview embed')
       .setDesc(createFragment(frag => {
         frag.appendText('Choose whether to display the banner in the page preview embed. This is the embed that appears from the ');
-        frag.createEl('span', { text: 'Page Preview ', attr: { style: 'color: --var(text-normal)' }});
+        frag.createEl('span', { text: 'Page Preview ', attr: { style: 'color: --var(text-normal)' } });
         frag.appendText('core plugin')
       }))
       .addToggle(toggle => toggle
@@ -312,7 +321,16 @@ export default class SettingsTab extends PluginSettingTab {
       .addToggle(toggle => toggle
         .setValue(useTwemoji)
         .onChange(async (val) => this.saveSettings({ useTwemoji: val }, { refreshViews: true })));
-
+    this.createHeader(
+      'Banner Title'
+    );
+    new Setting(containerEl)
+      .setName('Show banner title')
+      .setDesc('Set the position of the banner title')
+      .addDropdown(dropdown => dropdown
+        .addOptions(TITLE_PLACEMENT_OPTIONS)
+        .setValue(titlePlacement)
+        .onChange(async (val: TitlePlacementOption) => this.saveSettings({ titlePlacement: val }, { refreshViews: true })));
     this.createHeader(
       'Local Image Modal',
       'For the modal that shows when you run the "Add/Change banner with local image" command'
@@ -332,7 +350,7 @@ export default class SettingsTab extends PluginSettingTab {
       .setDesc(createFragment(frag => {
         frag.appendText('Show up to this many suggestions when searching through local images.');
         frag.createEl('br');
-        frag.createEl('b', { text: 'NOTE: '});
+        frag.createEl('b', { text: 'NOTE: ' });
         frag.appendText('Using a high number while ');
         frag.createEl('span', { text: 'Show preview images ', attr: { style: 'color: var(--text-normal)' } });
         frag.appendText('is on can lead to some slowdowns');
@@ -355,7 +373,7 @@ export default class SettingsTab extends PluginSettingTab {
       .addText(text => text
         .setValue(bannersFolder)
         .setPlaceholder(DEFAULT_VALUES.bannersFolder)
-        .onChange(async (val) => this.saveSettings({ bannersFolder: val || null } )));
+        .onChange(async (val) => this.saveSettings({ bannersFolder: val || null })));
 
     this.createHeader(
       'Experimental Things',

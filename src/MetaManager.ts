@@ -8,7 +8,8 @@ export interface IBannerMetadata {
   x: number,
   y: number,
   icon: string,
-  lock: boolean
+  lock: boolean,
+  title: string
 }
 type BannerMetadataKey = keyof IBannerMetadata;
 
@@ -35,14 +36,16 @@ export default class MetaManager {
       [`${fieldName}_x`]: x,
       [`${fieldName}_y`]: y,
       [`${fieldName}_icon`]: icon,
-      [`${fieldName}_lock`]: lock
+      [`${fieldName}_lock`]: lock,
+      [`${fieldName}_title`]: title
     } = frontmatter;
     return {
       src: src as string,
       x: this.parseBannerPos(x as string | number),
       y: this.parseBannerPos(y as string | number),
       icon: icon as string,
-      lock: (typeof lock === 'boolean') ? lock : lock === 'true'
+      lock: (typeof lock === 'boolean') ? lock : lock === 'true',
+      title: title as string
     };
   }
 
@@ -59,14 +62,15 @@ export default class MetaManager {
     if (!file) { return }
 
     // Get banner data based on the designated prefix for banner data fields
-    const { src, x, y, icon, lock } = data;
+    const { src, x, y, icon, lock, title } = data;
     const baseName = this.plugin.getSettingValue('frontmatterField');
     const trueFields: Partial<IBannerMetadata> = {
       ...(src !== undefined && { [baseName]: src }),
       ...(x !== undefined && { [`${baseName}_x`]: x }),
       ...(y !== undefined && { [`${baseName}_y`]: y }),
       ...(icon !== undefined && { [`${baseName}_icon`]: icon }),
-      ...(lock !== undefined && { [`${baseName}_lock`]: lock })
+      ...(lock !== undefined && { [`${baseName}_lock`]: lock }),
+      ...(title !== undefined && { [`${baseName}_title`]: title })
     };
 
     const fieldsArr = Object.keys(trueFields) as Array<keyof IBannerMetadata>;

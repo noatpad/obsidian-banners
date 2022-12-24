@@ -2,7 +2,7 @@ import { MarkdownPostProcessor, MarkdownPostProcessorContext } from 'obsidian';
 
 import BannersPlugin from '../main';
 import Banner from './BannerMD';
-import Icon from './IconMD';
+import Header from './HeaderMD';
 
 export interface IMPPCPlus extends MarkdownPostProcessorContext {
   containerEl: HTMLElement
@@ -23,8 +23,8 @@ const getPostProcessor: MarkdownPostProcessorFunc = (plugin) => (el, ctx: IMPPCP
   const isPreviewEmbed = fourLevelsDown?.hasClass('popover') ?? false;
 
   // Add icon
-  if (bannerData?.icon) {
-    ctx.addChild(new Icon(plugin, el, bannerData.icon, file));
+  if (bannerData?.icon || bannerData?.title) {
+    ctx.addChild(new Header(bannerData.title, bannerData.icon ?? "", plugin, el, file));
   }
 
   // Add banner if allowed
