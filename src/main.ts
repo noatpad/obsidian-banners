@@ -41,6 +41,14 @@ export default class BannersPlugin extends Plugin {
     this.addSettingTab(new SettingsTab(this));
 
     this.refreshViews();
+    setTimeout(() =>  {
+    const inlineTitle = document.querySelector('.inline-title');
+    console.log(inlineTitle);
+    if (inlineTitle && document.querySelector('.obsidian-banner')) {
+      console.log('removing inline title');
+      inlineTitle.remove();
+    }
+    }, 1000);
   }
 
   async onunload() {
@@ -53,6 +61,19 @@ export default class BannersPlugin extends Plugin {
 
   loadListeners() {
     // Banner cursor toggling
+    this.workspace.on('file-open', (file) => {
+      const inlineTitle = document.querySelector('.inline-title');
+      if (inlineTitle && document.querySelector('.obsidian-banner')) {
+        inlineTitle.remove();
+      }
+    });
+    // do the same if the user changes the view
+    this.registerEvent(this.workspace.on('layout-change', () => {
+      const inlineTitle = document.querySelector('.inline-title');
+      if (inlineTitle && document.querySelector('.obsidian-banner')) {
+        inlineTitle.remove();
+      }
+    }));
     window.addEventListener('keydown', this.isDragModHeld);
     window.addEventListener('keyup', this.isDragModHeld);
   }
@@ -150,7 +171,9 @@ export default class BannersPlugin extends Plugin {
     const files = this.workspace.getLeavesOfType('markdown').map((leaf) => (leaf.view as MarkdownView).file);
     const uniqueFiles = [...new Set(files)];
     uniqueFiles.forEach((file) => this.lintBannerSource(file));
-    this.registerEvent(this.workspace.on('file-open', (file) => this.lintBannerSource(file)));
+    this.registerEvent(this.workspace.on('file-open', (file) => {
+      this.lintBannerSource(file)
+    }));
   }
 
   unloadListeners() {

@@ -124,7 +124,7 @@
   background: #aaa3;
   cursor: pointer;
 }
-.obsidian-banner-header .title {
+.obsidian-banner-header .banner-title {
   pointer-events: initial;
   font-size: var(--h1-variant) !important;
 }

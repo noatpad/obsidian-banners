@@ -48,13 +48,11 @@ export default class TitleWidget extends WidgetType {
 
     // title
     const titleSpan = document.createElement('span');
-    titleSpan.addClass('title',)
+    titleSpan.addClass('banner-title', 'HyperMD-header-1')
 
     titleSpan.textContent = this.title;
     titleSpan.contentEditable = 'true';
-
     titleSpan.addEventListener('blur', (e) => {
-      titleSpan.contentEditable = 'false';
       const newTitle = titleSpan.textContent;
       if (newTitle !== this.title) {
         this.title = newTitle;
@@ -63,7 +61,6 @@ export default class TitleWidget extends WidgetType {
     });
     
     titleSpan.addEventListener('click', (e) => {
-      titleSpan.contentEditable = 'true';
       titleSpan.focus();
     });
 

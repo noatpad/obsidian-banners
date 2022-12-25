@@ -26,10 +26,11 @@ export default class Banner extends MarkdownRenderChild {
     this.ctx = ctx;
     this.bannerData = bannerData;
     this.isEmbed = isEmbed;
-    this.removeListeners = () => {};
+    this.removeListeners = () => { };
   }
 
   onload() {
+    console.log('Banner onload');
     const { style } = this.plugin.settings;
     const { containerEl: contentEl, sourcePath } = this.ctx;
 
@@ -40,6 +41,10 @@ export default class Banner extends MarkdownRenderChild {
     this.containerEl.append(...elements);
     this.removeListeners = removeListeners;
     this.wrapper.prepend(this.containerEl);
+    const inlineTitle = document.querySelector('.inline-title');
+    if (inlineTitle && document.querySelector('.obsidian-banner')) {
+      inlineTitle.remove();
+    }
   }
 
   onunload(): void {

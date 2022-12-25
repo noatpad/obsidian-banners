@@ -30,10 +30,6 @@ const getViewPlugin = (plugin: BannersPlugin) => ViewPlugin.fromClass(class Bann
   }
 
   decorate(state: EditorState): DecorationSet {
-    const inlineTitle = document.querySelector('.inline-title');
-    if (inlineTitle) {
-      inlineTitle.classList.remove('inline-title');
-    }
     // If there's no YAML, stop here
     const cursor = syntaxTree(state).cursor();
     cursor.firstChild();
