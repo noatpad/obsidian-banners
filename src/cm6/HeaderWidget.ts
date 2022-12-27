@@ -5,7 +5,7 @@ import BannersPlugin from '../main';
 import { PartialSettings } from '../Settings';
 import MetaManager from '../MetaManager';
 
-export default class TitleWidget extends WidgetType {
+export default class HeaderWidget extends WidgetType {
   plugin: BannersPlugin;
   title: string;
   icon: string;
@@ -23,7 +23,7 @@ export default class TitleWidget extends WidgetType {
     this.metaManager = plugin.metaManager;
   }
 
-  eq(widget: TitleWidget): boolean {
+  eq(widget: HeaderWidget): boolean {
     const { title, icon, file, settingsFacet } = widget;
     return (
       this.title === title &&
@@ -37,7 +37,7 @@ export default class TitleWidget extends WidgetType {
     const { iconHorizontalAlignment: ha, iconVerticalAlignment: va } = this.plugin.settings;
     // get inline-title class and delete it
     const wrap = document.createElement('div');
-    wrap.addClass('cm-line', 'obsidian-banner-header');
+    wrap.addClass('obsidian-banner-header');
 
     if (this.icon) {
       wrap.addClass('obsidian-banner-icon', 'cm6-banner-icon', `h-${ha}`, `v-${va}`);
@@ -47,24 +47,25 @@ export default class TitleWidget extends WidgetType {
     }
 
     // title
-    const titleSpan = document.createElement('span');
-    titleSpan.addClass('banner-title', 'HyperMD-header-1')
+    const titleDiv = document.createElement('div');
+    titleDiv.addClass('banner-title', 'HyperMD-header-1')
 
-    titleSpan.textContent = this.title;
-    titleSpan.contentEditable = 'true';
-    titleSpan.addEventListener('blur', (e) => {
-      const newTitle = titleSpan.textContent;
+    titleDiv.textContent = this.title;
+    titleDiv.contentEditable = 'true';
+
+    titleDiv.addEventListener('blur', (e) => {
+      const newTitle = titleDiv.textContent;
       if (newTitle !== this.title) {
         this.title = newTitle;
         this.metaManager.upsertBannerData(this.file, { title: newTitle });
       }
     });
-    
-    titleSpan.addEventListener('click', (e) => {
-      titleSpan.focus();
+
+    titleDiv.addEventListener('click', (e) => {
+      titleDiv.focus();
     });
 
-    wrap.append(titleSpan);
+    wrap.append(titleDiv);
     return wrap;
   }
 }

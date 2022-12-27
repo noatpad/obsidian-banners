@@ -41,13 +41,10 @@ export default class Banner extends MarkdownRenderChild {
     this.containerEl.append(...elements);
     this.removeListeners = removeListeners;
     this.wrapper.prepend(this.containerEl);
-    const inlineTitle = document.querySelector('.inline-title');
-    if (inlineTitle && document.querySelector('.obsidian-banner')) {
-      inlineTitle.remove();
-    }
   }
 
   onunload(): void {
+    console.log('Banner onunload');
     this.removeListeners();
   }
 }

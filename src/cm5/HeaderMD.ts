@@ -29,9 +29,9 @@ export default class Header extends MarkdownRenderChild {
     this.wrapper.prepend(this.containerEl);
     */
     this.wrapper.addClass('has-banner-header');
-    const titleBox = document.createElement('span');
-    titleBox.addClass('title-box', 'cm-header', 'cm-header-1', 'HyperMD-header', 'HyperMD-header-1');
-    titleBox.textContent = this.title;
+    const titleSpan = document.createElement('span');
+    titleSpan.addClass('title-box', 'cm-header', 'cm-header-1', 'HyperMD-header', 'HyperMD-header-1');
+    titleSpan.textContent = this.title;
 
     if (this.icon) {
       this.containerEl.addClass('obsidian-banner-icon', 'cm5-banner-icon', `h-${ha}`, `v-${va}`);
@@ -40,6 +40,6 @@ export default class Header extends MarkdownRenderChild {
       this.wrapper.append(el);
       this.wrapper.prepend(this.containerEl);
     }
-    this.wrapper.append(titleBox);
+    this.wrapper.append(titleSpan);
   }
 }

@@ -28,7 +28,7 @@ const buildIcon = (plugin: BannersPlugin, icon: string, file: TFile): HTMLElemen
     box.textContent = text;
   }
 
-  box.onclick = async () => new IconModal(plugin, file).open();
+  box.onclick = async (e) => { new IconModal(plugin, file).open(); e.stopPropagation();};
 
   return box;
 };

@@ -59,6 +59,9 @@
   }
 }
 
+// read the ty
+
+
 // [Reading View] Banner wrapper (YAML with banner)
 .obsidian-banner-wrapper {
   margin-top: calc(var(--banner-height) - 15px);
@@ -77,7 +80,6 @@
   font-size: 4em;
   pointer-events: none;
   user-select: none;
-
   &.h-left {
     justify-content: flex-start;
   }
@@ -87,7 +89,7 @@
   }
 
   &.h-right {
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
 
   .icon-box {
@@ -340,4 +342,7 @@
   .obsidian-banner-wrapper.has-banner-header .obsidian-banner-icon {
     position: initial;
   }
+}
+.hide {
+  display: none;
 }

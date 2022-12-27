@@ -5,6 +5,7 @@ import isURL from 'validator/lib/isURL';
 import './styles/styles.scss';
 import IconModal from './modals/IconModal';
 import LocalImageModal from './modals/LocalImageModal';
+import TitleModal from './modals/TitleModal';
 import MetaManager from './MetaManager';
 import SettingsTab, { INITIAL_SETTINGS, DEFAULT_VALUES, ISettingsOptions, PartialSettings } from './Settings';
 import getPostProcessor from './cm5';
@@ -41,14 +42,6 @@ export default class BannersPlugin extends Plugin {
     this.addSettingTab(new SettingsTab(this));
 
     this.refreshViews();
-    setTimeout(() =>  {
-    const inlineTitle = document.querySelector('.inline-title');
-    console.log(inlineTitle);
-    if (inlineTitle && document.querySelector('.obsidian-banner')) {
-      console.log('removing inline title');
-      inlineTitle.remove();
-    }
-    }, 1000);
   }
 
   async onunload() {
@@ -60,20 +53,6 @@ export default class BannersPlugin extends Plugin {
   }
 
   loadListeners() {
-    // Banner cursor toggling
-    this.workspace.on('file-open', (file) => {
-      const inlineTitle = document.querySelector('.inline-title');
-      if (inlineTitle && document.querySelector('.obsidian-banner')) {
-        inlineTitle.remove();
-      }
-    });
-    // do the same if the user changes the view
-    this.registerEvent(this.workspace.on('layout-change', () => {
-      const inlineTitle = document.querySelector('.inline-title');
-      if (inlineTitle && document.querySelector('.obsidian-banner')) {
-        inlineTitle.remove();
-      }
-    }));
     window.addEventListener('keydown', this.isDragModHeld);
     window.addEventListener('keyup', this.isDragModHeld);
   }
@@ -110,6 +89,16 @@ export default class BannersPlugin extends Plugin {
         const file = this.workspace.getActiveFile();
         if (checking) { return !!file }
         new IconModal(this, file).open();
+      }
+    });
+
+    this.addCommand({
+      id: 'banners:addTitle',
+      name: 'Add/Change title',
+      checkCallback: (checking) => {
+        const file = this.workspace.getActiveFile();
+        if (checking) { return !!file }
+        new TitleModal(this, file).open();
       }
     });
 

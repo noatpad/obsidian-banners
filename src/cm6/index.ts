@@ -7,7 +7,7 @@ import BannersPlugin from '../main';
 import BannerWidget from './BannerWidget';
 import SpacerWidget from './SpacerWidget';
 import IconWidget from './IconWidget';
-import TitleWidget from './HeaderWidget';
+import HeaderWidget from './HeaderWidget';
 import { bannerDecorFacet, iconDecorFacet } from './helpers';
 
 const YAML_SEPARATOR_TOKEN = 'def_hmd-frontmatter';
@@ -57,29 +57,21 @@ const getViewPlugin = (plugin: BannersPlugin) => ViewPlugin.fromClass(class Bann
     // Add banner widgets if applicable
     if (src) {
       const settingsFacet = state.facet(bannerDecorFacet);
+      contentEl.getElementsByClassName("inline-title")[0].classList.add("hide")
       widgets.push(
         Decoration.widget({ widget: new BannerWidget(plugin, bannerData, file.path, contentEl, settingsFacet) }),
         Decoration.widget({ widget: new SpacerWidget() }),
         Decoration.line({ class: 'has-banner' })
-        // remove the class inline-title to prevent the title from being displayed in the banner
-
-
       );
+      
+    } else {
+      contentEl.getElementsByClassName("inline-title")[0].classList.remove("hide")
     }
-    // Add icon widget if applicable
-    /*if (icon) {
-      const settingsFacet = state.facet(iconDecorFacet);
-      widgets.push(
-        Decoration.widget({ widget: new IconWidget(plugin, icon, file, settingsFacet) }),
-        Decoration.line({ class: "has-banner-header", attributes: { "data-icon-v": settingsFacet.iconVerticalAlignment } })
-      );
-    }
-    */
 
     if (title || icon) {
       const settingsFacet = state.facet(iconDecorFacet);
       widgets.push(
-        Decoration.widget({ widget: new TitleWidget(title, icon ?? "", plugin, file, state.facet(iconDecorFacet)) }),
+        Decoration.widget({ widget: new HeaderWidget(title, icon ?? "", plugin, file, state.facet(iconDecorFacet)) }),
 
         Decoration.line({ class: "has-header", attributes: { "data-icon-v": settingsFacet.iconVerticalAlignment, contenteditable: "true" } })
       );
