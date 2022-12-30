@@ -38,17 +38,15 @@ export default class HeaderWidget extends WidgetType {
     // get inline-title class and delete it
     const wrap = document.createElement('div');
     wrap.addClass('obsidian-banner-header');
-
+    wrap.addClass('obsidian-banner-icon', `h-${ha}`, `v-${va}`);
     if (this.icon) {
-      wrap.addClass('obsidian-banner-icon', 'cm6-banner-icon', `h-${ha}`, `v-${va}`);
-
       const el = buildIcon(this.plugin, this.icon, this.file);
       wrap.append(el);
     }
 
     // title
     const titleDiv = document.createElement('div');
-    titleDiv.addClass('banner-title', 'HyperMD-header-1')
+    titleDiv.addClass('obsidian-banner-title', 'HyperMD-header-1')
 
     titleDiv.textContent = this.title;
     titleDiv.contentEditable = 'true';
@@ -58,6 +56,13 @@ export default class HeaderWidget extends WidgetType {
       if (newTitle !== this.title) {
         this.title = newTitle;
         this.metaManager.upsertBannerData(this.file, { title: newTitle });
+      }
+    });
+
+    titleDiv.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        titleDiv.blur();
       }
     });
 

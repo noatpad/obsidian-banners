@@ -6,7 +6,6 @@ import { EditorState } from '@codemirror/state';
 import BannersPlugin from '../main';
 import BannerWidget from './BannerWidget';
 import SpacerWidget from './SpacerWidget';
-import IconWidget from './IconWidget';
 import HeaderWidget from './HeaderWidget';
 import { bannerDecorFacet, iconDecorFacet } from './helpers';
 

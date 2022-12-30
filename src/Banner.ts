@@ -22,7 +22,6 @@ type ElListener = IElementListener<keyof HTMLElementEventMap>;
 
 // Get current mouse position of event
 const getMousePos = (e: MTEvent) => {
-  console.log(e)
   const { clientX, clientY } = (e instanceof MouseEvent) ? e : e.targetTouches[0];
   return { x: clientX, y: clientY };
 };
@@ -129,6 +128,8 @@ const buildBanner = (
   }
 
   // Only allow dragging for banners not within embed views
+  // get the body html element
+  const body = document.querySelector('body');
   const listeners: ElListener[] = [];
   if (canDrag) {
     img.classList.toggle('draggable', plugin.settings.bannerDragModifier === 'none' || plugin.holdingDragModKey);
@@ -136,11 +137,13 @@ const buildBanner = (
     // Image drag
     const imgDragStart = (e: MTEvent) => handleDragStart(e, dragData, plugin.holdingDragModKey);
     const imgDragMove = (e: MTEvent) => handleDragMove(e, dragData);
-    const imgDragEnd = () => handleDragEnd(img, filepath, dragData, plugin);
+    const imgDragEnd = (e: MTEvent) => { handleDragEnd(img, filepath, dragData, plugin); }
     listeners.push(
       { target: img, ev: 'mousedown', func: imgDragStart },
       { target: img, ev: 'mousemove', func: imgDragMove },
-      { target: contentEl.parentElement, ev: 'mouseup', func: imgDragEnd }
+      { target: body, ev: 'mouseup', func: imgDragEnd },
+      { target: body, ev: 'mouseleave', func: imgDragEnd },
+      { target: img, ev: 'click', func: (e: MTEvent) => e.stopPropagation() }
     );
 
     // Only allow dragging in mobile when desired from settings
@@ -148,7 +151,8 @@ const buildBanner = (
       listeners.push(
         { target: img, ev: 'touchstart', func: imgDragStart },
         { target: img, ev: 'touchmove', func: imgDragMove },
-        { target: contentEl.parentElement, ev: 'touchend', func: imgDragEnd }
+        { target: body, ev: 'touchend', func: imgDragEnd },
+        { target: img, ev: 'click', func: (e: MTEvent) => e.stopPropagation() }
       );
     }
   }

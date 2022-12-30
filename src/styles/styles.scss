@@ -10,10 +10,16 @@
   width: 100%;
   overflow: hidden;
   user-select: none;
+  pointer-events: none;
 
   &.gradient:not(.error) {
     mask-image: linear-gradient(to bottom, black 50%, transparent);
     -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent);
+  }
+
+  &.cm6-banner {
+    pointer-events: initial;
+    cursor: grab !important;
   }
 
   .banner-message {
@@ -43,11 +49,11 @@
     width: 100%;
 
     &.draggable {
-      cursor: grab;
+      cursor: grab !important;
     }
 
     &.draggable:active {
-      cursor: grabbing;
+      cursor: grabbing !important;
     }
   }
 
@@ -59,18 +65,17 @@
   }
 }
 
-// read the ty
-
 
 // [Reading View] Banner wrapper (YAML with banner)
 .obsidian-banner-wrapper {
-  margin-top: calc(var(--banner-height) - 15px);
+  margin-top: calc(var(--banner-height));
   padding-top: 0.5em;
 }
 
 // [Live Preview] Spacer for banners
 .obsidian-banner-spacer {
   height: calc(var(--banner-height) - 24px);
+  
 }
 
 // Banner Icon && Title
@@ -80,6 +85,7 @@
   font-size: 4em;
   pointer-events: none;
   user-select: none;
+
   &.h-left {
     justify-content: flex-start;
   }
@@ -96,6 +102,7 @@
     display: inline-flex;
     align-items: center;
     height: calc(1em + 12px);
+    min-width: fit-content;
     padding: 6px;
     border-radius: 4px;
     pointer-events: initial;
@@ -107,9 +114,15 @@
     }
   }
 
-  .banner-title {
+  .obsidian-banner-title {
+    display: inline-flex;
+    align-items: center;
     pointer-events: initial;
-    font-size: var(--h1-variant) !important;
+    font-size: 3.5rem !important;
+    font-variant: var(--h1-variant);
+    font-style: var(--hl-style) !important;
+    font-family: var(--hl-font) !important;
+    padding-right: 2rem;
   }
 
   // place title next to icon
@@ -151,10 +164,6 @@
 .obsidian-banner-wrapper.has-banner-header {
   padding-top: 0;
 
-  .title-box {
-    font-size: 5rem !important;
-  }
-
   .obsidian-banner-icon {
     &.v-above {
       margin-top: calc(-1em - 12px);
@@ -172,7 +181,7 @@
 }
 
 // [Live Preview] Banner + Icon
-.has-banner .cm6-banner-icon {
+.has-banner .obsidian-banner-icon {
   &.v-above {
     margin-top: calc(-1em - 12px);
   }
@@ -199,7 +208,7 @@
     }
   }
 
-  &.has-banner-header .cm6-banner-icon,
+  &.has-banner-header .obsidian-banner-icon,
   &.has-banner:not(.has-banner-header) .obsidian-banner-spacer {
     margin-bottom: 1.5rem;
   }
@@ -343,6 +352,7 @@
     position: initial;
   }
 }
+
 .hide {
   display: none;
 }

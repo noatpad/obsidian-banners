@@ -17,7 +17,7 @@ const getIconTransform = (plugin: BannersPlugin): string => {
 }
 
 const buildIcon = (plugin: BannersPlugin, icon: string, file: TFile): HTMLElement => {
-  const box = document.createElement('span');
+  const box = document.createElement('div');
   box.addClass('icon-box');
   box.style.transform = getIconTransform(plugin);
 

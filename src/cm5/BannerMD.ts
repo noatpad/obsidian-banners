@@ -35,7 +35,7 @@ export default class Banner extends MarkdownRenderChild {
     const { containerEl: contentEl, sourcePath } = this.ctx;
 
     this.wrapper.addClass('obsidian-banner-wrapper');
-    this.containerEl.addClass('obsidian-banner', 'cm5-banner', style);
+    this.containerEl.addClass('obsidian-banner', 'cm6-banner', style);
 
     const [elements, removeListeners] = buildBanner(this.plugin, this.bannerData, sourcePath, this.containerEl, contentEl, this.isEmbed);
     this.containerEl.append(...elements);

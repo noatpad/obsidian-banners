@@ -147,6 +147,19 @@ export default class BannersPlugin extends Plugin {
         this.removeIcon(file);
       }
     });
+
+    this.addCommand({
+      id: 'banners:removeTitle',
+      name: 'Remove title',
+      checkCallback: (checking) => {
+        const file = this.workspace.getActiveFile();
+        if (checking) {
+          if (!file) { return false }
+          return !!this.metaManager.getBannerDataFromFile(file)?.title;
+        }
+        this.removeTitle(file);
+      }
+    });
   }
 
   loadStyles() {
@@ -262,6 +275,11 @@ export default class BannersPlugin extends Plugin {
   async removeIcon(file: TFile) {
     await this.metaManager.removeBannerData(file, 'icon');
     new Notice(`Removed banner icon for ${file.name}!`);
+  }
+
+  async removeTitle(file: TFile) {
+    await this.metaManager.removeBannerData(file, 'title');
+    new Notice(`Removed banner title for ${file.name}!`);
   }
 
   // Helper to wrap banner source in quotes if not already (Patch for previous versions)

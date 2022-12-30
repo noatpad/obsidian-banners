@@ -47,7 +47,6 @@ export default class BannerWidget extends WidgetType {
   }
 
   destroy() {
-
     this.removeListeners();
   }
 }
