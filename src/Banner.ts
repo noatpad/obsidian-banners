@@ -46,8 +46,8 @@ const handleDragMove = (e: MTEvent, dragData: IDragData) => {
   const img = e.target as HTMLImageElement;
   const { x, y } = getMousePos(e);
   const delta = {
-    x: (dragData.x - x) / img.clientWidth * 100,
-    y: (dragData.y - y) / img.clientHeight * 100
+    x: (dragData.x - x) / img.clientWidth * 30,
+    y: (dragData.y - y) / img.clientHeight * 30
   };
   dragData.x = x;
   dragData.y = y;
