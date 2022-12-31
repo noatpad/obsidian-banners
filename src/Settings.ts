@@ -7,7 +7,7 @@ type StyleOption = 'solid' | 'gradient';
 export type BannerDragModOption = 'none' | 'shift' | 'ctrl' | 'alt' | 'meta';
 type IconHorizontalOption = 'left' | 'center' | 'right' | 'custom';
 type IconVerticalOption = 'above' | 'center' | 'below' | 'custom';
-type TitlePlacementOption = 'below' | 'next-to-icon';
+type TitlePlacementOption = 'below-icon' | 'next-to-icon';
 
 export interface ISettingsOptions {
   height: number,
@@ -95,7 +95,7 @@ const ICON_VERTICAL_OPTIONS: Record<IconVerticalOption, string> = {
   custom: 'Custom'
 };
 const TITLE_PLACEMENT_OPTIONS: Record<TitlePlacementOption, string> = {
-  'below': 'Below icon',
+  'below-icon': 'Below icon',
   'next-to-icon': 'Next to icon on the right'
 };
 
@@ -257,7 +257,7 @@ export default class SettingsTab extends PluginSettingTab {
         }));
 
     this.createHeader(
-      'Banner Icons',
+      'Banner Header',
       'Give people a lil\' notion of what your note is about'
     );
 
@@ -321,16 +321,32 @@ export default class SettingsTab extends PluginSettingTab {
       .addToggle(toggle => toggle
         .setValue(useTwemoji)
         .onChange(async (val) => this.saveSettings({ useTwemoji: val }, { refreshViews: true })));
-    this.createHeader(
-      'Banner Title'
-    );
+
+
     new Setting(containerEl)
-      .setName('Show banner title')
+      .setName('Banner title placement')
       .setDesc('Set the position of the banner title')
       .addDropdown(dropdown => dropdown
         .addOptions(TITLE_PLACEMENT_OPTIONS)
         .setValue(titlePlacement)
-        .onChange(async (val: TitlePlacementOption) => this.saveSettings({ titlePlacement: val }, { refreshViews: true })));
+        .onChange(async (val: TitlePlacementOption) => {
+          // For some reason it doesn't update instantly when I just save the setting and refresh the view
+          if (val === 'below-icon') {
+            const bannerHeader = document.querySelector('.obsidian-banner-header');
+            if (bannerHeader) {
+              bannerHeader.classList.add('title-placement-below-icon');
+              bannerHeader.classList.remove('title-placement-next-to-icon');
+            }
+          } else if (val === 'next-to-icon') {
+            const bannerHeader = document.querySelector('.obsidian-banner-header');
+            if (bannerHeader) {
+              bannerHeader.classList.add('title-placement-next-to-icon');
+              bannerHeader.classList.remove('title-placement-below-icon');
+            }
+          }
+          this.saveSettings({ titlePlacement: val }, { reloadSettings: true, refreshViews: true })
+        }));
+
     this.createHeader(
       'Local Image Modal',
       'For the modal that shows when you run the "Add/Change banner with local image" command'

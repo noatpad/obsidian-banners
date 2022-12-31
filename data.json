@@ -16,6 +16,6 @@
   "localSuggestionsLimit": null,
   "bannersFolder": null,
   "allowMobileDrag": true,
-  "titlePlacement": "next-to-icon",
+  "titlePlacement": "below-icon",
   "fileNameAsTitle": true
 }

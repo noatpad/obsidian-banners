@@ -75,7 +75,7 @@
 // [Live Preview] Spacer for banners
 .obsidian-banner-spacer {
   height: calc(var(--banner-height) - 24px);
-  
+
 }
 
 // Banner Icon && Title
@@ -96,6 +96,13 @@
 
   &.h-right {
     justify-content: flex-start;
+  }
+
+  &.title-placement-below-icon {
+    flex-direction: column;
+    .obsidian-banner-title {
+      margin-top: 1rem;
+    }
   }
 
   .icon-box {
@@ -321,10 +328,12 @@
   .has-banner-header {
     margin-top: 20px;
   }
+
   .obsidian-banner-title {
     font-size: 2.8rem !important;
     padding-right: 0 !important;
   }
+
   .obsidian-banner-wrapper {
     margin-top: var(--banner-height);
   }
