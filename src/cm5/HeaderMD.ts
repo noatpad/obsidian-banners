@@ -19,9 +19,10 @@ export default class Header extends MarkdownRenderChild {
   }
 
   onload() {
-    const { iconHorizontalAlignment: ha, iconVerticalAlignment: va } = this.plugin.settings;
+    const { iconHorizontalAlignment: ha, iconVerticalAlignment: va, titlePlacement: titlePlacement} = this.plugin.settings;
+
     this.containerEl.addClass('obsidian-banner-header');
-    this.containerEl.addClass('obsidian-banner-icon', 'cm6-banner-icon', `h-${ha}`, `v-${va}`);
+    this.containerEl.addClass('obsidian-banner-icon', 'cm6-banner-icon', `h-${ha}`, `v-${va}`, `title-placement-${titlePlacement}`);
     this.wrapper.addClass('has-banner-header');
     if (this.icon) {
       const el = buildIcon(this.plugin, this.icon, this.file);

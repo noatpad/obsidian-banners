@@ -7,7 +7,7 @@
   "previewEmbedHeight": null,
   "frontmatterField": null,
   "bannerDragModifier": "none",
-  "iconHorizontalAlignment": "right",
+  "iconHorizontalAlignment": "left",
   "iconHorizontalTransform": "500",
   "iconVerticalAlignment": "above",
   "iconVerticalTransform": null,
@@ -15,6 +15,7 @@
   "showPreviewInLocalModal": true,
   "localSuggestionsLimit": null,
   "bannersFolder": null,
-  "allowMobileDrag": false,
-  "titlePlacement": "below"
+  "allowMobileDrag": true,
+  "titlePlacement": "next-to-icon",
+  "fileNameAsTitle": true
 }
