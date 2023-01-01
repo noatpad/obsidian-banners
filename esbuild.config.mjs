@@ -11,7 +11,7 @@ Please visit the repository linked to view the source code:
 https://github.com/noatpad/obsidian-banners
 */`;
 const prod = process.argv[2] === 'prod';
-const outdir = prod ? './' : './';
+const outdir = prod ? './' : process.env.DEVDIR;
 
 if (!outdir) {
 	console.error(
