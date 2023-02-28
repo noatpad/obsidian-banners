@@ -71,7 +71,7 @@ export default class MetaManager {
 
     const fieldsArr = Object.keys(trueFields) as Array<keyof IBannerMetadata>;
     const content = await this.vault.read(file);
-    const lines = content.split('\n');
+    const lines = content.split(/\r?\n/);
     const yamlStartLine = lines.indexOf('---');
     const hasYaml = yamlStartLine !== -1 && lines.slice(0, yamlStartLine).every(l => !l);
     let changed = false;
@@ -142,7 +142,7 @@ export default class MetaManager {
     if (!fields || !trueFields.some(f => frontmatterKeys.includes(f))) { return }
 
     const content = await this.vault.read(file);
-    const lines = content.split('\n');
+    const lines = content.split(/\r?\n/);
     const { line: start } = position.start;
     let { line: end } = position.end;
 
