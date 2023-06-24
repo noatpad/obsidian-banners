@@ -19,7 +19,7 @@ export default class BannersPlugin extends Plugin {
   extensions: Extension[];
   metaManager: MetaManager;
 
-  holdingDragModKey: boolean
+  holdingDragModKey: boolean;
 
   async onload() {
     console.log('Loading Banners...');
@@ -63,11 +63,7 @@ export default class BannersPlugin extends Plugin {
   }
 
   loadExtension() {
-    this.extensions = [
-      bannerDecorFacet.of(this.settings),
-      iconDecorFacet.of(this.settings),
-      getViewPlugin(this)
-    ];
+    this.extensions = [bannerDecorFacet.of(this.settings), iconDecorFacet.of(this.settings), getViewPlugin(this)];
     this.registerEditorExtension(this.extensions);
   }
 
@@ -77,7 +73,9 @@ export default class BannersPlugin extends Plugin {
       name: 'Add/Change banner with local image',
       checkCallback: (checking) => {
         const file = this.workspace.getActiveFile();
-        if (checking) { return !!file }
+        if (checking) {
+          return !!file;
+        }
         new LocalImageModal(this, file).open();
       }
     });
@@ -87,7 +85,9 @@ export default class BannersPlugin extends Plugin {
       name: 'Add/Change emoji icon',
       checkCallback: (checking) => {
         const file = this.workspace.getActiveFile();
-        if (checking) { return !!file }
+        if (checking) {
+          return !!file;
+        }
         new IconModal(this, file).open();
       }
     });
@@ -97,7 +97,9 @@ export default class BannersPlugin extends Plugin {
       name: 'Paste banner from clipboard',
       checkCallback: (checking) => {
         const file = this.workspace.getActiveFile();
-        if (checking) { return !!file }
+        if (checking) {
+          return !!file;
+        }
         this.pasteBanner(file);
       }
     });
@@ -107,10 +109,12 @@ export default class BannersPlugin extends Plugin {
       name: 'Lock/Unlock banner position',
       checkCallback: (checking) => {
         const file = this.workspace.getActiveFile();
-        if (checking) { return !!file }
+        if (checking) {
+          return !!file;
+        }
         this.toggleBannerLock(file);
       }
-    })
+    });
 
     this.addCommand({
       id: 'banners:removeBanner',
@@ -118,7 +122,9 @@ export default class BannersPlugin extends Plugin {
       checkCallback: (checking) => {
         const file = this.workspace.getActiveFile();
         if (checking) {
-          if (!file) { return false }
+          if (!file) {
+            return false;
+          }
           return !!this.metaManager.getBannerDataFromFile(file)?.src;
         }
         this.removeBanner(file);
@@ -131,7 +137,9 @@ export default class BannersPlugin extends Plugin {
       checkCallback: (checking) => {
         const file = this.workspace.getActiveFile();
         if (checking) {
-          if (!file) { return false }
+          if (!file) {
+            return false;
+          }
           return !!this.metaManager.getBannerDataFromFile(file)?.icon;
         }
         this.removeIcon(file);
@@ -140,9 +148,18 @@ export default class BannersPlugin extends Plugin {
   }
 
   loadStyles() {
-    document.documentElement.style.setProperty('--banner-height', `${this.getSettingValue('height')}px`);
-    document.documentElement.style.setProperty('--banner-internal-embed-height', `${this.getSettingValue('internalEmbedHeight')}px`);
-    document.documentElement.style.setProperty('--banner-preview-embed-height', `${this.getSettingValue('previewEmbedHeight')}px`);
+    const height = this.getSettingValue('height');
+    const height_uom = this.getSettingValue('height_uom');
+
+    document.documentElement.style.setProperty('--banner-height', height + height_uom);
+    document.documentElement.style.setProperty(
+      '--banner-internal-embed-height',
+      `${this.getSettingValue('internalEmbedHeight')}px`
+    );
+    document.documentElement.style.setProperty(
+      '--banner-preview-embed-height',
+      `${this.getSettingValue('previewEmbedHeight')}px`
+    );
   }
 
   loadPrecheck() {
@@ -159,13 +176,10 @@ export default class BannersPlugin extends Plugin {
   }
 
   unloadBanners() {
-    this.workspace.containerEl
-      .querySelectorAll('.obsidian-banner-wrapper')
-      .forEach((wrapper) => {
-        wrapper.querySelector('.obsidian-banner')?.remove();
-        wrapper.querySelector('.obsidian-banner-icon')?.remove();
-        wrapper.removeClasses(['obsidian-banner-wrapper', 'has-banner-icon']);
-      });
+    this.workspace.containerEl.querySelectorAll('.obsidian-banner-wrapper').forEach((wrapper) => {
+      wrapper.querySelector('.obsidian-banner')?.remove();
+      wrapper.removeClasses(['obsidian-banner-wrapper', 'has-banner-icon']);
+    });
   }
 
   unloadStyles() {
@@ -179,18 +193,27 @@ export default class BannersPlugin extends Plugin {
     let ret: boolean;
     if (e) {
       switch (this.settings.bannerDragModifier) {
-        case 'alt': ret = e.altKey; break;
-        case 'ctrl': ret = e.ctrlKey; break;
-        case 'meta': ret = e.metaKey; break;
-        case 'shift': ret = e.shiftKey; break;
-        default: ret = true;
+        case 'alt':
+          ret = e.altKey;
+          break;
+        case 'ctrl':
+          ret = e.ctrlKey;
+          break;
+        case 'meta':
+          ret = e.metaKey;
+          break;
+        case 'shift':
+          ret = e.shiftKey;
+          break;
+        default:
+          ret = true;
       }
     } else {
-      ret = (this.settings.bannerDragModifier === 'none');
+      ret = this.settings.bannerDragModifier === 'none';
     }
     this.holdingDragModKey = ret;
     this.toggleBannerCursor(ret);
-  }
+  };
 
   // Helper to refresh views
   refreshViews() {
@@ -214,10 +237,12 @@ export default class BannersPlugin extends Plugin {
   async pasteBanner(file: TFile) {
     const clipboard = await navigator.clipboard.readText();
     if (!isURL(clipboard)) {
-      new Notice('Your clipboard didn\'t had a valid URL! Please try again (and check the console if you wanna debug).');
+      new Notice("Your clipboard didn't had a valid URL! Please try again (and check the console if you wanna debug).");
       console.error({ clipboard });
     } else {
-      await this.metaManager.upsertBannerData(file, { src: `"${clipboard}"` });
+      await this.metaManager.upsertBannerData(file, {
+        src: `"${clipboard}"`
+      });
       new Notice('Pasted a new banner!');
     }
   }
@@ -226,7 +251,7 @@ export default class BannersPlugin extends Plugin {
   // TODO: This feels fragile, perhaps look for a better way
   toggleBannerCursor = (val: boolean) => {
     document.querySelectorAll('.banner-image').forEach((el) => el.toggleClass('draggable', val));
-  }
+  };
 
   // Helper to toggle banner position locking
   async toggleBannerLock(file: TFile) {
@@ -254,7 +279,9 @@ export default class BannersPlugin extends Plugin {
 
   // Helper to wrap banner source in quotes if not already (Patch for previous versions)
   async lintBannerSource(file: TFile) {
-    if (!file) { return }
+    if (!file) {
+      return;
+    }
     const { src } = this.metaManager.getBannerDataFromFile(file) ?? {};
     if (src && typeof src === 'string') {
       await this.metaManager.upsertBannerData(file, { src: `"${src}"` });
