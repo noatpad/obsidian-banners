@@ -1,4 +1,12 @@
-import { MarkdownView, MetadataCache, Notice, Plugin, TFile, Vault, Workspace } from 'obsidian';
+import {
+  MarkdownView,
+  MetadataCache,
+  Notice,
+  Plugin,
+  TFile,
+  Vault,
+  Workspace
+} from 'obsidian';
 import { Extension } from '@codemirror/state';
 import isURL from 'validator/lib/isURL';
 
@@ -7,7 +15,12 @@ import IconModal from './modals/IconModal';
 import LocalImageModal from './modals/LocalImageModal';
 import TitleModal from './modals/TitleModal';
 import MetaManager from './MetaManager';
-import SettingsTab, { INITIAL_SETTINGS, DEFAULT_VALUES, ISettingsOptions, PartialSettings } from './Settings';
+import SettingsTab, {
+  INITIAL_SETTINGS,
+  DEFAULT_VALUES,
+  ISettingsOptions,
+  PartialSettings
+} from './Settings';
 import getPostProcessor from './cm5';
 import getViewPlugin from './cm6';
 import { bannerDecorFacet, iconDecorFacet } from './cm6/helpers';
@@ -20,7 +33,7 @@ export default class BannersPlugin extends Plugin {
   extensions: Extension[];
   metaManager: MetaManager;
 
-  holdingDragModKey: boolean
+  holdingDragModKey: boolean;
 
   async onload() {
     console.log('Loading Banners...');
@@ -72,34 +85,32 @@ export default class BannersPlugin extends Plugin {
   }
 
   loadCommands() {
+    function createCommandCheckBackForModal(modal) {
+      return (checking) => {
+        const file = this.workspace.getActiveFile();
+        if (checking) {
+          return !!file;
+        }
+        new modal(this, file).open();
+      };
+    }
+
     this.addCommand({
       id: 'banners:addBanner',
       name: 'Add/Change banner with local image',
-      checkCallback: (checking) => {
-        const file = this.workspace.getActiveFile();
-        if (checking) { return !!file }
-        new LocalImageModal(this, file).open();
-      }
+      checkCallback: createCommandCheckBackForModal(LocalImageModal)
     });
 
     this.addCommand({
       id: 'banners:addIcon',
       name: 'Add/Change emoji icon',
-      checkCallback: (checking) => {
-        const file = this.workspace.getActiveFile();
-        if (checking) { return !!file }
-        new IconModal(this, file).open();
-      }
+      checkCallback: createCommandCheckBackForModal(IconModal)
     });
 
     this.addCommand({
       id: 'banners:addTitle',
       name: 'Add/Change title',
-      checkCallback: (checking) => {
-        const file = this.workspace.getActiveFile();
-        if (checking) { return !!file }
-        new TitleModal(this, file).open();
-      }
+      checkCallback: createCommandCheckBackForModal(TitleModal)
     });
 
     this.addCommand({
@@ -107,7 +118,10 @@ export default class BannersPlugin extends Plugin {
       name: 'Paste banner from clipboard',
       checkCallback: (checking) => {
         const file = this.workspace.getActiveFile();
-        if (checking) { return !!file }
+        if (checking) {
+          return !!file;
+        }
+        if (!(file instanceof TFile)) return;
         this.pasteBanner(file);
       }
     });
@@ -117,10 +131,13 @@ export default class BannersPlugin extends Plugin {
       name: 'Lock/Unlock banner position',
       checkCallback: (checking) => {
         const file = this.workspace.getActiveFile();
-        if (checking) { return !!file }
+        if (checking) {
+          return !!file;
+        }
+        if (!(file instanceof TFile)) return;
         this.toggleBannerLock(file);
       }
-    })
+    });
 
     this.addCommand({
       id: 'banners:removeBanner',
@@ -128,9 +145,14 @@ export default class BannersPlugin extends Plugin {
       checkCallback: (checking) => {
         const file = this.workspace.getActiveFile();
         if (checking) {
-          if (!file) { return false }
+          if (!file) {
+            return false;
+          }
           return !!this.metaManager.getBannerDataFromFile(file)?.src;
         }
+
+        if (!(file instanceof TFile)) return;
+
         this.removeBanner(file);
       }
     });
@@ -141,9 +163,14 @@ export default class BannersPlugin extends Plugin {
       checkCallback: (checking) => {
         const file = this.workspace.getActiveFile();
         if (checking) {
-          if (!file) { return false }
+          if (!file) {
+            return false;
+          }
           return !!this.metaManager.getBannerDataFromFile(file)?.icon;
         }
+
+        if (!(file instanceof TFile)) return;
+
         this.removeIcon(file);
       }
     });
@@ -154,28 +181,48 @@ export default class BannersPlugin extends Plugin {
       checkCallback: (checking) => {
         const file = this.workspace.getActiveFile();
         if (checking) {
-          if (!file) { return false }
+          if (!file) {
+            return false;
+          }
           return !!this.metaManager.getBannerDataFromFile(file)?.title;
         }
+
+        if (!(file instanceof TFile)) return;
+
         this.removeTitle(file);
       }
     });
   }
 
   loadStyles() {
-    document.documentElement.style.setProperty('--banner-height', `${this.getSettingValue('height')}px`);
-    document.documentElement.style.setProperty('--banner-internal-embed-height', `${this.getSettingValue('internalEmbedHeight')}px`);
-    document.documentElement.style.setProperty('--banner-preview-embed-height', `${this.getSettingValue('previewEmbedHeight')}px`);
+    document.documentElement.style.setProperty(
+      '--banner-height',
+      `${this.getSettingValue('height')}px`
+    );
+    document.documentElement.style.setProperty(
+      '--banner-internal-embed-height',
+      `${this.getSettingValue('internalEmbedHeight')}px`
+    );
+    document.documentElement.style.setProperty(
+      '--banner-preview-embed-height',
+      `${this.getSettingValue('previewEmbedHeight')}px`
+    );
   }
 
   loadPrecheck() {
     // Wrap banner source in quotes to prevent errors later in CM6 extension
-    const files = this.workspace.getLeavesOfType('markdown').map((leaf) => (leaf.view as MarkdownView).file);
+    const files = this.workspace
+      .getLeavesOfType('markdown')
+      .map((leaf) => (leaf.view as MarkdownView).file);
     const uniqueFiles = [...new Set(files)];
     uniqueFiles.forEach((file) => this.lintBannerSource(file));
-    this.registerEvent(this.workspace.on('file-open', (file) => {
-      this.lintBannerSource(file)
-    }));
+    this.registerEvent(
+      this.workspace.on('file-open', (file) => {
+        if (!(file instanceof TFile)) return;
+
+        this.lintBannerSource(file);
+      })
+    );
   }
 
   unloadListeners() {
@@ -195,8 +242,12 @@ export default class BannersPlugin extends Plugin {
 
   unloadStyles() {
     document.documentElement.style.removeProperty('--banner-height');
-    document.documentElement.style.removeProperty('--banner-internal-embed-height');
-    document.documentElement.style.removeProperty('--banner-preview-embed-height');
+    document.documentElement.style.removeProperty(
+      '--banner-internal-embed-height'
+    );
+    document.documentElement.style.removeProperty(
+      '--banner-preview-embed-height'
+    );
   }
 
   // Helper to check if the drag modifier key is being held down or not, if specified
@@ -204,18 +255,27 @@ export default class BannersPlugin extends Plugin {
     let ret: boolean;
     if (e) {
       switch (this.settings.bannerDragModifier) {
-        case 'alt': ret = e.altKey; break;
-        case 'ctrl': ret = e.ctrlKey; break;
-        case 'meta': ret = e.metaKey; break;
-        case 'shift': ret = e.shiftKey; break;
-        default: ret = true;
+        case 'alt':
+          ret = e.altKey;
+          break;
+        case 'ctrl':
+          ret = e.ctrlKey;
+          break;
+        case 'meta':
+          ret = e.metaKey;
+          break;
+        case 'shift':
+          ret = e.shiftKey;
+          break;
+        default:
+          ret = true;
       }
     } else {
-      ret = (this.settings.bannerDragModifier === 'none');
+      ret = this.settings.bannerDragModifier === 'none';
     }
     this.holdingDragModKey = ret;
     this.toggleBannerCursor(ret);
-  }
+  };
 
   // Helper to refresh views
   refreshViews() {
@@ -239,7 +299,10 @@ export default class BannersPlugin extends Plugin {
   async pasteBanner(file: TFile) {
     const clipboard = await navigator.clipboard.readText();
     if (!isURL(clipboard)) {
-      new Notice('Your clipboard didn\'t had a valid URL! Please try again (and check the console if you wanna debug).');
+      //
+      new Notice(
+        "Your clipboard didn't had a valid URL! Please try again (and check the console if you wanna debug)."
+      );
       console.error({ clipboard });
     } else {
       await this.metaManager.upsertBannerData(file, { src: `"${clipboard}"` });
@@ -250,8 +313,10 @@ export default class BannersPlugin extends Plugin {
   // Helper to apply grab cursor for banner images
   // TODO: This feels fragile, perhaps look for a better way
   toggleBannerCursor = (val: boolean) => {
-    document.querySelectorAll('.banner-image').forEach((el) => el.toggleClass('draggable', val));
-  }
+    document
+      .querySelectorAll('.banner-image')
+      .forEach((el) => el.toggleClass('draggable', val));
+  };
 
   // Helper to toggle banner position locking
   async toggleBannerLock(file: TFile) {
@@ -284,7 +349,9 @@ export default class BannersPlugin extends Plugin {
 
   // Helper to wrap banner source in quotes if not already (Patch for previous versions)
   async lintBannerSource(file: TFile) {
-    if (!file) { return }
+    if (!file) {
+      return;
+    }
     const { src } = this.metaManager.getBannerDataFromFile(file) ?? {};
     if (src && typeof src === 'string') {
       await this.metaManager.upsertBannerData(file, { src: `"${src}"` });
@@ -292,7 +359,9 @@ export default class BannersPlugin extends Plugin {
   }
 
   // Helper to get setting value (or the default setting value if not set)
-  getSettingValue<K extends keyof ISettingsOptions>(key: K): PartialSettings[K] {
+  getSettingValue<K extends keyof ISettingsOptions>(
+    key: K
+  ): PartialSettings[K] {
     return this.settings[key] ?? DEFAULT_VALUES[key];
   }
 }

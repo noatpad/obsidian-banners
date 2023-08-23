@@ -5,8 +5,8 @@
   "author": "Danny Hernandez",
   "main": "src/main.ts",
   "scripts": {
-    "dev": "node ./esbuild.config.mjs",
-    "build": "node ./esbuild.config.mjs prod"
+    "dev": "tsx ./esbuild.config.ts",
+    "build": "tsx ./esbuild.config.ts prod"
   },
   "keywords": [
     "obsidian",
@@ -29,19 +29,32 @@
     "validator": "^13.6.0"
   },
   "devDependencies": {
+    "@types/codemirror": "^5.60.9",
     "@types/common-tags": "^1.8.1",
+    "@types/fs-extra": "^11.0.1",
     "@types/lodash": "^4.14.172",
-    "@types/node": "^14.14.37",
+    "@types/node": "^14.18.55",
     "@types/node-emoji": "^1.8.1",
     "@types/twemoji": "^12.1.2",
     "@types/validator": "^13.6.3",
     "builtin-modules": "^3.2.0",
+    "copy-newer": "^2.1.2",
     "dotenv": "^16.0.0",
-    "esbuild": "^0.13.0",
-    "esbuild-sass-plugin": "^2.2.4",
-    "sass": "^1.37.5",
+    "esbuild": "^0.19.2",
+    "esbuild-plugin-copy": "^2.1.1",
+    "esbuild-sass-plugin": "^2.12.0",
+    "fs-extra": "^11.1.1",
+    "postcss": "^8.4.28",
+    "postcss-modules": "^6.0.0",
+    "sass": "^1.66.1",
     "tslib": "^2.4.1",
+    "tsx": "^3.12.7",
     "typescript": "^4.2.4"
+  },
+  "engineStrict": true,
+  "engines": {
+    "node": ">= 18.13.0",
+    "pnpm": ">= 7.26.3"
   },
   "license": "MIT"
 }

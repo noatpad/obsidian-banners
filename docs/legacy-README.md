@@ -1,8 +1,3 @@
----
-DOC_VERSION: v0.0.1
-CREATION_DATE: '2023-08-24'
----
-
 # Banners
 
 An [Obsidian](https://obsidian.md/) plugin to add banner images (and icons) to your notes!
@@ -114,55 +109,19 @@ Currently some plugins reported to conflict with Banners are:
 - [ ] [Obsidian Code Block Enhancer](https://github.com/nyable/obsidian-code-block-enhancer)
 - [ ] [Obsidian Embedded Note Titles](https://github.com/mgmeyers/obsidian-embedded-note-titles)
 
-## : For Developers
+## Develop
 
-### :: Active Development
+Once you run `npm i`, you can build the files into `dist/` easily by running `npm run build`.
 
-- PREREQUISITES include,
-  - the package manager,
-    - id est, **pnpm**
-  - the javascript runner
-    - id est, **node**
-  - [[ObisidianMD-app]]
-  - [[hot-reload-plugin,ad-fine-Obsidian-MD]]
-  - 🤔 The latestenvironment versions can be found in the `package.json` file.
-- for FIRST TIMERS, use the following procedure:
-  - Install dependences.
-    - ⚙️ execute `pnpm i` in shell
-  - Specify dev vault location.
-    - ⚙️
-      - Create a .env file within root
-      - 💁 Example of a .env can be found in `env.example`.
-  - Run development environment
-    - ⚙️ execute `pnpm dev`
-      - Artifacts will hot reload into your dev vault under the folder specified by the id specced within the file `manifest.json`
+You can also have it watch your files and update your plugin within your vault while you develop by running `npm run dev`. Just make sure to set `DEVDIR` in `./esbuild.config.mjs` to your testing vault beforehand.
 
-### :: Production Workflow
+## Things I _might_ do down the road
 
-Work in Progress...
-
-#### Github Pipeline...
-
-#### Production Builds
-
-- To produce a build,
-  - execute `pnpm build`
-- Location of prod build,
-  - is `dist`
-
-### :: Coding Style Guide
-
-- ℹ️ Prefix all functions using the Patterns.dev style guide
-  - 🔍 Prefixes with,
-    - `create`,
-      - returns a function
-      - useful for middleware
-    - `manu`,
-      - returns an object
-      - useful for default merge parameters.
-    - `do`,
-      - returns void
-      - useful for single responsibility impl
-    - `gen`,
-      - describes an asynchronous function
-      - useful for pre-signaling to dev whether or not a async IIFE setup is required.
+- [ ] Plugin compatibility fixes and enhancements
+- [ ] Note-specific settings (override global style & height settings per note)
+  - [ ] Drag bottom of banner to determine note-specific banner height
+- [ ] Image icons instead of only emoji
+- [ ] Banner titles (a la Notion-style)
+- [ ] Allow content's vertical displacement height to be different than banner height (this can be nice for aesthetic choices with the _Gradient_ style)
+- [ ] Copy image files and paste as a banner
+- [ ] Unsplash API integration (select from Unsplash's images straight from Obsidian)

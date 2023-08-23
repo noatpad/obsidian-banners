@@ -1,24 +1,33 @@
 {
   "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
+    "esModuleInterop": true,
+    "importHelpers": true,
     "inlineSourceMap": true,
     "inlineSources": true,
-    "module": "ESNext",
-    "target": "es6",
-    "allowJs": true,
-    "noImplicitAny": true,
-    "moduleResolution": "node",
-    "importHelpers": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
     "lib": [
       "dom",
-      "es5",
-      "scripthost",
-      "es2015"
+      "ES2022"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "noImplicitAny": true,
+    "resolveJsonModule": true,
+    "target": "ESNext",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./typings",
+      "./node_modules/obsidian",
+      "./node_modules/@codemirror/state/dist"
     ]
   },
+  "exclude": [
+    "node_modules"
+  ],
   "include": [
-    "**/*.ts"
+    "src/**/*.ts",
+    "./fophidian.ts"
   ]
 }

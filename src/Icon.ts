@@ -17,13 +17,13 @@ const getIconTransform = (plugin: BannersPlugin): string => {
 }
 
 const buildIcon = (plugin: BannersPlugin, icon: string, file: TFile): HTMLElement => {
-  const box = document.createElement('div');
+  const box: HTMLDivElement = document.createElement('div');
   box.addClass('icon-box');
   box.style.transform = getIconTransform(plugin);
 
   const text = icon.match(EMOJI_REGEX)?.join('') ?? icon[0];
   if (plugin.settings.useTwemoji) {
-    box.innerHTML = twemoji.parse(text);
+    box.innerHTML = twemoji.parse(text) as any;
   } else {
     box.textContent = text;
   }

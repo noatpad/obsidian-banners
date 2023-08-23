@@ -49,7 +49,7 @@ export default class IconModal extends FuzzySuggestModal<IEmojiPair> {
     const { useTwemoji } = this.plugin.settings;
     const { emoji } = match.item;
     const html = useTwemoji ? twemoji.parse(emoji) : `<span class="regular-emoji">${emoji} </span>`;
-    el.insertAdjacentHTML('afterbegin', html);
+    el.insertAdjacentHTML('afterbegin', html as any);
   }
 
   async onChooseItem(item: IEmojiPair) {

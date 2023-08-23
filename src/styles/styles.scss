@@ -65,7 +65,6 @@
   }
 }
 
-
 // [Reading View] Banner wrapper (YAML with banner)
 .obsidian-banner-wrapper {
   margin-top: calc(var(--banner-height));
@@ -75,7 +74,6 @@
 // [Live Preview] Spacer for banners
 .obsidian-banner-spacer {
   height: calc(var(--banner-height) - 24px);
-
 }
 
 // Banner Icon && Title
@@ -145,7 +143,7 @@
 .internal-embed .markdown-embed-content .obsidian-banner-wrapper {
   margin-top: var(--banner-internal-embed-height);
 
-  >.obsidian-banner {
+  > .obsidian-banner {
     height: var(--banner-internal-embed-height);
 
     img {
@@ -158,7 +156,7 @@
 .popover .markdown-embed-content .obsidian-banner-wrapper {
   margin-top: var(--banner-preview-embed-height);
 
-  >.obsidian-banner {
+  > .obsidian-banner {
     height: var(--banner-preview-embed-height);
 
     img {
@@ -205,7 +203,6 @@
 
 // [Live Preview] Patches for banner placement, YAML fold indicator, & first line spacing
 .markdown-source-view.mod-cm6 .cm-line {
-
   &.has-banner,
   &.has-banner-header {
     position: inherit;
@@ -235,16 +232,16 @@
   }
 
   &.has-banner.has-banner-header {
-    &[data-icon-v="above"] {
+    &[data-icon-v='above'] {
       @include fold-top(calc(var(--banner-height) + 25px));
     }
 
-    &[data-icon-v="center"],
-    &[data-icon-v="custom"] {
+    &[data-icon-v='center'],
+    &[data-icon-v='custom'] {
       @include fold-top(calc(var(--banner-height) + 2em + 31px));
     }
 
-    &[data-icon-v="below"] {
+    &[data-icon-v='below'] {
       @include fold-top(calc(var(--banner-height) + 4em + 45px));
     }
   }
@@ -348,7 +345,7 @@
   .obsidian-banner-wrapper {
     margin-top: 0;
 
-    >.obsidian-banner {
+    > .obsidian-banner {
       position: initial;
       margin-bottom: 20px;
     }
