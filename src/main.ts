@@ -34,6 +34,7 @@ export default class BannersPlugin extends Plugin {
   metaManager: MetaManager;
 
   holdingDragModKey: boolean;
+  windows: Set<Window>;
 
   async onload() {
     console.log('Loading Banners...');
@@ -55,6 +56,24 @@ export default class BannersPlugin extends Plugin {
     this.addSettingTab(new SettingsTab(this));
 
     this.refreshViews();
+
+    this.registerEvent(
+      this.app.workspace.on('window-open', (tfile, global, c) => {
+        if (!this.windows) {
+          this.loadStyles(global.window.document);
+          return (this.windows = new Set([global.window]));
+        }
+        if (this.windows.has(global.window)) {
+          return console.log("you've stored this already");
+        }
+        this.windows.add(global.window);
+      })
+    );
+    this.registerEvent(
+      this.app.workspace.on('window-close', (tfile, global) => {
+        this.windows.delete(global.window);
+      })
+    );
   }
 
   async onunload() {
@@ -194,16 +213,16 @@ export default class BannersPlugin extends Plugin {
     });
   }
 
-  loadStyles() {
-    document.documentElement.style.setProperty(
+  loadStyles(doc: Document = document) {
+    doc.documentElement.style.setProperty(
       '--banner-height',
       `${this.getSettingValue('height')}px`
     );
-    document.documentElement.style.setProperty(
+    doc.documentElement.style.setProperty(
       '--banner-internal-embed-height',
       `${this.getSettingValue('internalEmbedHeight')}px`
     );
-    document.documentElement.style.setProperty(
+    doc.documentElement.style.setProperty(
       '--banner-preview-embed-height',
       `${this.getSettingValue('previewEmbedHeight')}px`
     );
