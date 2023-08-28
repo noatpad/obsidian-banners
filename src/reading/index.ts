@@ -8,7 +8,6 @@ const pusherObserver = new MutationObserver((mutations, observer) => {
   for (const { addedNodes } of mutations) {
     addedNodes.forEach((node) => {
       if (node instanceof HTMLElement && node.hasClass('markdown-preview-pusher')) {
-        console.log('set!');
         node.setCssStyles({ marginTop: '300px' });
       }
     });

@@ -1,5 +1,6 @@
 import { Plugin } from "obsidian";
 import postprocessor from "./reading";
+import { bannerField, bannerMetadataField } from "./editing";
 
 export let plug: BannersPlugin;
 
@@ -9,6 +10,7 @@ export default class BannersPlugin extends Plugin {
 
     plug = this;
     this.loadProcessor();
+    this.loadExtension();
   }
 
   async onunload() {
@@ -16,6 +18,13 @@ export default class BannersPlugin extends Plugin {
   }
 
   loadProcessor() {
-    this.registerMarkdownPostProcessor(postprocessor)
+    this.registerMarkdownPostProcessor(postprocessor);
+  }
+
+  loadExtension() {
+    this.registerEditorExtension([
+      bannerMetadataField,
+      bannerField
+    ]);
   }
 }

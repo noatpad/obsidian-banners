@@ -4,10 +4,20 @@ declare module 'obsidian' {
   interface MarkdownPostProcessorContext {
     containerEl: HTMLElement
   }
+
+  interface MarkdownFileInfo {
+    file: TFile,
+    frontmatterValid: boolean,
+    rawFrontmatter: string
+  }
 }
 
-interface BannerMetadata {
-  src: string,
-  x: number,
-  y: number
+declare global {
+  type Maybe<T> = T | null | undefined;
+
+  interface BannerMetadata {
+    src: Maybe<string>,
+    x: Maybe<number>,
+    y: Maybe<number>
+  }
 }

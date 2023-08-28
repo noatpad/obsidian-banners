@@ -1,7 +1,7 @@
 import type { TFile } from "obsidian";
 import { plug } from "src/main";
 
-export const parseInternalLink = (src: string, file: TFile): string | null => {
+export const parseInternalLink = (src: string, file: TFile): Maybe<string> => {
   const isInternalLink = /^\[\[.+\]\]/.test(src);
   if (!isInternalLink) return null;
 

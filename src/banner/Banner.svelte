@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { TFile } from "obsidian";
   import { parseInternalLink } from "./utils";
-  import type { BannerMetadata } from "src/types";
 
   export let bannerData: BannerMetadata;
   export let file: TFile;
@@ -47,7 +46,7 @@
     height: 300px;
     overflow: hidden;
     user-select: none;
-    opacity: 0.5;
+    opacity: 0.3;
   }
 
   img {
@@ -58,3 +57,5 @@
     width: 100%;
   }
 </style>
+
+<svelte:options accessors />

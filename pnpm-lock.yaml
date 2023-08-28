@@ -10,6 +10,9 @@ dependencies:
     version: 1.4.4(@codemirror/state@6.2.1)(@codemirror/view@6.16.0)
 
 devDependencies:
+  '@codemirror/state':
+    specifier: ^6.2.1
+    version: 6.2.1
   '@tsconfig/svelte':
     specifier: ^5.0.2
     version: 5.0.2
@@ -62,7 +65,6 @@ packages:
 
   /@codemirror/state@6.2.1:
     resolution: {integrity: sha512-RupHSZ8+OjNT38zU9fKH2sv+Dnlr8Eb8sl4NOnnqz95mCFTZUaiRP8Xv5MeeaG0px2b8Bnfe7YGwCV3nsBhbuw==}
-    dev: false
 
   /@codemirror/view@6.16.0:
     resolution: {integrity: sha512-1Z2HkvkC3KR/oEZVuW9Ivmp8TWLzGEd8T8TA04TTwPvqogfkHBdYSlflytDOqmkUxM2d1ywTg7X2dU5mC+SXvg==}

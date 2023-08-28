@@ -1,6 +1,5 @@
 import { MarkdownRenderChild, TFile } from "obsidian";
 import Banner from '../banner/Banner.svelte';
-import type { BannerMetadata } from "src/types";
 
 export class BannerRenderChild extends MarkdownRenderChild {
   banner: Banner | undefined;
@@ -26,7 +25,5 @@ export class BannerRenderChild extends MarkdownRenderChild {
     });
   }
 
-  onunload() {
-    console.log('unload banner');
-  }
+  onunload() {}
 }
