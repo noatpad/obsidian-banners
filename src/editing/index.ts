@@ -1,12 +1,12 @@
 import { EditorState, StateField } from "@codemirror/state";
 import { editorEditorField, editorInfoField } from "obsidian";
 import Banner from "src/banner/Banner.svelte";
-import { extractBannerData } from "src/utils";
+import { extractBannerData, isEqualBannerData } from "src/utils";
 import { addBannerEffect, isBannerEffect, removeBannerEffect, updateBannerEffect } from "./utils";
 
-const getBannerData = (state: EditorState): Maybe<BannerMetadata> => {
+const getBannerData = (state: EditorState): BannerMetadata => {
   const { file, frontmatterValid, rawFrontmatter } = state.field(editorInfoField);
-  if (!file || !frontmatterValid) return undefined;
+  if (!file || !frontmatterValid) return extractBannerData();
 
   const frontmatter: Record<string, string> = {};
   for (const line of rawFrontmatter.split('\n').slice(1, -1)) {
@@ -18,20 +18,27 @@ const getBannerData = (state: EditorState): Maybe<BannerMetadata> => {
   return extractBannerData(frontmatter);
 };
 
-export const bannerMetadataField = StateField.define<Maybe<BannerMetadata>>({
-  create(state) { return undefined },
+export const bannerMetadataField = StateField.define<BannerMetadata>({
+  create(state) {
+    return extractBannerData();
+  },
   update(prev, transaction) {
-    console.log(transaction);
     const { effects, state } = transaction;
     if (isBannerEffect(effects) || !transaction.docChanged) return prev;
 
     const bannerData = getBannerData(state);
-    if (!bannerData) return undefined;
+    // if (!bannerData) return undefined;
 
     if (bannerData.src) {
-      const effect = prev?.src ? updateBannerEffect : addBannerEffect;
-      state.update({ effects: [effect.of(bannerData)] });
+      if (!prev.src) {
+        console.log('add!', bannerData);
+        state.update({ effects: [addBannerEffect.of(bannerData)] });
+      } else if (!isEqualBannerData(bannerData, prev)) {
+        console.log('update!', prev, bannerData);
+        state.update({ effects: [updateBannerEffect.of(bannerData)] });
+      }
     } else {
+      console.log('remove!', prev);
       state.update({ effects: [removeBannerEffect.of(null) ]});
     }
 
@@ -55,6 +62,7 @@ const addBanner = (state: EditorState, bannerData: BannerMetadata): Banner => {
 };
 
 const updateBanner = (banner: Banner, bannerData: BannerMetadata) => {
+  if (!banner) return;
   banner.$set({ bannerData });
 };
 
@@ -65,25 +73,32 @@ const removeBanner = (state: EditorState) => {
 };
 
 // TODO: Fix banner when loading a note for the first time, switching notes, & switching back into Editing view
-export const bannerField = StateField.define<Maybe<Banner>>({
+export const bannerField = StateField.define<number>({
   create(state) {
-    const bannerData = state.field(bannerMetadataField);
-    return bannerData?.src ? addBanner(state, bannerData) : undefined;
+    // const bannerData = state.field(bannerMetadataField);
+    // return bannerData?.src ? addBanner(state, bannerData) : undefined;
+    return 0;
   },
   update(prev, transaction) {
     const { effects, state } = transaction;
-
     let now = prev;
+    console.log(now);
     for (const effect of effects) {
       if (effect.is(addBannerEffect)) {
-        now = addBanner(state, effect.value);
-      } else if (effect.is(updateBannerEffect) && now) {
-        updateBanner(now, effect.value);
+        // now = addBanner(state, effect.value);
+        now = 1;
+        // console.log('add banner!', now);
+      } else if (effect.is(updateBannerEffect)) {
+        // updateBanner(now, effect.value);
+        now = 2;
+        // console.log('update banner!', now);
       } else if (effect.is(removeBannerEffect)) {
-        now = removeBanner(state);
+        // now = removeBanner(state);
+        now = 3;
+        // console.log('remove banner!', now);
       }
     }
 
-    return prev;
+    return now;
   },
 });
