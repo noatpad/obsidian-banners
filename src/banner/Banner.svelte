@@ -5,9 +5,11 @@
   export let bannerData: BannerMetadata;
   export let file: TFile;
 
-  const fetchImage = async () => {
+  const fetchImage = async (src: Maybe<string>) => {
+    // Just return the bad link to get the error
+    if (!src) return src;
+
     // Check if it's an internal link and use that if it is
-    const { src } = bannerData;
     const internalLink = parseInternalLink(src, file);
     if (internalLink) return internalLink;
 
@@ -28,7 +30,7 @@
 </script>
 
 <div class="obsidian-banner">
-  {#await fetchImage()}
+  {#await fetchImage(bannerData.src)}
     <p>Loading...</p>
   {:then src}
     <img {src} alt="Banner">

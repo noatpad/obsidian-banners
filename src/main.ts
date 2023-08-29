@@ -1,6 +1,6 @@
 import { Plugin } from "obsidian";
 import postprocessor from "./reading";
-import { bannerField, bannerMetadataField } from "./editing";
+import { bannerField, bannerMetadataExtender } from "./editing";
 
 export let plug: BannersPlugin;
 
@@ -23,7 +23,7 @@ export default class BannersPlugin extends Plugin {
 
   loadExtension() {
     this.registerEditorExtension([
-      bannerMetadataField,
+      bannerMetadataExtender,
       bannerField
     ]);
   }
