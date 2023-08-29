@@ -7,12 +7,15 @@ settings:
 dependencies:
   obsidian:
     specifier: ^1.4.4
-    version: 1.4.4(@codemirror/state@6.2.1)(@codemirror/view@6.16.0)
+    version: 1.4.4(@codemirror/state@6.2.1)(@codemirror/view@6.17.0)
 
 devDependencies:
   '@codemirror/state':
     specifier: ^6.2.1
     version: 6.2.1
+  '@codemirror/view':
+    specifier: ^6.17.0
+    version: 6.17.0
   '@tsconfig/svelte':
     specifier: ^5.0.2
     version: 5.0.2
@@ -66,13 +69,12 @@ packages:
   /@codemirror/state@6.2.1:
     resolution: {integrity: sha512-RupHSZ8+OjNT38zU9fKH2sv+Dnlr8Eb8sl4NOnnqz95mCFTZUaiRP8Xv5MeeaG0px2b8Bnfe7YGwCV3nsBhbuw==}
 
-  /@codemirror/view@6.16.0:
-    resolution: {integrity: sha512-1Z2HkvkC3KR/oEZVuW9Ivmp8TWLzGEd8T8TA04TTwPvqogfkHBdYSlflytDOqmkUxM2d1ywTg7X2dU5mC+SXvg==}
+  /@codemirror/view@6.17.0:
+    resolution: {integrity: sha512-0yVhPSyKWwYDy6Xwd7aDoj8ZXtdoHwC7El4z1/JJpIimrtDR5CVGY4lvQ0r2hP11ezB+eCHexZ6Zbz6rPUe06A==}
     dependencies:
       '@codemirror/state': 6.2.1
       style-mod: 4.1.0
       w3c-keyname: 2.2.8
-    dev: false
 
   /@esbuild-kit/cjs-loader@2.4.2:
     resolution: {integrity: sha512-BDXFbYOJzT/NBEtp71cvsrGPwGAMGRB/349rwKuoxNSiKjPraNNnlK6MIIabViCjqZugu6j+xeMDlEkWdHHJSg==}
@@ -1007,14 +1009,14 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /obsidian@1.4.4(@codemirror/state@6.2.1)(@codemirror/view@6.16.0):
+  /obsidian@1.4.4(@codemirror/state@6.2.1)(@codemirror/view@6.17.0):
     resolution: {integrity: sha512-q2V5GNT/M40uYOENdVw5kovPSoaO6vppiiyBCkIqWgKp4oN654jA/GQ0OaNBA7p5NdfS245QCeRgCFQ42wOZiw==}
     peerDependencies:
       '@codemirror/state': ^6.0.0
       '@codemirror/view': ^6.0.0
     dependencies:
       '@codemirror/state': 6.2.1
-      '@codemirror/view': 6.16.0
+      '@codemirror/view': 6.17.0
       '@types/codemirror': 5.60.8
       moment: 2.29.4
     dev: false
@@ -1172,7 +1174,6 @@ packages:
 
   /style-mod@4.1.0:
     resolution: {integrity: sha512-Ca5ib8HrFn+f+0n4N4ScTIA9iTOQ7MaGS1ylHcoVqW9J7w2w8PzN6g9gKmTYgGEBH8e120+RCmhpje6jC5uGWA==}
-    dev: false
 
   /supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
@@ -1276,7 +1277,6 @@ packages:
 
   /w3c-keyname@2.2.8:
     resolution: {integrity: sha512-dpojBhNsCNN7T82Tm7k26A6G9ML3NkhDsnw9n/eoxSRlVBB4CEtIQ/KTCLI2Fwf3ataSXRhYFkQi3SlnFwPvPQ==}
-    dev: false
 
   /wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}

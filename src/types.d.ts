@@ -1,14 +1,38 @@
-import type {} from 'obsidian';
+import type { EditorView } from '@codemirror/view';
+import type { Editor } from 'obsidian';
+
+interface EditMode {
+  type: 'source',
+  editor: Editor
+}
+
+interface PreviewMode {
+  type: 'preview'
+}
 
 declare module 'obsidian' {
+  interface Editor {
+    cm: EditorView
+  }
+
   interface MarkdownPostProcessorContext {
     containerEl: HTMLElement
   }
 
   interface MarkdownFileInfo {
+    leaf: WorkspaceLeaf,
     file: TFile,
     frontmatterValid: boolean,
     rawFrontmatter: string
+  }
+
+  interface View {
+    currentMode: EditMode | PreviewMode,
+    editor: Editor
+  }
+
+  interface WorkspaceLeaf {
+    id: string
   }
 }
 

@@ -1,6 +1,6 @@
 import { Plugin } from "obsidian";
 import postprocessor from "./reading";
-import { bannerField, bannerMetadataExtender } from "./editing";
+import { bannerField, bannerMetadataExtender, loadEditingViewListeners } from "./editing";
 
 export let plug: BannersPlugin;
 
@@ -11,6 +11,7 @@ export default class BannersPlugin extends Plugin {
     plug = this;
     this.loadProcessor();
     this.loadExtension();
+    this.loadListeners();
   }
 
   async onunload() {
@@ -26,5 +27,9 @@ export default class BannersPlugin extends Plugin {
       bannerMetadataExtender,
       bannerField
     ]);
+  }
+
+  loadListeners() {
+    loadEditingViewListeners();
   }
 }

@@ -1,8 +1,11 @@
-import { EditorState, StateField } from "@codemirror/state";
 import { editorEditorField, editorInfoField } from "obsidian";
+import { EditorState, StateField } from "@codemirror/state";
 import Banner from "src/banner/Banner.svelte";
 import { extractBannerData } from "src/utils";
-import { isBannerEffect, removeBannerEffect, upsertBannerEffect } from "./utils";
+import { assignBannerEffect, isBannerEffect, openNoteEffect, removeBannerEffect, upsertBannerEffect } from "./utils";
+import { plug } from "src/main";
+
+const leafBannerMap: Record<string, Maybe<Banner>> = {};
 
 const getBannerData = (state: EditorState): BannerMetadata => {
   const { file, frontmatterValid, rawFrontmatter } = state.field(editorInfoField);
@@ -21,13 +24,27 @@ const getBannerData = (state: EditorState): BannerMetadata => {
 
 export const bannerMetadataExtender = EditorState.transactionExtender.of((transaction) => {
   const { docChanged, effects, state } = transaction;
-  if (isBannerEffect(effects) || !docChanged) return null;
-
   const bannerData = getBannerData(state);
-  return {
-    effects: bannerData.src ? upsertBannerEffect.of(bannerData) : removeBannerEffect.of(null)
-  };
+
+  if (effects.some((e) => e.is(openNoteEffect))) {
+    console.log('open note!');
+    const { leaf } = state.field(editorInfoField);
+    const upsertEffect = upsertBannerEffect.of(bannerData);
+    const effects = leafBannerMap[leaf.id] ? [assignBannerEffect.of(leafBannerMap[leaf.id] as Banner), upsertEffect] : [upsertEffect];
+    return { effects };
+  } else if (!isBannerEffect(effects) && docChanged) {
+    return {
+      effects: bannerData.src ? upsertBannerEffect.of(bannerData) : removeBannerEffect.of(null)
+    };
+  }
+
+  return null;
 });
+
+const setBannerInMap = (state: EditorState, banner?: Maybe<Banner>) => {
+  const { leaf } = state.field(editorInfoField);
+  leafBannerMap[leaf.id] = banner;
+}
 
 const addBanner = (state: EditorState, bannerData: BannerMetadata): Banner => {
   const { file } = state.field(editorInfoField);
@@ -41,6 +58,7 @@ const addBanner = (state: EditorState, bannerData: BannerMetadata): Banner => {
     props: { bannerData, file }
   });
   dom.querySelector('.cm-sizer')?.prepend(wrapper);
+  setBannerInMap(state, banner);
   return banner;
 };
 
@@ -51,12 +69,17 @@ const updateBanner = (banner: Banner, bannerData: BannerMetadata) => {
 const removeBanner = (state: EditorState) => {
   const { dom } = state.field(editorEditorField);
   dom.querySelector('.obsidian-banner-wrapper')?.remove();
+  setBannerInMap(state);
   return undefined;
 };
 
-// TODO: Fix banner when loading a note for the first time, switching notes, & switching back into Editing view
+/* TODO: Fix banner spacing when switching into the Editing view
+- Reading -> Editing
+- Editing -> Reading -> Editing */
+// TODO: Fix banner in Editing View when switching files in a linked Reading view
 export const bannerField = StateField.define<Maybe<Banner>>({
   create() {
+    console.log('create!');
     return undefined;
   },
   update(prev, transaction) {
@@ -66,14 +89,34 @@ export const bannerField = StateField.define<Maybe<Banner>>({
       if (effect.is(upsertBannerEffect)) {
         if (now) {
           updateBanner(now, effect.value);
+          console.log('update!');
         } else {
           now = addBanner(state, effect.value);
+          console.log('add!');
         }
       } else if (effect.is(removeBannerEffect)) {
         now = removeBanner(state);
+        console.log('remove!');
+      } else if (effect.is(assignBannerEffect)) {
+        console.log('assign!');
+        now = effect.value;
       }
     }
 
     return now;
   },
 });
+
+export const loadEditingViewListeners = () => {
+  plug.registerEvent(
+    plug.app.workspace.on('active-leaf-change', () => {
+      plug.app.workspace.iterateRootLeaves((leaf) => {
+        const { currentMode } = leaf.view;
+        if (currentMode.type === 'preview') return;
+
+        const { cm } = currentMode.editor;
+        cm.dispatch({ effects: openNoteEffect.of(leafBannerMap[leaf.id]) });
+      });
+    })
+  );
+}

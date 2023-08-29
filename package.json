@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@codemirror/state": "^6.2.1",
+    "@codemirror/view": "^6.17.0",
     "@tsconfig/svelte": "^5.0.2",
     "builtin-modules": "^3.3.0",
     "copy-newer": "^2.1.2",
