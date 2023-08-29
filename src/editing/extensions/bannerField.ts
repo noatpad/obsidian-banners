@@ -27,8 +27,9 @@ const updateBanner = (banner: Banner, bannerData: BannerMetadata): Banner => {
   return banner;
 };
 
-const removeBanner = (state: EditorState) => {
+const removeBanner = (banner: Maybe<Banner>, state: EditorState) => {
   const { dom } = state.field(editorEditorField);
+  banner?.$destroy();
   dom.querySelector('.obsidian-banner-wrapper')?.remove();
   setBannerInMap(state);
   console.log('remove!?');
@@ -44,10 +45,6 @@ const assignBanner = (banner: Banner): Banner => {
  * State field that keeps track of the banner associated with a given editor, as well as adding, modifying,
  * and removing banners based on CM6 effects
  */
-/* TODO: Fix banner spacing when switching into the Editing view
-- Reading -> Editing
-- Editing -> Reading -> Editing */
-// TODO: Fix banner in Editing View when switching files in a linked Reading view
 const bannerField = StateField.define<Maybe<Banner>>({
   create() {
     console.log('create!');
@@ -61,7 +58,7 @@ const bannerField = StateField.define<Maybe<Banner>>({
       if (effect.is(upsertBannerEffect)) {
         now = now ? updateBanner(now, effect.value) : addBanner(state, effect.value);
       } else if (effect.is(removeBannerEffect)) {
-        now = removeBanner(state);
+        now = removeBanner(now, state);
       } else if (effect.is(assignBannerEffect)) {
         now = assignBanner(effect.value);
       }

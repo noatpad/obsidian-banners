@@ -32,6 +32,7 @@ declare module 'obsidian' {
   }
 
   interface WorkspaceLeaf {
+    containerEl: HTMLElement,
     id: string
   }
 }

@@ -1,21 +1,20 @@
 import { plug } from "src/main";
 import bannerField from "./extensions/bannerField";
 import bannerExtender from "./extensions/bannerExtender";
-import { leafBannerMap, openNoteEffect } from "./extensions/utils";
+import { leafBannerMap, openNoteEffect, removeBannerEffect } from "./extensions/utils";
 
 export const loadEditingViewListeners = () => {
-  // Assign banners when opening/switching notes in an editor
+  // Remove unused banners when switching to reading view
+  // Assign and use the correct banners when opening/switching notes in an editor
   plug.registerEvent(
-    plug.app.workspace.on('active-leaf-change', () => {
+    plug.app.workspace.on('layout-change', () => {
       plug.app.workspace.iterateRootLeaves((leaf) => {
-        const { currentMode } = leaf.view;
-        if (currentMode.type === 'preview') return;
-
-        const { cm } = currentMode.editor;
-        cm.dispatch({ effects: openNoteEffect.of(leafBannerMap[leaf.id]) });
+        const { id, view } = leaf;
+        const effect = view.currentMode.type === 'source' ? openNoteEffect.of(leafBannerMap[id]) : removeBannerEffect.of(null);
+        view.editor.cm.dispatch({ effects: effect });
       });
     })
-  );
+  )
 }
 
 export {
