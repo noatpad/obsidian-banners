@@ -11,8 +11,9 @@ const getBannerData = (state: EditorState): BannerMetadata => {
   const frontmatter: Record<string, string> = {};
   for (const line of rawFrontmatter.split('\n').slice(1, -1)) {
     const pair = line.split(':');
-    if (pair.length !== 2 || !pair[1]) continue;
-    const [field, value] = pair;
+    if (pair.length < 2 || !pair[1]) continue;
+    const [field, ...rest] = pair;
+    const value = rest.join(':');
     frontmatter[field.trim()] = value.trim();
   }
   return extractBannerData(frontmatter);
