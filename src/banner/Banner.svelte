@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { TFile } from "obsidian";
   import { parseInternalLink } from "./utils";
+  import Loading from "./Loading.svelte";
+  import Error from "./Error.svelte";
 
   export let bannerData: BannerMetadata;
   export let file: TFile;
@@ -13,29 +15,28 @@
     const internalLink = parseInternalLink(src, file);
     if (internalLink) return internalLink;
 
-    const resp = await fetch(src);
-    const blob = await resp.blob();
-
-    if (resp.ok) {
+    try {
+      const resp = await fetch(src);
+      const blob = await resp.blob();
       return new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(blob);
         reader.onload = () => resolve(reader.result as string);
         reader.onerror = (error) => reject(error)
-      })
-    } else {
-      throw new Error('huh?');
+      });
+    } catch (error) {
+      throw error;
     }
   };
 </script>
 
 <div class="obsidian-banner">
   {#await fetchImage(bannerData.src)}
-    <p>Loading...</p>
+    <Loading />
   {:then src}
     <img {src} alt="Banner">
   {:catch error}
-    <p>Error! {error}</p>
+    <Error {error} />
   {/await}
 </div>
 
@@ -48,7 +49,6 @@
     height: 300px;
     overflow: hidden;
     user-select: none;
-    opacity: 0.3;
   }
 
   img {
