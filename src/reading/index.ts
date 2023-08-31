@@ -28,7 +28,7 @@ const stylePusher = (toggle: boolean, containerEl: HTMLElement) => {
   }
 }
 
-export const postprocessor: MarkdownPostProcessor = (el, ctx) => {
+const postprocessor: MarkdownPostProcessor = (el, ctx) => {
   console.log(el, ctx);
   // Only process the frontmatter
   if (!el.querySelector('pre.frontmatter')) return;
@@ -45,6 +45,16 @@ export const postprocessor: MarkdownPostProcessor = (el, ctx) => {
   } else {
     stylePusher(false, containerEl);
   }
+};
+
+export const loadPostProcessor = () => {
+  plug.registerMarkdownPostProcessor(postprocessor);
+  plug.app.workspace.iterateRootLeaves((leaf) => {
+    const { currentMode, previewMode } = leaf.view;
+    if (currentMode.type === 'preview') {
+      previewMode.rerender(true);
+    }
+  });
 };
 
 export const unloadReadingViewBanners = () => {

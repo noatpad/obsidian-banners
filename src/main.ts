@@ -1,6 +1,6 @@
 import { Plugin } from "obsidian";
-import { postprocessor, unloadReadingViewBanners } from "./reading";
-import { bannerExtender, bannerField, loadEditingViewListeners, unloadEditingViewBanners } from "./editing";
+import { loadPostProcessor, unloadReadingViewBanners } from "./reading";
+import { loadExtensions, unloadEditingViewBanners } from "./editing";
 
 export let plug: BannersPlugin;
 
@@ -9,9 +9,8 @@ export default class BannersPlugin extends Plugin {
     console.log('Loading Banners 2...');
 
     plug = this;
-    this.loadProcessor();
-    this.loadExtension();
-    this.loadListeners();
+    loadPostProcessor();
+    loadExtensions();
   }
 
   async onunload() {
@@ -19,22 +18,5 @@ export default class BannersPlugin extends Plugin {
 
     unloadEditingViewBanners();
     unloadReadingViewBanners();
-  }
-
-  // MD processor for Reading views
-  loadProcessor() {
-    this.registerMarkdownPostProcessor(postprocessor);
-  }
-
-  // CM6 extensions for Editing views
-  loadExtension() {
-    this.registerEditorExtension([
-      bannerExtender,
-      bannerField
-    ]);
-  }
-
-  loadListeners() {
-    loadEditingViewListeners();
   }
 }

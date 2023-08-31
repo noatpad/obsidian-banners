@@ -3,7 +3,12 @@ import bannerField from "./extensions/bannerField";
 import bannerExtender from "./extensions/bannerExtender";
 import { leafBannerMap, openNoteEffect, removeBannerEffect } from "./extensions/utils";
 
-export const loadEditingViewListeners = () => {
+export const loadExtensions = () => {
+  plug.registerEditorExtension([
+    bannerExtender,
+    bannerField
+  ]);
+
   // Remove unused banners when switching to reading view
   // Assign and use the correct banners when opening/switching notes in an editor
   plug.registerEvent(
@@ -23,8 +28,3 @@ export const unloadEditingViewBanners = () => {
   }
   document.querySelectorAll('.obsidian-banner-wrapper').forEach((el) => el.remove());
 }
-
-export {
-  bannerField,
-  bannerExtender
-};
