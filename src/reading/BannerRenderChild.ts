@@ -1,7 +1,7 @@
 import { MarkdownRenderChild, TFile } from "obsidian";
 import Banner from '../banner/Banner.svelte';
 
-export class BannerRenderChild extends MarkdownRenderChild {
+export default class BannerRenderChild extends MarkdownRenderChild {
   banner: Maybe<Banner>;
   bannerData: BannerMetadata;
   file: TFile;

@@ -1,6 +1,6 @@
 import type { MarkdownPostProcessor, TFile } from "obsidian";
 import { plug } from "src/main";
-import { BannerRenderChild } from "./BannerMD";
+import BannerRenderChild from "./BannerRenderChild";
 import { extractBannerData } from "src/utils";
 
 const pusherObserver = new MutationObserver((mutations, observer) => {
