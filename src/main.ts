@@ -1,6 +1,6 @@
 import { Plugin } from "obsidian";
-import postprocessor from "./reading";
-import { bannerExtender, bannerField, loadEditingViewListeners } from "./editing";
+import { postprocessor, unloadReadingViewBanners } from "./reading";
+import { bannerExtender, bannerField, loadEditingViewListeners, unloadEditingViewBanners } from "./editing";
 
 export let plug: BannersPlugin;
 
@@ -15,7 +15,10 @@ export default class BannersPlugin extends Plugin {
   }
 
   async onunload() {
-    console.log('Unloading Banners 2...');
+    console.log('Unloading Banners 2....');
+
+    unloadEditingViewBanners();
+    unloadReadingViewBanners();
   }
 
   // MD processor for Reading views

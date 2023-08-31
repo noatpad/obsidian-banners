@@ -17,6 +17,13 @@ export const loadEditingViewListeners = () => {
   )
 }
 
+export const unloadEditingViewBanners = () => {
+  for (const banner of Object.values(leafBannerMap)) {
+    banner?.$destroy();
+  }
+  document.querySelectorAll('.obsidian-banner-wrapper').forEach((el) => el.remove());
+}
+
 export {
   bannerField,
   bannerExtender

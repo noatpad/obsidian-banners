@@ -28,7 +28,8 @@ declare module 'obsidian' {
 
   interface View {
     currentMode: EditMode | PreviewMode,
-    editor: Editor
+    editor: Editor,
+    previewMode: MarkdownPreviewView
   }
 
   interface WorkspaceLeaf {

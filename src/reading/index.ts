@@ -14,20 +14,9 @@ const pusherObserver = new MutationObserver((mutations, observer) => {
   }
 });
 
-const postprocessor: MarkdownPostProcessor = (el, ctx) => {
-  // Only process the frontmatter
-  if (!el.querySelector('pre.frontmatter')) return;
-
-  const { containerEl, frontmatter, sourcePath } = ctx;
-  const file = plug.app.metadataCache.getFirstLinkpathDest(sourcePath, '/') as TFile;
-  const bannerData = extractBannerData(frontmatter);
-  const showBanner = bannerData.src;
-  const pusher = containerEl.querySelector('.markdown-preview-pusher') as HTMLElement;
-
-  if (showBanner) {
-    const banner = new BannerRenderChild(el, bannerData, file);
-    ctx.addChild(banner);
-
+const stylePusher = (toggle: boolean, containerEl: HTMLElement) => {
+  const pusher = containerEl.querySelector('.markdown-preview-pusher') as Maybe<HTMLElement>;
+  if (toggle) {
     if (pusher) {
       pusher.setCssStyles({ marginTop: '300px' });
     } else {
@@ -35,8 +24,36 @@ const postprocessor: MarkdownPostProcessor = (el, ctx) => {
       pusherObserver.observe(containerEl, { childList: true });
     }
   } else {
-    pusher.setCssStyles({ marginTop: '' });
+    pusher?.setCssStyles({ marginTop: '' });
+  }
+}
+
+export const postprocessor: MarkdownPostProcessor = (el, ctx) => {
+  console.log(el, ctx);
+  // Only process the frontmatter
+  if (!el.querySelector('pre.frontmatter')) return;
+
+  const { containerEl, frontmatter, sourcePath } = ctx;
+  const file = plug.app.metadataCache.getFirstLinkpathDest(sourcePath, '/') as TFile;
+  const bannerData = extractBannerData(frontmatter);
+  const showBanner = bannerData.src;
+
+  if (showBanner) {
+    const banner = new BannerRenderChild(el, bannerData, file);
+    ctx.addChild(banner);
+    stylePusher(true, containerEl);
+  } else {
+    stylePusher(false, containerEl);
   }
 };
 
-export default postprocessor;
+export const unloadReadingViewBanners = () => {
+  plug.app.workspace.iterateRootLeaves((leaf) => {
+    const { containerEl, currentMode, previewMode } = leaf.view;
+    if (currentMode.type === 'preview') {
+      // BUG: This won't rerender the Properties view and the inline title until you make an editor change or manually reload the view
+      previewMode.rerender(true);
+      stylePusher(false, containerEl);
+    }
+  });
+};

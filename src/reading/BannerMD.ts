@@ -2,7 +2,7 @@ import { MarkdownRenderChild, TFile } from "obsidian";
 import Banner from '../banner/Banner.svelte';
 
 export class BannerRenderChild extends MarkdownRenderChild {
-  banner: Banner | undefined;
+  banner: Maybe<Banner>;
   bannerData: BannerMetadata;
   file: TFile;
 
@@ -15,7 +15,6 @@ export class BannerRenderChild extends MarkdownRenderChild {
 
   onload() {
     this.containerEl.addClass('obsidian-banner-wrapper');
-
     this.banner = new Banner({
       target: this.containerEl,
       props: {
@@ -25,5 +24,8 @@ export class BannerRenderChild extends MarkdownRenderChild {
     });
   }
 
-  onunload() {}
+  onunload() {
+    this.banner?.$destroy();
+    this.containerEl.remove();
+  }
 }
