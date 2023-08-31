@@ -9,8 +9,9 @@ export const loadExtensions = () => {
     bannerField
   ]);
 
-  // Remove unused banners when switching to reading view
-  // Assign and use the correct banners when opening/switching notes in an editor
+  /** Listener used to remove unused banners when switching to reading view,
+   * as well as to assign the correct banners when opening/switching notes in an editor
+   */
   plug.registerEvent(
     plug.app.workspace.on('layout-change', () => {
       plug.app.workspace.iterateRootLeaves((leaf) => {
@@ -19,7 +20,15 @@ export const loadExtensions = () => {
         view.editor.cm.dispatch({ effects: effect });
       });
     })
-  )
+  );
+
+  // Properly insert a banner upon loading the banner
+  plug.app.workspace.iterateRootLeaves((leaf) => {
+    const { view } = leaf;
+    if (view.currentMode.type === 'source') {
+      view.editor.cm.dispatch({ effects: openNoteEffect.of(null) });
+    }
+  });
 }
 
 export const unloadEditingViewBanners = () => {

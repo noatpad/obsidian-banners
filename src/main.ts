@@ -14,7 +14,7 @@ export default class BannersPlugin extends Plugin {
   }
 
   async onunload() {
-    console.log('Unloading Banners 2....');
+    console.log('Unloading Banners 2...');
 
     unloadEditingViewBanners();
     unloadReadingViewBanners();

@@ -29,7 +29,6 @@ const stylePusher = (toggle: boolean, containerEl: HTMLElement) => {
 }
 
 const postprocessor: MarkdownPostProcessor = (el, ctx) => {
-  console.log(el, ctx);
   // Only process the frontmatter
   if (!el.querySelector('pre.frontmatter')) return;
 
@@ -49,6 +48,8 @@ const postprocessor: MarkdownPostProcessor = (el, ctx) => {
 
 export const loadPostProcessor = () => {
   plug.registerMarkdownPostProcessor(postprocessor);
+
+  // Properly insert a banner upon loading the plugin
   plug.app.workspace.iterateRootLeaves((leaf) => {
     const { currentMode, previewMode } = leaf.view;
     if (currentMode.type === 'preview') {
@@ -61,7 +62,7 @@ export const unloadReadingViewBanners = () => {
   plug.app.workspace.iterateRootLeaves((leaf) => {
     const { containerEl, currentMode, previewMode } = leaf.view;
     if (currentMode.type === 'preview') {
-      // BUG: This won't rerender the Properties view and the inline title until you make an editor change or manually reload the view
+      // BUG: This won't rerender the Properties view and the inline title until you manually reload the view
       previewMode.rerender(true);
       stylePusher(false, containerEl);
     }
