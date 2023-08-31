@@ -2,13 +2,12 @@ import { MarkdownRenderChild, TFile } from "obsidian";
 import Banner from '../banner/Banner.svelte';
 
 export default class BannerRenderChild extends MarkdownRenderChild {
-  banner: Maybe<Banner>;
+  banner!: Banner;
   bannerData: BannerMetadata;
   file: TFile;
 
   constructor(containerEl: HTMLElement, bannerData: BannerMetadata, file: TFile) {
     super(containerEl);
-    this.banner = undefined;
     this.bannerData = bannerData;
     this.file = file;
   }
