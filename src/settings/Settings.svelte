@@ -2,7 +2,7 @@
   import Header from "./Header.svelte";
   import SelectSetting from "./SelectSetting.svelte";
   import TextSetting from "./TextSetting.svelte";
-    import ToggleSetting from "./ToggleSetting.svelte";
+  import ToggleSetting from "./ToggleSetting.svelte";
 </script>
 
 <Header title="Banners" description="A nice lil' thing to add some flair to your notes :)" />

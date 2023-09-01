@@ -17,10 +17,14 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   showInInternalEmbed: true
 };
 
-export const STYLE_OPTION_LABELS: Record<StyleOption, string> = {
+const STYLE_OPTION_LABELS: Record<StyleOption, string> = {
   solid: 'Solid',
   gradient: 'Gradient'
 };
+
+export const SELECT_OPTIONS_MAP = {
+  style: STYLE_OPTION_LABELS
+}
 
 class SettingsTab extends PluginSettingTab {
   component: Maybe<Settings>;

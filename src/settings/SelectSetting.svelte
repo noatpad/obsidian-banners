@@ -1,10 +1,9 @@
 <script lang="ts">
-  import { STYLE_OPTION_LABELS, type BannerSettings } from ".";
+  import { SELECT_OPTIONS_MAP } from ".";
   import SettingItem from "./SettingItem.svelte";
 
-  export let key: keyof BannerSettings;
-
-  const options = Object.entries(STYLE_OPTION_LABELS);
+  export let key: keyof typeof SELECT_OPTIONS_MAP;
+  const options = Object.entries(SELECT_OPTIONS_MAP[key]);
 </script>
 
 <SettingItem {key}>
