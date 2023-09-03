@@ -31,7 +31,7 @@ const bannerExtender = EditorState.transactionExtender.of((transaction) => {
     console.log('open note!');
     const { leaf } = state.field(editorInfoField);
     const upsertEffect = upsertBannerEffect.of(bannerData);
-    const effects = leafBannerMap[leaf.id] ? [assignBannerEffect.of(leafBannerMap[leaf.id] as Banner), upsertEffect] : [upsertEffect];
+    const effects = leafBannerMap[leaf.id] ? [assignBannerEffect.of(leafBannerMap[leaf.id]), upsertEffect] : [upsertEffect];
     return { effects };
   } else if (!isBannerEffect(effects) && docChanged) {
     return {

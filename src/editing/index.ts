@@ -31,10 +31,9 @@ export const registerEditorBannerEvents = () => {
           const { mode } = (leaf.getViewState() as MarkdownViewState).state;
           const effect = (mode === 'source') ? openNoteEffect.of(leafBannerMap[id]) : removeBannerEffect.of(null);
           view.editor.cm.dispatch({ effects: effect });
-        } else if (leafBannerMap[id]) {
-          // When switching to a view where the editor isn't available, remove the banner manually
+        } else if (leafBannerMap[id]) {   // When switching to a view where the editor isn't available, remove the banner manually
           leafBannerMap[id].$destroy();
-          leafBannerMap[id] = undefined;
+          delete leafBannerMap[id];
         }
       });
     })
