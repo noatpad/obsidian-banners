@@ -1,7 +1,7 @@
 import type { MarkdownPostProcessor, TFile } from "obsidian";
 import { plug } from "src/main";
 import BannerRenderChild from "./BannerRenderChild";
-import { extractBannerData, registerEvents } from "src/utils";
+import { doesLeafHaveMarkdownMode, extractBannerData, registerEvents } from "src/utils";
 import { getSetting } from "src/settings";
 
 const pusherObserver = new MutationObserver((mutations, observer) => {
@@ -53,9 +53,8 @@ export const loadPostProcessor = () => {
 
   // Properly insert a banner upon loading the plugin
   plug.app.workspace.iterateRootLeaves((leaf) => {
-    const { currentMode, previewMode } = leaf.view;
-    if (currentMode.type === 'preview') {
-      previewMode.rerender(true);
+    if (doesLeafHaveMarkdownMode(leaf, 'reading')) {
+      leaf.view.previewMode.rerender(true);
     }
   });
 };
@@ -65,8 +64,7 @@ export const registerReadingBannerEvents = () => {
     plug.events.on('setting-change', (changed) => {
       if (changed.hasOwnProperty('height')) {
         plug.app.workspace.iterateRootLeaves((leaf) => {
-          const { type, state } = leaf.getViewState();
-          if (type === 'markdown' && state.mode === 'preview') {
+          if (doesLeafHaveMarkdownMode(leaf, 'reading')) {
             const pusher = leaf.view.containerEl.querySelector('.markdown-preview-pusher') as Maybe<HTMLElement>;
             resizePusher(pusher);
           }

@@ -10,6 +10,20 @@ interface PreviewMode {
   type: 'preview'
 }
 
+interface MarkdownViewState {
+  type: 'markdown',
+  state: {
+    file: string,
+    mode: 'source' | 'preview',
+    source: boolean
+  }
+}
+
+interface ImageViewState {
+  type: 'image',
+  state: { file: string }
+}
+
 declare module 'obsidian' {
   interface Editor {
     cm: EditorView
@@ -34,6 +48,7 @@ declare module 'obsidian' {
 
   interface WorkspaceLeaf {
     containerEl: HTMLElement,
+    getViewState(): MarkdownViewState | ImageViewState,
     id: string
   }
 }

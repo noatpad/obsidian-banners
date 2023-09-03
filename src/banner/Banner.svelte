@@ -8,7 +8,7 @@
 
   export let bannerData: BannerMetadata;
   export let file: TFile;
-  $: height = `${getSetting('height', $settingsStore.height)}px`
+  $: height = `${getSetting('height', $settingsStore.height)}px`;
 </script>
 
 <div class="obsidian-banner">
