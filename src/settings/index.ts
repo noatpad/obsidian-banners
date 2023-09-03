@@ -43,13 +43,23 @@ class SettingsTab extends PluginSettingTab {
   }
 }
 
+export const getSetting = <T extends keyof BannerSettings>(key: T, value?: BannerSettings[T]): BannerSettings[T] => (
+  value ?? plug.settings[key] ?? DEFAULT_SETTINGS[key]
+);
+
 export const loadSettings = async () => {
   const settings = Object.assign({}, DEFAULT_SETTINGS, await plug.loadData()) as BannerSettings;
   for (const [key, val] of Object.entries(settings) as [keyof BannerSettings, any][]) {
     if (DEFAULT_SETTINGS[key] === val && typeof val === 'number') delete settings[key];
   }
   plug.settings = settings;
-  await plug.saveData(settings);
-  store.set(settings);
+  await saveSettings();
   plug.addSettingTab(new SettingsTab());
 };
+
+export const saveSettings = async (changed: Partial<BannerSettings> = {}) => {
+  await plug.saveData(plug.settings);
+  store.set(plug.settings);
+  plug.events.trigger('setting-change', changed);
+  console.log(plug.settings);
+}

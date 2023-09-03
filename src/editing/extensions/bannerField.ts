@@ -2,6 +2,7 @@ import { TFile, editorEditorField, editorInfoField } from "obsidian";
 import { EditorState, StateField } from "@codemirror/state";
 import Banner from "src/banner/Banner.svelte";
 import { assignBannerEffect, removeBannerEffect, setBannerInMap, upsertBannerEffect } from "./utils";
+import { getSetting } from "src/settings";
 
 const addBanner = (state: EditorState, bannerData: BannerMetadata): Banner => {
   const { file } = state.field(editorInfoField);
@@ -9,7 +10,7 @@ const addBanner = (state: EditorState, bannerData: BannerMetadata): Banner => {
   const wrapper = document.createElement('div');
 
   wrapper.addClass('obsidian-banner-wrapper');
-  wrapper.setCssStyles({ marginTop: '300px' });
+  wrapper.setCssStyles({ height: `${getSetting('height')}px` });
   const banner = new Banner({
     target: wrapper,
     props: { bannerData, file: file as TFile }

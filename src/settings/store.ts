@@ -1,5 +1,5 @@
 import { writable, type Readable } from "svelte/store";
-import type { BannerSettings } from ".";
+import { saveSettings, type BannerSettings } from ".";
 import { plug } from "src/main";
 
 interface SettingsStore extends Readable<BannerSettings> {
@@ -12,14 +12,13 @@ const settingsStore: SettingsStore = {
   subscribe,
   set,
   updateSetting: async (key, value) => {
+    const changed = { [key]: value };
     if (value !== undefined) {
-      plug.settings = { ...plug.settings, [key]: value };
+      plug.settings = { ...plug.settings, ...changed };
     } else {
       delete plug.settings[key];
     }
-    await plug.saveData(plug.settings);
-    set(plug.settings);
-    console.log(plug.settings);
+    await saveSettings(changed);
   }
-}
+};
 export default settingsStore;

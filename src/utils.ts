@@ -1,3 +1,6 @@
+import type { EventRef } from "obsidian";
+import { plug } from "./main";
+
 const massageString = (value: string): string => {
   value = /^\"(.+)\"$/.test(value) ? value.slice(1, -1) : value;
   return value.trim();
@@ -16,4 +19,8 @@ export const extractBannerData = (frontmatter?: Record<string, any>): BannerMeta
 export const isEqualBannerData = (a: BannerMetadata, b: BannerMetadata): boolean => {
   const keys = Object.keys(a) as Array<keyof BannerMetadata>;
   return keys.every((k) => a[k] === b[k]);
+};
+
+export const registerEvents = (events: EventRef[]) => {
+  for (const event of events) plug.registerEvent(event);
 };
