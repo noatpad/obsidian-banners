@@ -4,6 +4,7 @@ import bannerExtender from "./extensions/bannerExtender";
 import { leafBannerMap, openNoteEffect, removeBannerEffect } from "./extensions/utils";
 import { doesLeafHaveMarkdownMode, registerEvents } from "src/utils";
 import type { MarkdownViewState } from "src/types";
+import { getSetting } from "src/settings";
 
 export const loadExtensions = () => {
   plug.registerEditorExtension([
@@ -21,8 +22,19 @@ export const loadExtensions = () => {
 
 export const registerEditorBannerEvents = () => {
   registerEvents([
-    /** Listener used to remove unused banners when switching to reading view,
-     * as well as to assign the correct banners when opening/switching notes in an editor
+    // Listen for setting changes
+    plug.events.on('setting-change', (changed) => {
+      if (changed.hasOwnProperty('height')) {
+        plug.app.workspace.iterateRootLeaves((leaf) => {
+          if (doesLeafHaveMarkdownMode(leaf, 'editing')) {
+            const wrapper = leaf.containerEl.querySelector<HTMLElement>('.obsidian-banner-wrapper')!;
+            wrapper.setCssStyles({ height: `${getSetting('height')}px` });
+          }
+        });
+      }
+    }),
+    /** Remove unused banners when switching to reading view,
+     * as well as assign the correct banners when opening/switching notes in an editor
      */
     plug.app.workspace.on('layout-change', () => {
       plug.app.workspace.iterateRootLeaves((leaf) => {

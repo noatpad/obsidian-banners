@@ -3,7 +3,6 @@ import { EditorState, StateField } from "@codemirror/state";
 import Banner from "src/banner/Banner.svelte";
 import { assignBannerEffect, removeBannerEffect, setBannerInMap, upsertBannerEffect } from "./utils";
 import { getSetting } from "src/settings";
-import { isEqualBannerData } from "src/utils";
 
 const addBanner = (state: EditorState, bannerData: BannerMetadata): Banner => {
   const { file } = state.field(editorInfoField);
