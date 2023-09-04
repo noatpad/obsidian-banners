@@ -2,7 +2,7 @@
   import { getSetting } from "src/settings";
   import settingsStore from "src/settings/store";
   import { clampAndRound, getMousePos, type MTEvent } from "./utils";
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, onDestroy, onMount } from "svelte";
 
   const dispatch = createEventDispatcher<{
     'drag-banner': Partial<BannerMetadata>
@@ -13,8 +13,6 @@
   export let y: number | undefined;
 
   // TODO: Reimplement touch dragging
-  // TODO: Optimize properties that shouldn't need to be run in the handlers
-  // TODO: Account for resizing of panes
   let img: HTMLImageElement;
   let dragging = false;
   let isVerticalDrag = false;
@@ -57,6 +55,10 @@
     const data = isVerticalDrag ? { y: posY } : { x: posX };
     dispatch('drag-banner', data);
   };
+
+  // Fire event when releasing drag from outside the image's boundaries
+  onMount(() => document.addEventListener('mouseup', dragEnd));
+  onDestroy(() => document.removeEventListener('mouseup', dragEnd));
 
   $: gradient = (getSetting('style', $settingsStore.style) === 'gradient');
   $: posX = clampAndRound(0, (x ?? 0.5) + dragOffset.x, 1);
