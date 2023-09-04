@@ -43,6 +43,7 @@ class SettingsTab extends PluginSettingTab {
   }
 }
 
+// TODO: The `value` parameter is redundant, but is implemented for Svelte store values. Perhaps think of something cleaner
 export const getSetting = <T extends keyof BannerSettings>(key: T, value?: BannerSettings[T]): BannerSettings[T] => (
   value ?? plug.settings[key] ?? DEFAULT_SETTINGS[key]
 );
