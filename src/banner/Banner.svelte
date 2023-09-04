@@ -14,7 +14,8 @@
   $: gradient = getSetting('style', $settingsStore.style) === 'gradient';
 </script>
 
-<div class="obsidian-banner">
+<div class="obsidian-banner" style:height>
+  <!-- IDEA: Add fade-in transition? -->
   {#await fetchImage(source, file)}
     <Loading />
   {:then src}
@@ -22,7 +23,6 @@
       {src}
       alt="Banner"
       class:gradient
-      style:height
     >
   {:catch error}
     <Error {error} />

@@ -27,7 +27,7 @@ export const fetchImage = async (src: string|null, file: TFile): Promise<string|
       reader.onload = () => resolve(reader.result as string);
       reader.onerror = (error) => reject(error)
     });
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    throw new Error(error);
   }
 };

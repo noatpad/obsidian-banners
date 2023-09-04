@@ -6,6 +6,7 @@ import BannerEvents from "./BannerEvents";
 
 export let plug: BannersPlugin;
 
+// BUG: Scrolling with linked editing/reading views are not synced properly (maybe use `margin` instead of `height` for the "pusher" elements?)
 export default class BannersPlugin extends Plugin {
   settings!: BannerSettings;
   events!: BannerEvents;
