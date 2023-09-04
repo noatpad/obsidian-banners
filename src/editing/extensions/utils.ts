@@ -4,7 +4,7 @@ import type Banner from "src/banner/Banner.svelte";
 
 export const leafBannerMap: Record<string, Banner> = {};
 
-export const openNoteEffect = StateEffect.define<Maybe<Banner>>();
+export const openNoteEffect = StateEffect.define<Banner|null>();
 export const upsertBannerEffect = StateEffect.define<BannerMetadata>();
 export const removeBannerEffect = StateEffect.define();
 export const assignBannerEffect = StateEffect.define<Banner>();
@@ -14,7 +14,7 @@ export const hasEffect = (effects: readonly StateEffect<any>[], target: StateEff
 
 export const isBannerEffect = (effects: readonly StateEffect<any>[]) => (bannerEffects.some((b) => hasEffect(effects, b)));
 
-export const setBannerInMap = (state: EditorState, banner?: Maybe<Banner>) => {
+export const setBannerInMap = (state: EditorState, banner?: Banner) => {
   const { leaf } = state.field(editorInfoField);
   if (banner) {
     leafBannerMap[leaf.id] = banner;

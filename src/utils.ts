@@ -10,13 +10,14 @@ const massageNumber = (value: string|number): number => typeof value === 'number
 
 export const extractBannerData = (frontmatter?: Record<string, any>): BannerMetadata => {
   return {
-    src: frontmatter?.banner ? massageString(frontmatter.banner) : undefined,
-    x: frontmatter?.banner_x ? massageNumber(frontmatter.banner_x) : undefined,
-    y: frontmatter?.banner_y ? massageNumber(frontmatter.banner_y) : undefined
+    source: frontmatter?.banner ? massageString(frontmatter.banner) : null,
+    x: frontmatter?.banner_x ? massageNumber(frontmatter.banner_x) : null,
+    y: frontmatter?.banner_y ? massageNumber(frontmatter.banner_y) : null
   };
 };
 
 export const isEqualBannerData = (a: BannerMetadata, b: BannerMetadata): boolean => {
+  console.log(a, b);
   const keys = Object.keys(a) as Array<keyof BannerMetadata>;
   return keys.every((k) => a[k] === b[k]);
 };

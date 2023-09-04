@@ -3,6 +3,7 @@ import { EditorState, StateField } from "@codemirror/state";
 import Banner from "src/banner/Banner.svelte";
 import { assignBannerEffect, removeBannerEffect, setBannerInMap, upsertBannerEffect } from "./utils";
 import { getSetting } from "src/settings";
+import { isEqualBannerData } from "src/utils";
 
 const addBanner = (state: EditorState, bannerData: BannerMetadata): Banner => {
   const { file } = state.field(editorInfoField);
@@ -13,7 +14,7 @@ const addBanner = (state: EditorState, bannerData: BannerMetadata): Banner => {
   wrapper.setCssStyles({ height: `${getSetting('height')}px` });
   const banner = new Banner({
     target: wrapper,
-    props: { bannerData, file: file as TFile }
+    props: { ...bannerData, file: file as TFile }
   });
   dom.querySelector('.cm-sizer')?.prepend(wrapper);
 
@@ -23,18 +24,18 @@ const addBanner = (state: EditorState, bannerData: BannerMetadata): Banner => {
 };
 
 const updateBanner = (banner: Banner, bannerData: BannerMetadata): Banner => {
-  banner.$set({ bannerData });
+  banner.$set({ ...bannerData });
   console.log('update!');
   return banner;
 };
 
-const removeBanner = (banner: Maybe<Banner>, state: EditorState) => {
+const removeBanner = (banner: Banner | null = null, state: EditorState): null => {
   const { dom } = state.field(editorEditorField);
   banner?.$destroy();
   dom.querySelector('.obsidian-banner-wrapper')?.remove();
   setBannerInMap(state);
   console.log('remove!?');
-  return undefined;
+  return null;
 };
 
 const assignBanner = (banner: Banner): Banner => {
@@ -46,10 +47,10 @@ const assignBanner = (banner: Banner): Banner => {
  * State field that keeps track of the banner associated with a given editor, as well as adding, modifying,
  * and removing banners based on CM6 effects
  */
-const bannerField = StateField.define<Maybe<Banner>>({
+const bannerField = StateField.define<Banner|null>({
   create() {
     console.log('create!');
-    return undefined;
+    return null;
   },
   update(prev, transaction) {
     const { effects, state } = transaction;

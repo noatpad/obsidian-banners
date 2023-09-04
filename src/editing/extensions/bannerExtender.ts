@@ -35,7 +35,7 @@ const bannerExtender = EditorState.transactionExtender.of((transaction) => {
     return { effects };
   } else if (!isBannerEffect(effects) && docChanged) {
     return {
-      effects: bannerData.src ? upsertBannerEffect.of(bannerData) : removeBannerEffect.of(null)
+      effects: bannerData.source ? upsertBannerEffect.of(bannerData) : removeBannerEffect.of(null)
     };
   }
 

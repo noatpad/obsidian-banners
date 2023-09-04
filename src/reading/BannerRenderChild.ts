@@ -17,7 +17,7 @@ export default class BannerRenderChild extends MarkdownRenderChild {
     this.banner = new Banner({
       target: this.containerEl,
       props: {
-        bannerData: this.bannerData,
+        ...this.bannerData,
         file: this.file
       }
     });

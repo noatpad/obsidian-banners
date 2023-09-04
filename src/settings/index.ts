@@ -27,7 +27,7 @@ export const SELECT_OPTIONS_MAP = {
 }
 
 class SettingsTab extends PluginSettingTab {
-  component: Maybe<Settings>;
+  component: Settings | undefined;
 
   constructor() {
     super(plug.app, plug);

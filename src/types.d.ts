@@ -54,11 +54,9 @@ declare module 'obsidian' {
 }
 
 declare global {
-  type Maybe<T> = T | null | undefined;
-
   interface BannerMetadata {
-    src: Maybe<string>,
-    x: Maybe<number>,
-    y: Maybe<number>
+    source: string | null,
+    x: number | null,
+    y: number | null
   }
 }

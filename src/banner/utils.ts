@@ -1,7 +1,7 @@
 import type { TFile } from "obsidian";
 import { plug } from "src/main";
 
-const parseInternalLink = (src: string, file: TFile): Maybe<string> => {
+const parseInternalLink = (src: string, file: TFile): string | null => {
   const isInternalLink = /^\[\[.+\]\]/.test(src);
   if (!isInternalLink) return null;
 
@@ -10,7 +10,7 @@ const parseInternalLink = (src: string, file: TFile): Maybe<string> => {
   return target ? plug.app.vault.getResourcePath(target) : link;
 }
 
-export const fetchImage = async (src: Maybe<string>, file: TFile) => {
+export const fetchImage = async (src: string|null, file: TFile): Promise<string|null> => {
   // Just return the bad link to get the error
   if (!src) return src;
 

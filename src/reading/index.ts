@@ -16,7 +16,7 @@ const pusherObserver = new MutationObserver((mutations, observer) => {
 });
 
 // Helper function to style the "preview pusher" for banners
-const resizePusher = (pusher: Maybe<HTMLElement>, reset = false) => {
+const resizePusher = (pusher: HTMLElement | undefined, reset = false) => {
   if (reset) {
     pusher?.setCssStyles({ height: '' });
     return;
@@ -31,10 +31,9 @@ const postprocessor: MarkdownPostProcessor = (el, ctx) => {
   const { containerEl, frontmatter, sourcePath } = ctx;
   const file = plug.app.metadataCache.getFirstLinkpathDest(sourcePath, '/') as TFile;
   const bannerData = extractBannerData(frontmatter);
-  const showBanner = bannerData.src;
-  const pusher = containerEl.querySelector('.markdown-preview-pusher') as Maybe<HTMLElement>;
+  const pusher = containerEl.querySelector('.markdown-preview-pusher') as HTMLElement;
 
-  if (showBanner) {
+  if (bannerData.source) {
     const banner = new BannerRenderChild(el, bannerData, file);
     ctx.addChild(banner);
     if (pusher) {
@@ -65,7 +64,7 @@ export const registerReadingBannerEvents = () => {
       if (changed.hasOwnProperty('height')) {
         plug.app.workspace.iterateRootLeaves((leaf) => {
           if (doesLeafHaveMarkdownMode(leaf, 'reading')) {
-            const pusher = leaf.view.containerEl.querySelector('.markdown-preview-pusher') as Maybe<HTMLElement>;
+            const pusher = leaf.view.containerEl.querySelector('.markdown-preview-pusher') as HTMLElement;
             resizePusher(pusher);
           }
         });
@@ -77,7 +76,7 @@ export const registerReadingBannerEvents = () => {
 export const unloadReadingViewBanners = () => {
   plug.app.workspace.iterateRootLeaves((leaf) => {
     const { containerEl, currentMode, previewMode } = leaf.view;
-    const pusher = containerEl.querySelector('.markdown-preview-pusher') as Maybe<HTMLElement>;
+    const pusher = containerEl.querySelector('.markdown-preview-pusher') as HTMLElement;
     if (currentMode.type === 'preview') {
       // BUG: This won't rerender the Properties view and the inline title until you manually reload the view
       previewMode.rerender(true);

@@ -6,13 +6,15 @@
   import settingsStore from "src/settings/store";
   import { getSetting } from "src/settings";
 
-  export let bannerData: BannerMetadata;
+  export let source: string|null = null;
+  export let x: number|null = 0.5;
+  export let y: number|null = 0.5;
   export let file: TFile;
   $: height = `${getSetting('height', $settingsStore.height)}px`;
 </script>
 
 <div class="obsidian-banner">
-  {#await fetchImage(bannerData.src, file)}
+  {#await fetchImage(source, file)}
     <Loading />
   {:then src}
     <img
