@@ -11,6 +11,7 @@
   export let y: number|null = 0.5;
   export let file: TFile;
   $: height = `${getSetting('height', $settingsStore.height)}px`;
+  $: gradient = getSetting('style', $settingsStore.style) === 'gradient';
 </script>
 
 <div class="obsidian-banner">
@@ -20,6 +21,7 @@
     <img
       {src}
       alt="Banner"
+      class:gradient
       style:height
     >
   {:catch error}
@@ -43,6 +45,11 @@
     max-width: none;
     height: 100%;
     width: 100%;
+
+    &.gradient {
+      mask-image: linear-gradient(to bottom, black 50%, transparent);
+      -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent);
+    }
   }
 </style>
 
