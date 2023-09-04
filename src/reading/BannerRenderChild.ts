@@ -16,10 +16,7 @@ export default class BannerRenderChild extends MarkdownRenderChild {
     this.containerEl.addClass('obsidian-banner-wrapper');
     this.banner = new Banner({
       target: this.containerEl,
-      props: {
-        ...this.bannerData,
-        file: this.file
-      }
+      props: { ...this.bannerData, file: this.file }
     });
   }
 

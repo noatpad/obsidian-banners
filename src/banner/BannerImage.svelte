@@ -4,12 +4,12 @@
   import { clamp } from "./utils";
 
   export let src: string|null;
-  export let x: number;
-  export let y: number;
+  export let x: number|undefined;
+  export let y: number|undefined;
 
   $: gradient = (getSetting('style', $settingsStore.style) === 'gradient');
-  $: clampedX = clamp(0, x, 1) * 100;
-  $: clampedY = clamp(0, y, 1) * 100;
+  $: clampedX = clamp(0, x ?? 0.5, 1) * 100;
+  $: clampedY = clamp(0, y ?? 0.5, 1) * 100;
 </script>
 
 <img

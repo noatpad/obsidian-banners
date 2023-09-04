@@ -8,10 +8,11 @@
   import BannerImage from "./BannerImage.svelte";
 
   export let source: string|undefined;
-  export let x: number = 0.5;
-  export let y: number = 0.5;
+  export let x: number|undefined;
+  export let y: number|undefined;
   export let file: TFile;
 
+  $: console.log(x, y);
   $: height = `${getSetting('height', $settingsStore.height)}px`;
 </script>
 
@@ -21,7 +22,6 @@
     <Loading />
   {:then src}
     <BannerImage {src} {x} {y} />
-    <!-- <img {src} alt="Banner" class:gradient> -->
   {:catch error}
     <Error {error} />
   {/await}
