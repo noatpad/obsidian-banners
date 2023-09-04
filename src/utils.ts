@@ -10,9 +10,9 @@ const massageNumber = (value: string|number): number => typeof value === 'number
 
 export const extractBannerData = (frontmatter?: Record<string, any>): BannerMetadata => {
   return {
-    source: frontmatter?.banner ? massageString(frontmatter.banner) : null,
-    x: frontmatter?.banner_x ? massageNumber(frontmatter.banner_x) : null,
-    y: frontmatter?.banner_y ? massageNumber(frontmatter.banner_y) : null
+    source: frontmatter?.banner && massageString(frontmatter.banner),
+    x: frontmatter?.banner_x && massageNumber(frontmatter.banner_x),
+    y: frontmatter?.banner_y && massageNumber(frontmatter.banner_y)
   };
 };
 

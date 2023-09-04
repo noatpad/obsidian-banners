@@ -5,13 +5,14 @@
   import Error from "./Error.svelte";
   import settingsStore from "src/settings/store";
   import { getSetting } from "src/settings";
+  import BannerImage from "./BannerImage.svelte";
 
-  export let source: string|null = null;
-  export let x: number|null = 0.5;
-  export let y: number|null = 0.5;
+  export let source: string|undefined;
+  export let x: number = 0.5;
+  export let y: number = 0.5;
   export let file: TFile;
+
   $: height = `${getSetting('height', $settingsStore.height)}px`;
-  $: gradient = getSetting('style', $settingsStore.style) === 'gradient';
 </script>
 
 <div class="obsidian-banner" style:height>
@@ -19,11 +20,8 @@
   {#await fetchImage(source, file)}
     <Loading />
   {:then src}
-    <img
-      {src}
-      alt="Banner"
-      class:gradient
-    >
+    <BannerImage {src} {x} {y} />
+    <!-- <img {src} alt="Banner" class:gradient> -->
   {:catch error}
     <Error {error} />
   {/await}
@@ -37,19 +35,6 @@
     right: 0;
     overflow: hidden;
     user-select: none;
-  }
-
-  img {
-    position: relative;
-    object-fit: cover;
-    max-width: none;
-    height: 100%;
-    width: 100%;
-
-    &.gradient {
-      mask-image: linear-gradient(to bottom, black 50%, transparent);
-      -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent);
-    }
   }
 </style>
 
