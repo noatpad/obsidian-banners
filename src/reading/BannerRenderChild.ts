@@ -30,9 +30,8 @@ export default class BannerRenderChild extends MarkdownRenderChild {
     this.file = file;
     this.embedded = embedded;
 
-    if (this.embedded === 'internal') {
-      this.heightKey = 'internalEmbedHeight';
-    }
+    if (this.embedded === 'internal') this.heightKey = 'internalEmbedHeight';
+    else if (this.embedded === 'popover') this.heightKey = 'popoverHeight';
   }
 
   private resizePusher(reset = false) {
@@ -65,6 +64,13 @@ export default class BannerRenderChild extends MarkdownRenderChild {
           })
         );
         break;
+      case 'popover':
+        this.registerEvent(
+          plug.events.on('setting-change', (changed) => {
+            if ('popoverHeight' in changed) this.resizePusher();
+          })
+        );
+        break;
       default:
         this.registerEvent(
           plug.events.on('setting-change', (changed) => {
@@ -93,7 +99,7 @@ export default class BannerRenderChild extends MarkdownRenderChild {
       target: this.containerEl,
       props: {
         ...this.bannerData,
-        embed: this.embedded === 'internal',
+        embed: this.embedded,
         file: this.file
       }
     });

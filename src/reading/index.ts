@@ -29,6 +29,7 @@ const rerender = () => {
 
 const isEmbedded = (containerEl: HTMLElement): Embedded => {
   if (containerEl.closest('.internal-embed')) return 'internal';
+  if (containerEl.closest('.popover')) return 'popover';
   return false;
 };
 
@@ -43,8 +44,12 @@ const postprocessor: MarkdownPostProcessor = (el, ctx) => {
     sourcePath
   } = ctx;
 
+  // Only show banners in embeds when allowed
   const embed = isEmbedded(containerEl);
-  if (embed && !getSetting('showInInternalEmbed')) return;
+  if (
+    (embed === 'internal' && !getSetting('showInInternalEmbed')) ||
+    (embed === 'popover' && !getSetting('showInPopover'))
+  ) return;
 
   const file = plug.app.metadataCache.getFirstLinkpathDest(sourcePath, '/')!;
   const bannerData = extractBannerData(frontmatter);

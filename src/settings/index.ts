@@ -13,13 +13,17 @@ export interface BannerSettings {
   style: StyleOption;
   showInInternalEmbed: boolean;
   internalEmbedHeight: number;
+  showInPopover: boolean;
+  popoverHeight: number;
 }
 
 export const DEFAULT_SETTINGS: BannerSettings = {
   height: 300,
   style: 'solid',
   showInInternalEmbed: true,
-  internalEmbedHeight: 200
+  internalEmbedHeight: 200,
+  showInPopover: true,
+  popoverHeight: 120
 };
 
 const STYLE_OPTION_LABELS: Record<StyleOption, string> = {

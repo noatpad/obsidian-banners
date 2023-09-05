@@ -5,7 +5,7 @@
   import TextSetting from './TextSetting.svelte';
   import ToggleSetting from './ToggleSetting.svelte';
 
-  $: ({ showInInternalEmbed } = $settings);
+  $: ({ showInInternalEmbed, showInPopover } = $settings);
 </script>
 
 <Header title="Banners" description="A nice lil' thing to add some flair to your notes :)" />
@@ -30,5 +30,18 @@
   <TextSetting key="internalEmbedHeight">
     <span slot="name">Internal embed banner height</span>
     <span slot="description">Set how big the banner should be within an internal embed</span>
+  </TextSetting>
+{/if}
+<ToggleSetting key="showInPopover">
+  <span slot="name">Show in preview popover</span>
+  <span slot="description">
+    Display the banner in the page preview popover. This is the preview that appears from the
+    <em>Page Preview</em> core plugin.
+  </span>
+</ToggleSetting>
+{#if showInPopover}
+  <TextSetting key="popoverHeight">
+    <span slot="name">Preview popover banner height</span>
+    <span slot="description">Set how big the banner should be within the preview popover.</span>
   </TextSetting>
 {/if}

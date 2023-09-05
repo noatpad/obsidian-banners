@@ -9,6 +9,7 @@
   import { fetchImage } from './utils';
 
   import { plug } from 'src/main';
+  import type { Embedded } from 'src/reading/BannerRenderChild';
   import { getSetting } from 'src/settings';
   import settingsStore from 'src/settings/store';
 
@@ -16,7 +17,7 @@
   export let x: number | undefined;
   export let y: number | undefined;
   export let file: TFile;
-  export let embed = false;
+  export let embed: Embedded = false;
   let heightValue: number;
 
   // TODO: The key should be a dynamic prefix + property value
@@ -33,16 +34,25 @@
   };
 
   $: {
-    if (embed) heightValue = getSetting('internalEmbedHeight', $settingsStore.internalEmbedHeight);
-    else heightValue = getSetting('height', $settingsStore.height);
-    console.log(heightValue);
+    switch (embed) {
+      case 'internal':
+        heightValue = getSetting('internalEmbedHeight', $settingsStore.internalEmbedHeight);
+        break;
+      case 'popover':
+        heightValue = getSetting('popoverHeight', $settingsStore.popoverHeight);
+        break;
+      default:
+        heightValue = getSetting('height', $settingsStore.height);
+        break;
+    }
   }
   $: height = `${heightValue}px`;
 </script>
 
 <div
   class="obsidian-banner"
-  class:embed
+  class:in-internal-embed={embed === 'internal'}
+  class:in-popover={embed === 'popover'}
   style:height
 >
   <!-- IDEA: Add fade-in transition? -->
