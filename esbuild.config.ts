@@ -41,6 +41,7 @@ const obsimove: esbuild.Plugin = {
   }
 };
 
+// eslint-disable-next-line import/no-named-as-default-member
 const context = await esbuild.context({
   banner: { js: BANNER },
   entryPoints: ['src/main.ts', 'src/styles.scss'],
