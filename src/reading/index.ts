@@ -6,11 +6,18 @@ import { plug } from 'src/main';
 import { getSetting } from 'src/settings';
 import { extractBannerData } from 'src/utils';
 
+// Helper to associate a banner to a specific view/document
+const currentBanners: Record<string, BannerRenderChild> = {};
+
 const rerender = () => {
+  for (const banner of Object.values(currentBanners)) {
+    banner.unload();
+  }
+
   for (const leaf of plug.app.workspace.getLeavesOfType('markdown')) {
     const { previewMode } = leaf.view;
     const sections = previewMode.renderer.sections.filter((s) => (
-      s.el.querySelector('.frontmatter, .internal-embed')
+      s.el.querySelector('pre.frontmatter, .internal-embed')
     ));
     for (const section of sections) {
       section.rendered = false;
@@ -22,16 +29,26 @@ const rerender = () => {
 
 const postprocessor: MarkdownPostProcessor = (el, ctx) => {
   // Only process the frontmatter
-  if (!el.querySelector('pre.frontmatter')) return;
+  if (!el.querySelector(':scope > pre.frontmatter')) return;
 
-  const { containerEl, frontmatter, sourcePath } = ctx;
+  const {
+    docId,
+    containerEl,
+    frontmatter,
+    sourcePath
+  } = ctx;
   if (!getSetting('showInInternalEmbed') && containerEl.closest('.internal-embed')) return;
 
   const file = plug.app.metadataCache.getFirstLinkpathDest(sourcePath, '/')!;
   const bannerData = extractBannerData(frontmatter);
 
   if (bannerData.source) {
-    ctx.addChild(new BannerRenderChild(el, bannerData, ctx, file));
+    const banner = new BannerRenderChild(el, ctx, bannerData, file);
+    if (currentBanners[docId]) currentBanners[docId].prepareSwap = true;
+    ctx.addChild(banner);
+    currentBanners[docId] = banner;
+  } else {
+    delete currentBanners[docId];
   }
 };
 
@@ -43,9 +60,7 @@ export const loadPostProcessor = () => {
 export const registerReadingBannerEvents = () => {
   plug.registerEvent(
     plug.events.on('setting-change', (changed) => {
-      if ('showInInternalEmbed' in changed) {
-        rerender();
-      }
+      if ('showInInternalEmbed' in changed) rerender();
     })
   );
 };

@@ -5,26 +5,23 @@ import Banner from '../banner/Banner.svelte';
 import { plug } from 'src/main';
 import { getSetting } from 'src/settings';
 
-const currentBanners: Record<string, boolean> = {};
-
 export default class BannerRenderChild extends MarkdownRenderChild {
   banner!: Banner;
   bannerData: BannerMetadata;
   contentEl: HTMLElement;
   pusherEl?: HTMLElement | null;
-  docId: string;
   file: TFile;
+  prepareSwap = false;
 
   constructor(
     el: HTMLElement,
-    bannerData: BannerMetadata,
     ctx: MarkdownPostProcessorContext,
+    bannerData: BannerMetadata,
     file: TFile
   ) {
     super(el);
-    this.bannerData = bannerData;
     this.contentEl = ctx.containerEl;
-    this.docId = ctx.docId;
+    this.bannerData = bannerData;
     this.file = file;
   }
 
@@ -47,13 +44,6 @@ export default class BannerRenderChild extends MarkdownRenderChild {
       }
     });
     observer.observe(this.contentEl, { childList: true });
-  }
-
-  /* Helper to "register" a banner instance, so that the pusher can be properly styled when
-  a banner is being reloaded or removed */
-  private registerInstance() {
-    if (!(this.docId in currentBanners)) currentBanners[this.docId] = false;
-    else if (!currentBanners[this.docId]) currentBanners[this.docId] = true;
   }
 
   onload() {
@@ -81,17 +71,10 @@ export default class BannerRenderChild extends MarkdownRenderChild {
       props: { ...this.bannerData, file: this.file }
     });
 
-    // Register banner instance for a view
-    this.registerInstance();
   }
 
   onunload() {
-    if (currentBanners[this.docId]) {
-      currentBanners[this.docId] = false;
-    } else {
-      this.resizePusher(true);
-      delete currentBanners[this.docId];
-    }
+    if (!this.prepareSwap) this.resizePusher(true);
     this.banner?.$destroy();
     this.containerEl.remove();
   }
