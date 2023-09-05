@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { Plugin } from 'obsidian';
-
 import BannerEvents from './BannerEvents';
 import { loadExtensions, unloadEditingViewBanners } from './editing';
 import { loadPostProcessor, unloadReadingViewBanners } from './reading';
-import { loadSettings, type BannerSettings } from './settings';
+import { loadSettings } from './settings';
+import type { BannerSettings } from './settings';
 
 export let plug: BannersPlugin;
 

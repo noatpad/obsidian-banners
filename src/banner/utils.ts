@@ -1,6 +1,6 @@
+import { plug } from 'src/main';
 import type { TFile } from 'obsidian';
 
-import { plug } from 'src/main';
 
 export type MTEvent = MouseEvent | TouchEvent;
 

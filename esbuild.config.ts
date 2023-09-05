@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import 'dotenv/config';
 import fs from 'fs/promises';
-
 import builtins from 'builtin-modules';
 // @ts-ignore
 import copyNewer from 'copy-newer';

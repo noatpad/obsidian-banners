@@ -1,11 +1,10 @@
+import { plug } from 'src/main';
+import { getSetting } from 'src/settings';
+import { doesLeafHaveMarkdownMode, registerEvents } from 'src/utils';
 import bannerExtender from './extensions/bannerExtender';
 import bannerField from './extensions/bannerField';
 import { leafBannerMap, openNoteEffect, removeBannerEffect } from './extensions/utils';
-
-import { plug } from 'src/main';
-import { getSetting } from 'src/settings';
 import type { MarkdownViewState } from 'src/types';
-import { doesLeafHaveMarkdownMode, registerEvents } from 'src/utils';
 
 export const loadExtensions = () => {
   plug.registerEditorExtension([bannerExtender, bannerField]);

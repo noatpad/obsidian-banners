@@ -1,6 +1,5 @@
 import { EditorState, StateEffect, StateEffectType } from '@codemirror/state';
 import { editorInfoField } from 'obsidian';
-
 import type Banner from 'src/banner/Banner.svelte';
 
 export const leafBannerMap: Record<string, Banner> = {};

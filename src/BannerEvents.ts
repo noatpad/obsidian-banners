@@ -1,8 +1,8 @@
-import { Events, type EventRef } from 'obsidian';
-
+import { Events } from 'obsidian';
 import { registerEditorBannerEvents } from './editing';
 import { registerReadingBannerEvents } from './reading';
 import type { BannerSettings } from './settings';
+import type { EventRef } from 'obsidian';
 
 export default class BannerEvents extends Events {
   loadEvents() {

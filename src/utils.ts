@@ -1,6 +1,6 @@
+import { plug } from './main';
 import type { EventRef, WorkspaceLeaf } from 'obsidian';
 
-import { plug } from './main';
 
 const massageString = (value: string): string => {
   value = /^"(.+)"$/.test(value) ? value.slice(1, -1) : value;

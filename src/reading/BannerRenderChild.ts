@@ -1,9 +1,9 @@
-import { MarkdownRenderChild, TFile, type MarkdownPostProcessorContext } from 'obsidian';
-
-import Banner from '../banner/Banner.svelte';
-
+import { MarkdownRenderChild, TFile  } from 'obsidian';
 import { plug } from 'src/main';
-import { getSetting, type BannerSettings } from 'src/settings';
+import { getSetting } from 'src/settings';
+import Banner from '../banner/Banner.svelte';
+import type { MarkdownPostProcessorContext } from 'obsidian';
+import type { BannerSettings } from 'src/settings';
 
 export type Embedded = 'internal' | 'popover' | false;
 

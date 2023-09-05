@@ -45,12 +45,22 @@
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/member-delimiter-style": "error",
     "import/order": ["error", {
-      "newlines-between": "always",
+      "groups": [
+        "builtin",
+        "external",
+        "internal",
+        "parent",
+        "sibling",
+        "index",
+        "type"
+      ],
+      "newlines-between": "never",
       "alphabetize": {
         "order": "asc",
         "caseInsensitive": true
       }
     }],
+    "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
     "import/newline-after-import": "error"
   },
   "overrides": [

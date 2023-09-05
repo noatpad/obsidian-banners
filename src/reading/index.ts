@@ -1,10 +1,11 @@
-import type { MarkdownPostProcessor } from 'obsidian';
 
-import BannerRenderChild, { type Embedded } from './BannerRenderChild';
 
 import { plug } from 'src/main';
 import { getSetting } from 'src/settings';
 import { extractBannerData } from 'src/utils';
+import BannerRenderChild from './BannerRenderChild';
+import type { Embedded } from './BannerRenderChild';
+import type { MarkdownPostProcessor } from 'obsidian';
 
 // Helper to associate a banner to a specific view/document
 const currentBanners: Record<string, BannerRenderChild> = {};

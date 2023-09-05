@@ -1,8 +1,6 @@
 <script lang="ts">
   import { slide } from 'svelte/transition';
-
   import settings from './store';
-
   import type { BannerSettings } from '.';
 
   export let key: keyof BannerSettings;

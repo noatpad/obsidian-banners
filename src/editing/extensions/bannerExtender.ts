@@ -1,6 +1,6 @@
 import { EditorState } from '@codemirror/state';
 import { editorInfoField } from 'obsidian';
-
+import { extractBannerData } from 'src/utils';
 import {
   assignBannerEffect,
   hasEffect,
@@ -10,8 +10,6 @@ import {
   removeBannerEffect,
   upsertBannerEffect
 } from './utils';
-
-import { extractBannerData } from 'src/utils';
 
 // Helper function to get the banner data from a raw frontmatter string
 const parseBannerFrontmatter = (state: EditorState): BannerMetadata => {

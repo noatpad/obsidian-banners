@@ -1,17 +1,16 @@
 <svelte:options accessors />
 
 <script lang="ts">
-  import type { TFile } from 'obsidian';
 
+  import { plug } from 'src/main';
+  import { getSetting } from 'src/settings';
+  import settingsStore from 'src/settings/store';
   import BannerImage from './BannerImage.svelte';
   import Error from './Error.svelte';
   import Loading from './Loading.svelte';
   import { fetchImage } from './utils';
-
-  import { plug } from 'src/main';
+  import type { TFile } from 'obsidian';
   import type { Embedded } from 'src/reading/BannerRenderChild';
-  import { getSetting } from 'src/settings';
-  import settingsStore from 'src/settings/store';
 
   export let source: string | undefined;
   export let x: number | undefined;

@@ -1,10 +1,9 @@
 <script lang="ts">
   import { createEventDispatcher, onDestroy, onMount } from 'svelte';
-
-  import { clampAndRound, getMousePos, type MTEvent } from './utils';
-
   import { getSetting } from 'src/settings';
   import settingsStore from 'src/settings/store';
+  import { clampAndRound, getMousePos } from './utils';
+  import type { MTEvent } from './utils';
 
 
   const dispatch = createEventDispatcher<{

@@ -1,15 +1,13 @@
 import { EditorState, StateField } from '@codemirror/state';
 import { editorEditorField, editorInfoField } from 'obsidian';
-
+import Banner from 'src/banner/Banner.svelte';
+import { getSetting } from 'src/settings';
 import {
  assignBannerEffect,
  removeBannerEffect,
  setBannerInMap,
  upsertBannerEffect
 } from './utils';
-
-import Banner from 'src/banner/Banner.svelte';
-import { getSetting } from 'src/settings';
 
 
 const addBanner = (state: EditorState, bannerData: BannerMetadata): Banner => {

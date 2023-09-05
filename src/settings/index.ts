@@ -1,10 +1,7 @@
 import { PluginSettingTab } from 'obsidian';
-
-
+import { plug } from 'src/main';
 import Settings from './Settings.svelte';
 import store from './store';
-
-import { plug } from 'src/main';
 
 type StyleOption = 'solid' | 'gradient';
 
