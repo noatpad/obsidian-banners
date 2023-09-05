@@ -1,5 +1,5 @@
 import { EditorState, StateField } from '@codemirror/state';
-import { TFile, editorEditorField, editorInfoField } from 'obsidian';
+import { editorEditorField, editorInfoField } from 'obsidian';
 
 import {
  assignBannerEffect,
@@ -21,7 +21,7 @@ const addBanner = (state: EditorState, bannerData: BannerMetadata): Banner => {
   wrapper.setCssStyles({ height: `${getSetting('height')}px` });
   const banner = new Banner({
     target: wrapper,
-    props: { ...bannerData, file: file as TFile }
+    props: { ...bannerData, file: file! }
   });
   dom.querySelector('.cm-sizer')?.prepend(wrapper);
 
@@ -45,7 +45,9 @@ const removeBanner = (banner: Banner | null = null, state: EditorState): null =>
   return null;
 };
 
-const assignBanner = (banner: Banner): Banner => {
+const assignBanner = (banner: Banner, state: EditorState): Banner => {
+  const { file } = state.field(editorInfoField);
+  banner.$set({ file: file! });
   console.log('assign!');
   return banner;
 };
@@ -67,7 +69,7 @@ const bannerField = StateField.define<Banner | null>({
       } else if (effect.is(removeBannerEffect)) {
         now = removeBanner(now, state);
       } else if (effect.is(assignBannerEffect)) {
-        now = assignBanner(effect.value);
+        now = assignBanner(effect.value, state);
       }
     }
 

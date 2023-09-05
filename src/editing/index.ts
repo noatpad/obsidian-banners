@@ -7,8 +7,6 @@ import { getSetting } from 'src/settings';
 import type { MarkdownViewState } from 'src/types';
 import { doesLeafHaveMarkdownMode, registerEvents } from 'src/utils';
 
-
-
 export const loadExtensions = () => {
   plug.registerEditorExtension([bannerExtender, bannerField]);
 
@@ -27,14 +25,12 @@ export const registerEditorBannerEvents = () => {
       if ('height' in changed) {
         plug.app.workspace.iterateRootLeaves((leaf) => {
           if (doesLeafHaveMarkdownMode(leaf, 'editing')) {
-            const wrapper = leaf.containerEl
-              .querySelector<HTMLElement>('.obsidian-banner-wrapper')!;
-            wrapper.setCssStyles({ height: `${getSetting('height')}px` });
+            leaf.containerEl.querySelector<HTMLElement>('.obsidian-banner-wrapper')!
+              .setCssStyles({ height: `${getSetting('height')}px` });
           }
         });
       }
     }),
-    // BUG: When switching files, dragging the banner doesn't update the metadata
     /* Remove unused banners when switching to reading view,
     as well as assign the correct banners when opening/switching notes in an editor */
     plug.app.workspace.on('layout-change', () => {

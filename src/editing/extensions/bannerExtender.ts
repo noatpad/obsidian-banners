@@ -13,7 +13,6 @@ import {
 
 import { extractBannerData } from 'src/utils';
 
-
 // Helper function to get the banner data from a raw frontmatter string
 const parseBannerFrontmatter = (state: EditorState): BannerMetadata => {
   const { file, frontmatterValid, rawFrontmatter } = state.field(editorInfoField);
