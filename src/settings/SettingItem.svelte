@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { slide } from 'svelte/transition';
+
   import settings from './store';
 
   import type { BannerSettings } from '.';
@@ -8,7 +10,7 @@
   $: value = $settings[key] ?? '';
 </script>
 
-<div class="setting-item">
+<div class="setting-item" transition:slide>
   <div class="setting-item-info">
     <div class="setting-item-name">
       <slot name="name" />
