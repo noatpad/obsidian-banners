@@ -9,7 +9,9 @@
 </div>
 
 <style lang="scss">
-  p { margin: 0; }
+  p {
+    margin: 0;
+  }
 
   .setting-item-heading {
     display: block;

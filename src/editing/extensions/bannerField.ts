@@ -1,8 +1,16 @@
-import { TFile, editorEditorField, editorInfoField } from "obsidian";
-import { EditorState, StateField } from "@codemirror/state";
-import Banner from "src/banner/Banner.svelte";
-import { assignBannerEffect, removeBannerEffect, setBannerInMap, upsertBannerEffect } from "./utils";
-import { getSetting } from "src/settings";
+import { EditorState, StateField } from '@codemirror/state';
+import { TFile, editorEditorField, editorInfoField } from 'obsidian';
+
+import {
+ assignBannerEffect,
+ removeBannerEffect,
+ setBannerInMap,
+ upsertBannerEffect
+} from './utils';
+
+import Banner from 'src/banner/Banner.svelte';
+import { getSetting } from 'src/settings';
+
 
 const addBanner = (state: EditorState, bannerData: BannerMetadata): Banner => {
   const { file } = state.field(editorInfoField);
@@ -43,10 +51,10 @@ const assignBanner = (banner: Banner): Banner => {
 };
 
 /**
- * State field that keeps track of the banner associated with a given editor, as well as adding, modifying,
- * and removing banners based on CM6 effects
+ * State field that keeps track of the banner associated with a given editor, as well as
+ * adding, modifying, and removing banners based on CM6 effects
  */
-const bannerField = StateField.define<Banner|null>({
+const bannerField = StateField.define<Banner | null>({
   create() {
     console.log('create!');
     return null;
@@ -66,7 +74,7 @@ const bannerField = StateField.define<Banner|null>({
     }
 
     return now;
-  },
+  }
 });
 
 export default bannerField;

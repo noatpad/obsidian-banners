@@ -1,8 +1,12 @@
-import type { MarkdownPostProcessor, TFile } from "obsidian";
-import { plug } from "src/main";
-import BannerRenderChild from "./BannerRenderChild";
-import { doesLeafHaveMarkdownMode, extractBannerData, registerEvents } from "src/utils";
-import { getSetting } from "src/settings";
+import type { MarkdownPostProcessor, TFile } from 'obsidian';
+
+import BannerRenderChild from './BannerRenderChild';
+
+import { plug } from 'src/main';
+import { getSetting } from 'src/settings';
+import { doesLeafHaveMarkdownMode, extractBannerData, registerEvents } from 'src/utils';
+
+
 
 const pusherObserver = new MutationObserver((mutations, observer) => {
   observer.disconnect();
@@ -22,7 +26,7 @@ const resizePusher = (pusher: HTMLElement | null, reset = false) => {
     return;
   }
   pusher?.setCssStyles({ height: `${getSetting('height')}px` });
-}
+};
 
 const postprocessor: MarkdownPostProcessor = (el, ctx) => {
   // Only process the frontmatter
@@ -63,10 +67,11 @@ export const registerReadingBannerEvents = () => {
     // Listen for setting changes
     plug.events.on('setting-change', (changed) => {
       // Resize "preview pusher" when resizing banner size
-      if (changed.hasOwnProperty('height')) {
+      if ('height' in changed) {
         plug.app.workspace.iterateRootLeaves((leaf) => {
           if (doesLeafHaveMarkdownMode(leaf, 'reading')) {
-            const pusher = leaf.view.containerEl.querySelector<HTMLElement>('.markdown-preview-pusher')!;
+            const pusher = leaf.view.containerEl
+              .querySelector<HTMLElement>('.markdown-preview-pusher')!;
             resizePusher(pusher);
           }
         });
@@ -75,10 +80,8 @@ export const registerReadingBannerEvents = () => {
   ]);
 };
 
-/**
- * BUG: This won't rerender the Properties view and the inline title on the reading view until you manually
- * switch out and back into reading view; or reload the app
- */
+/* BUG: This won't rerender the Properties view and the inline title on the reading view
+ * until you manually switch out and back into reading view; or reload the app */
 export const unloadReadingViewBanners = () => {
   plug.app.workspace.iterateRootLeaves((leaf) => {
     const { containerEl, previewMode } = leaf.view;

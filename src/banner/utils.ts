@@ -1,5 +1,6 @@
-import type { TFile } from "obsidian";
-import { plug } from "src/main";
+import type { TFile } from 'obsidian';
+
+import { plug } from 'src/main';
 
 export type MTEvent = MouseEvent | TouchEvent;
 
@@ -22,11 +23,11 @@ const parseInternalLink = (src: string, file: TFile): string | null => {
   const link = src.slice(2, -2);
   const target = plug.app.metadataCache.getFirstLinkpathDest(link, file.path);
   return target ? plug.app.vault.getResourcePath(target) : link;
-}
+};
 
-export const fetchImage = async (src: string|undefined, file: TFile): Promise<string|null> => {
+export const fetchImage = async (src: string | undefined, file: TFile): Promise<string | null> => {
   // Just return the bad link to get the error
-  if (!src) return (src ?? null);
+  if (!src) return src ?? null;
 
   // Check if it's an internal link and use that if it is
   const internalLink = parseInternalLink(src, file);
@@ -39,7 +40,7 @@ export const fetchImage = async (src: string|undefined, file: TFile): Promise<st
       const reader = new FileReader();
       reader.readAsDataURL(blob);
       reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error)
+      reader.onerror = (error) => reject(error);
     });
   } catch (error: any) {
     throw new Error(error);

@@ -1,7 +1,8 @@
-import { Events, type EventRef } from "obsidian";
-import type { BannerSettings } from "./settings";
-import { registerReadingBannerEvents } from "./reading";
-import { registerEditorBannerEvents } from "./editing";
+import { Events, type EventRef } from 'obsidian';
+
+import { registerEditorBannerEvents } from './editing';
+import { registerReadingBannerEvents } from './reading';
+import type { BannerSettings } from './settings';
 
 export default class BannerEvents extends Events {
   loadEvents() {
@@ -9,7 +10,7 @@ export default class BannerEvents extends Events {
     registerEditorBannerEvents();
   }
 
-  on(name: 'setting-change', callback: (changed: Partial<BannerSettings>) => any): EventRef {
+  on(name: 'setting-change', callback: (changed: Partial<BannerSettings>) => void): EventRef {
     return super.on(name, callback);
   }
 

@@ -1,12 +1,16 @@
+<svelte:options accessors />
+
 <script lang="ts">
-  import type { TFile } from "obsidian";
-  import { fetchImage } from "./utils";
-  import Loading from "./Loading.svelte";
-  import Error from "./Error.svelte";
-  import settingsStore from "src/settings/store";
-  import { getSetting } from "src/settings";
-  import BannerImage from "./BannerImage.svelte";
-  import { plug } from "src/main";
+  import type { TFile } from 'obsidian';
+
+  import BannerImage from './BannerImage.svelte';
+  import Error from './Error.svelte';
+  import Loading from './Loading.svelte';
+  import { fetchImage } from './utils';
+
+  import { plug } from 'src/main';
+  import { getSetting } from 'src/settings';
+  import settingsStore from 'src/settings/store';
 
   export let source: string | undefined;
   export let x: number | undefined;
@@ -34,7 +38,12 @@
   {#await fetchImage(source, file)}
     <Loading />
   {:then src}
-    <BannerImage {src} {x} {y} on:drag-banner={updateBannerData} />
+    <BannerImage
+      {src}
+      {x}
+      {y}
+      on:drag-banner={updateBannerData}
+    />
   {:catch error}
     <Error {error} />
   {/await}
@@ -50,5 +59,3 @@
     user-select: none;
   }
 </style>
-
-<svelte:options accessors />

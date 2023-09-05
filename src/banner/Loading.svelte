@@ -1,6 +1,4 @@
-<div class="loading">
-  Loading...
-</div>
+<div class="loading">Loading...</div>
 
 <style lang="scss">
   .loading {

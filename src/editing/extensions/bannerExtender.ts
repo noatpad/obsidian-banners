@@ -1,8 +1,18 @@
-import { editorInfoField } from "obsidian";
-import { EditorState } from "@codemirror/state";
-import Banner from "src/banner/Banner.svelte";
-import { extractBannerData } from "src/utils";
-import { assignBannerEffect, hasEffect, isBannerEffect, leafBannerMap, openNoteEffect, removeBannerEffect, upsertBannerEffect } from "./utils";
+import { EditorState } from '@codemirror/state';
+import { editorInfoField } from 'obsidian';
+
+import {
+  assignBannerEffect,
+  hasEffect,
+  isBannerEffect,
+  leafBannerMap,
+  openNoteEffect,
+  removeBannerEffect,
+  upsertBannerEffect
+} from './utils';
+
+import { extractBannerData } from 'src/utils';
+
 
 // Helper function to get the banner data from a raw frontmatter string
 const parseBannerFrontmatter = (state: EditorState): BannerMetadata => {
@@ -21,7 +31,8 @@ const parseBannerFrontmatter = (state: EditorState): BannerMetadata => {
 };
 
 /**
- * Transaction extender that essentially is in charge of sending banner-related effects to `bannerField`
+ * Transaction extender that essentially is in charge of sending banner-related
+ * effects to `bannerField`
  */
 const bannerExtender = EditorState.transactionExtender.of((transaction) => {
   const { docChanged, effects, state } = transaction;
@@ -31,12 +42,15 @@ const bannerExtender = EditorState.transactionExtender.of((transaction) => {
     console.log('open note!');
     const { leaf } = state.field(editorInfoField);
     const upsertEffect = upsertBannerEffect.of(bannerData);
-    const effects = leafBannerMap[leaf.id] ? [assignBannerEffect.of(leafBannerMap[leaf.id]), upsertEffect] : [upsertEffect];
+    const effects = leafBannerMap[leaf.id]
+      ? [assignBannerEffect.of(leafBannerMap[leaf.id]), upsertEffect]
+      : [upsertEffect];
     return { effects };
   } else if (!isBannerEffect(effects) && docChanged) {
-    return {
-      effects: bannerData.source ? upsertBannerEffect.of(bannerData) : removeBannerEffect.of(null)
-    };
+    const effects = bannerData.source
+      ? upsertBannerEffect.of(bannerData)
+      : removeBannerEffect.of(null);
+    return { effects };
   }
 
   return null;

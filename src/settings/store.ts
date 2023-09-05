@@ -1,10 +1,12 @@
-import { writable, type Readable } from "svelte/store";
-import { saveSettings, type BannerSettings } from ".";
-import { plug } from "src/main";
+import { writable, type Readable } from 'svelte/store';
+
+import { saveSettings, type BannerSettings } from '.';
+
+import { plug } from 'src/main';
 
 interface SettingsStore extends Readable<BannerSettings> {
-  set: (value: BannerSettings) => void,
-  updateSetting: (key: keyof BannerSettings, value: any) => void
+  set: (value: BannerSettings) => void;
+  updateSetting: (key: keyof BannerSettings, value: any) => void;
 }
 
 const { subscribe, set } = writable<BannerSettings>();

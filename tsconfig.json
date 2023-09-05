@@ -6,10 +6,7 @@
     "baseUrl": ".",
     "esModuleInterop": true,
     "importHelpers": true,
-    "lib": [
-      "dom",
-      "ES2022"
-    ],
+    "lib": ["dom", "ES2022"],
     "module": "ESNext",
     "moduleResolution": "Node",
     "noImplicitAny": true,
@@ -17,10 +14,6 @@
     "target": "ESNext"
   },
   "types": ["svelte", "node"],
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["**/*.ts", "**/*.svelte"],
+  "exclude": ["node_modules"]
 }

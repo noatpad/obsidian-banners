@@ -1,12 +1,15 @@
-import type { EventRef, WorkspaceLeaf } from "obsidian";
-import { plug } from "./main";
+import type { EventRef, WorkspaceLeaf } from 'obsidian';
+
+import { plug } from './main';
 
 const massageString = (value: string): string => {
-  value = /^\"(.+)\"$/.test(value) ? value.slice(1, -1) : value;
+  value = /^"(.+)"$/.test(value) ? value.slice(1, -1) : value;
   return value.trim();
-}
+};
 
-const massageNumber = (value: string|number): number => typeof value === 'number' ? value : Number(value);
+const massageNumber = (value: string | number): number => (
+  (typeof value === 'number') ? value : Number(value)
+);
 
 export const extractBannerData = (frontmatter?: Record<string, any>): BannerMetadata => {
   return {

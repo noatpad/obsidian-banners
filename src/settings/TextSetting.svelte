@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { DEFAULT_SETTINGS, type BannerSettings } from ".";
-  import SettingItem from "./SettingItem.svelte";
+  import SettingItem from './SettingItem.svelte';
+
+  import { DEFAULT_SETTINGS, type BannerSettings } from '.';
 
   export let key: keyof BannerSettings;
   $: placeholder = (DEFAULT_SETTINGS[key] as number).toString();
@@ -17,5 +18,5 @@
     {value}
     {placeholder}
     on:change={(e) => update(e.currentTarget.value || undefined)}
-  >
+  />
 </SettingItem>

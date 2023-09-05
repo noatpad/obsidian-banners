@@ -1,0 +1,69 @@
+{
+  "plugins": ["@typescript-eslint"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:svelte/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript"
+  ],
+  "settings": {
+    "import/resolver": {
+      "typescript": { "project": "tsconfig.json" },
+      "node": { "project": "tsconfig.json" }
+    }
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "tsconfig.json",
+    "extraFileExtensions": [".svelte"]
+  },
+  "root": true,
+  "ignorePatterns": ["/dist/**"],
+  "rules": {
+    "max-len": ["error", {
+      "code": 100,
+      "tabWidth": 2
+    }],
+    "semi": ["error", "always"],
+    "quotes": ["error", "single"],
+    "comma-dangle": ["error", "never"],
+    "array-bracket-newline": ["error", {
+      "multiline": true,
+      "minItems": 4
+    }],
+    "array-element-newline": ["error", "consistent"],
+    "object-curly-newline": ["error", {
+      "multiline": true,
+      "minProperties": 4
+    }],
+    "object-curly-spacing": ["error", "always", {
+      "arraysInObjects": false,
+      "objectsInObjects": false
+    }],
+    "object-property-newline": ["error", { "allowAllPropertiesOnSameLine": true }],
+    "@typescript-eslint/no-explicit-any": "off",
+    "import/order": ["error", {
+      "newlines-between": "always",
+      "alphabetize": {
+        "order": "asc",
+        "caseInsensitive": true
+      }
+    }]
+  },
+  "overrides": [
+    {
+      "files": ["*.svelte"],
+      "parser": "svelte-eslint-parser",
+      "parserOptions": { "parser": "@typescript-eslint/parser" },
+      "rules": {
+        "no-undef": "off",
+        "svelte/first-attribute-linebreak": "error",
+        "svelte/max-attributes-per-line": ["error", {
+          "multiline": 1,
+          "singleline": 3
+        }]
+      }
+    }
+  ]
+}

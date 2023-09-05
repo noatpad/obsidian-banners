@@ -1,6 +1,7 @@
 <script lang="ts">
-  import type { BannerSettings } from ".";
   import settings from './store';
+
+  import type { BannerSettings } from '.';
 
   export let key: keyof BannerSettings;
   const update = (value: any) => settings.updateSetting(key, value);

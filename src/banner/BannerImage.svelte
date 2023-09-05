@@ -1,11 +1,14 @@
 <script lang="ts">
-  import { getSetting } from "src/settings";
-  import settingsStore from "src/settings/store";
-  import { clampAndRound, getMousePos, type MTEvent } from "./utils";
-  import { createEventDispatcher, onDestroy, onMount } from "svelte";
+  import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+
+  import { clampAndRound, getMousePos, type MTEvent } from './utils';
+
+  import { getSetting } from 'src/settings';
+  import settingsStore from 'src/settings/store';
+
 
   const dispatch = createEventDispatcher<{
-    'drag-banner': Partial<BannerMetadata>
+    'drag-banner': Partial<BannerMetadata>;
   }>();
 
   export let src: string | null;
@@ -23,28 +26,31 @@
 
   const dragStart = (e: MTEvent) => {
     const [x, y] = getMousePos(e);
-    const { clientHeight, clientWidth, naturalHeight, naturalWidth } = img;
+    const {
+      clientHeight,
+      clientWidth,
+      naturalHeight,
+      naturalWidth
+    } = img;
     const clientRatio = clientWidth / clientHeight;
     const naturalRatio = naturalWidth / naturalHeight;
     dragging = true;
-    isVerticalDrag = (naturalRatio <= clientRatio);
+    isVerticalDrag = naturalRatio <= clientRatio;
     startDragPos = { x, y };
     // Get "drag area" dimensions (image size with "covered" area, then subtract image dimensions)
-    imageSize = isVerticalDrag ? (
-      { width: 0, height: (clientWidth / naturalRatio) - clientHeight }
-    ) : (
-      { width: (clientHeight * naturalRatio) - clientWidth, height: 0 }
-    );
+    imageSize = isVerticalDrag
+      ? { width: 0, height: clientWidth / naturalRatio - clientHeight }
+      : { width: clientHeight * naturalRatio - clientWidth, height: 0 };
   };
 
   const dragMove = (e: MTEvent) => {
     if (!dragging) return;
 
     const [x, y] = getMousePos(e);
-    const delta = { x: startDragPos.x -  x, y: startDragPos.y - y };
+    const delta = { x: startDragPos.x - x, y: startDragPos.y - y };
     dragOffset = {
-      x: isVerticalDrag ? 0 : (delta.x / imageSize.width),
-      y: isVerticalDrag ? (delta.y / imageSize.height) : 0
+      x: isVerticalDrag ? 0 : delta.x / imageSize.width,
+      y: isVerticalDrag ? delta.y / imageSize.height : 0
     };
   };
 
@@ -78,7 +84,7 @@
   on:mousedown={dragStart}
   on:mousemove={dragMove}
   on:mouseup={dragEnd}
->
+/>
 
 <style lang="scss">
   img {
@@ -94,6 +100,8 @@
       mask-image: linear-gradient(to bottom, black 50%, transparent);
       -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent);
     }
-    &.dragging { cursor: grabbing; }
+    &.dragging {
+      cursor: grabbing;
+    }
   }
 </style>

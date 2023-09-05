@@ -1,5 +1,6 @@
 <script lang="ts">
-  import SettingItem from "./SettingItem.svelte";
+  import SettingItem from './SettingItem.svelte';
+
   import type { BannerSettings } from '.';
 
   export let key: keyof BannerSettings;
@@ -19,10 +20,6 @@
     class:is-enabled={checked}
     on:click={() => update(!checked)}
   >
-    <input
-      type="checkbox"
-      tabindex="0"
-      value={checked}
-    >
+    <input type="checkbox" tabindex="0" value={checked} />
   </div>
 </SettingItem>
