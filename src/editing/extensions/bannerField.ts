@@ -3,10 +3,10 @@ import { editorEditorField, editorInfoField } from 'obsidian';
 import Banner from 'src/banner/Banner.svelte';
 import { getSetting } from 'src/settings';
 import {
- assignBannerEffect,
- removeBannerEffect,
- setBannerInMap,
- upsertBannerEffect
+  assignBannerEffect,
+  removeBannerEffect,
+  setBannerInMap,
+  upsertBannerEffect
 } from './utils';
 
 

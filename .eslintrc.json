@@ -21,6 +21,7 @@
   "root": true,
   "ignorePatterns": ["/dist/**"],
   "rules": {
+    "indent": ["error", 2, { "SwitchCase": 1 }],
     "max-len": ["error", {
       "code": 100,
       "tabWidth": 2
