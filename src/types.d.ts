@@ -24,6 +24,17 @@ interface ImageViewState {
   state: { file: string };
 }
 
+interface RenderSection {
+  el: HTMLElement;
+  rendered: boolean;
+  html: string;
+}
+
+interface PreviewRenderer {
+  sections: RenderSection[];
+  queueRender: () => void;
+}
+
 declare module 'obsidian' {
   interface Editor {
     cm: EditorView;
@@ -38,6 +49,10 @@ declare module 'obsidian' {
     file: TFile;
     frontmatterValid: boolean;
     rawFrontmatter: string;
+  }
+
+  interface MarkdownPreviewView {
+    renderer: PreviewRenderer;
   }
 
   interface View {
