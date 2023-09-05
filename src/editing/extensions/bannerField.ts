@@ -50,10 +50,8 @@ const assignBanner = (banner: Banner): Banner => {
   return banner;
 };
 
-/**
- * State field that keeps track of the banner associated with a given editor, as well as
- * adding, modifying, and removing banners based on CM6 effects
- */
+/* State field that keeps track of the banner associated with a given editor, as well as
+adding, modifying, and removing banners based on CM6 effects */
 const bannerField = StateField.define<Banner | null>({
   create() {
     console.log('create!');

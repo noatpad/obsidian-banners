@@ -30,10 +30,8 @@ const parseBannerFrontmatter = (state: EditorState): BannerMetadata => {
   return extractBannerData(frontmatter);
 };
 
-/**
- * Transaction extender that essentially is in charge of sending banner-related
- * effects to `bannerField`
- */
+/* Transaction extender that essentially is in charge of sending banner-related
+effects to `bannerField` */
 const bannerExtender = EditorState.transactionExtender.of((transaction) => {
   const { docChanged, effects, state } = transaction;
   const bannerData = parseBannerFrontmatter(state);

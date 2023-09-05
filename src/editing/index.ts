@@ -35,9 +35,8 @@ export const registerEditorBannerEvents = () => {
       }
     }),
     // BUG: When switching files, dragging the banner doesn't update the metadata
-    /** Remove unused banners when switching to reading view,
-     * as well as assign the correct banners when opening/switching notes in an editor
-     */
+    /* Remove unused banners when switching to reading view,
+    as well as assign the correct banners when opening/switching notes in an editor */
     plug.app.workspace.on('layout-change', () => {
       plug.app.workspace.iterateRootLeaves((leaf) => {
         const { id, view } = leaf;
