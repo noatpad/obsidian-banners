@@ -12,12 +12,14 @@ export interface BannerSettings {
   height: number;
   style: StyleOption;
   showInInternalEmbed: boolean;
+  internalEmbedHeight: number;
 }
 
 export const DEFAULT_SETTINGS: BannerSettings = {
   height: 300,
   style: 'solid',
-  showInInternalEmbed: true
+  showInInternalEmbed: true,
+  internalEmbedHeight: 200
 };
 
 const STYLE_OPTION_LABELS: Record<StyleOption, string> = {

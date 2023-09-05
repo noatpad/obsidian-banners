@@ -1,8 +1,11 @@
 <script lang="ts">
   import Header from './Header.svelte';
   import SelectSetting from './SelectSetting.svelte';
+  import settings from './store';
   import TextSetting from './TextSetting.svelte';
   import ToggleSetting from './ToggleSetting.svelte';
+
+  $: ({ showInInternalEmbed } = $settings);
 </script>
 
 <Header title="Banners" description="A nice lil' thing to add some flair to your notes :)" />
@@ -17,8 +20,15 @@
 <ToggleSetting key="showInInternalEmbed">
   <span slot="name">Show in internal embed</span>
   <span slot="description">
-    Display the banner in the internal file embed.
-    <br />
-    This is the embed that appears when you write <code>![[file]]</code> in a file
+    Display the banner in the internal file embed. This is the embed that appears when you
+    write <code>![[file]]</code> in a file.
+    <br/>
+    <em>Note:</em> You might need to reload Obsidian after toggling this setting
   </span>
 </ToggleSetting>
+{#if showInInternalEmbed}
+  <TextSetting key="internalEmbedHeight">
+    <span slot="name">Internal embed banner height</span>
+    <span slot="description">Set how big the banner should be within an internal embed</span>
+  </TextSetting>
+{/if}

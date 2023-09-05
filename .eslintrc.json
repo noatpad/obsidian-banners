@@ -43,6 +43,7 @@
     }],
     "object-property-newline": ["error", { "allowAllPropertiesOnSameLine": true }],
     "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/member-delimiter-style": "error",
     "import/order": ["error", {
       "newlines-between": "always",
       "alphabetize": {

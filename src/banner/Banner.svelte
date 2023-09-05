@@ -16,6 +16,8 @@
   export let x: number | undefined;
   export let y: number | undefined;
   export let file: TFile;
+  export let embed = false;
+  let heightValue: number;
 
   // TODO: The key should be a dynamic prefix + property value
   const getBannerKey = (key: keyof BannerMetadata): string => (
@@ -30,10 +32,19 @@
     });
   };
 
-  $: height = `${getSetting('height', $settingsStore.height)}px`;
+  $: {
+    if (embed) heightValue = getSetting('internalEmbedHeight', $settingsStore.internalEmbedHeight);
+    else heightValue = getSetting('height', $settingsStore.height);
+    console.log(heightValue);
+  }
+  $: height = `${heightValue}px`;
 </script>
 
-<div class="obsidian-banner" style:height>
+<div
+  class="obsidian-banner"
+  class:embed
+  style:height
+>
   <!-- IDEA: Add fade-in transition? -->
   {#await fetchImage(source, file)}
     <Loading />

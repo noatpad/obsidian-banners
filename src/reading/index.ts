@@ -1,6 +1,6 @@
 import type { MarkdownPostProcessor } from 'obsidian';
 
-import BannerRenderChild from './BannerRenderChild';
+import BannerRenderChild, { type Embedded } from './BannerRenderChild';
 
 import { plug } from 'src/main';
 import { getSetting } from 'src/settings';
@@ -27,6 +27,11 @@ const rerender = () => {
   }
 };
 
+const isEmbedded = (containerEl: HTMLElement): Embedded => {
+  if (containerEl.closest('.internal-embed')) return 'internal';
+  return false;
+};
+
 const postprocessor: MarkdownPostProcessor = (el, ctx) => {
   // Only process the frontmatter
   if (!el.querySelector(':scope > pre.frontmatter')) return;
@@ -37,13 +42,15 @@ const postprocessor: MarkdownPostProcessor = (el, ctx) => {
     frontmatter,
     sourcePath
   } = ctx;
-  if (!getSetting('showInInternalEmbed') && containerEl.closest('.internal-embed')) return;
+
+  const embed = isEmbedded(containerEl);
+  if (embed && !getSetting('showInInternalEmbed')) return;
 
   const file = plug.app.metadataCache.getFirstLinkpathDest(sourcePath, '/')!;
   const bannerData = extractBannerData(frontmatter);
 
   if (bannerData.source) {
-    const banner = new BannerRenderChild(el, ctx, bannerData, file);
+    const banner = new BannerRenderChild(el, ctx, bannerData, file, embed);
     if (currentBanners[docId]) currentBanners[docId].prepareSwap = true;
     ctx.addChild(banner);
     currentBanners[docId] = banner;

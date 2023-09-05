@@ -3,7 +3,9 @@ import { MarkdownRenderChild, TFile, type MarkdownPostProcessorContext } from 'o
 import Banner from '../banner/Banner.svelte';
 
 import { plug } from 'src/main';
-import { getSetting } from 'src/settings';
+import { getSetting, type BannerSettings } from 'src/settings';
+
+export type Embedded = 'internal' | 'popover' | false;
 
 export default class BannerRenderChild extends MarkdownRenderChild {
   banner!: Banner;
@@ -11,22 +13,30 @@ export default class BannerRenderChild extends MarkdownRenderChild {
   contentEl: HTMLElement;
   pusherEl?: HTMLElement | null;
   file: TFile;
+  embedded: Embedded;
   prepareSwap = false;
+  heightKey: keyof BannerSettings = 'height';
 
   constructor(
     el: HTMLElement,
     ctx: MarkdownPostProcessorContext,
     bannerData: BannerMetadata,
-    file: TFile
+    file: TFile,
+    embedded: Embedded
   ) {
     super(el);
     this.contentEl = ctx.containerEl;
     this.bannerData = bannerData;
     this.file = file;
+    this.embedded = embedded;
+
+    if (this.embedded === 'internal') {
+      this.heightKey = 'internalEmbedHeight';
+    }
   }
 
   private resizePusher(reset = false) {
-    const height = reset ? '' : `${getSetting('height')}px`;
+    const height = reset ? '' : `${getSetting(this.heightKey)}px`;
     this.pusherEl!.setCssStyles({ height });
   }
 
@@ -46,6 +56,25 @@ export default class BannerRenderChild extends MarkdownRenderChild {
     observer.observe(this.contentEl, { childList: true });
   }
 
+  private registerListener() {
+    switch (this.embedded) {
+      case 'internal':
+        this.registerEvent(
+          plug.events.on('setting-change', (changed) => {
+            if ('internalEmbedHeight' in changed) this.resizePusher();
+          })
+        );
+        break;
+      default:
+        this.registerEvent(
+          plug.events.on('setting-change', (changed) => {
+            if ('height' in changed) this.resizePusher();
+          })
+        );
+        break;
+    }
+  }
+
   onload() {
     // Resize "pusher" element
     this.pusherEl = this.contentEl.querySelector<HTMLElement>('.markdown-preview-pusher');
@@ -56,19 +85,17 @@ export default class BannerRenderChild extends MarkdownRenderChild {
     }
 
     // Listen for setting changes
-    this.registerEvent(
-      plug.events.on('setting-change', (changed) => {
-        if ('height' in changed) {
-          this.resizePusher();
-        }
-      })
-    );
+    this.registerListener();
 
     // Create banner
     this.containerEl.addClass('obsidian-banner-wrapper');
     this.banner = new Banner({
       target: this.containerEl,
-      props: { ...this.bannerData, file: this.file }
+      props: {
+        ...this.bannerData,
+        embed: this.embedded === 'internal',
+        file: this.file
+      }
     });
 
   }
