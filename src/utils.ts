@@ -20,7 +20,6 @@ export const extractBannerData = (frontmatter?: Record<string, any>): BannerMeta
 };
 
 export const isEqualBannerData = (a: BannerMetadata, b: BannerMetadata): boolean => {
-  console.log(a, b);
   const keys = Object.keys(a) as Array<keyof BannerMetadata>;
   return keys.every((k) => a[k] === b[k]);
 };

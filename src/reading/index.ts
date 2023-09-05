@@ -25,7 +25,6 @@ const postprocessor: MarkdownPostProcessor = (el, ctx) => {
   if (!el.querySelector('pre.frontmatter')) return;
 
   const { containerEl, frontmatter, sourcePath } = ctx;
-  console.log(getSetting('showInInternalEmbed'));
   if (!getSetting('showInInternalEmbed') && containerEl.closest('.internal-embed')) return;
 
   const file = plug.app.metadataCache.getFirstLinkpathDest(sourcePath, '/')!;
