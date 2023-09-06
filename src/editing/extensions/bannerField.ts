@@ -11,6 +11,7 @@ import {
 
 
 const addBanner = (state: EditorState, bannerData: BannerMetadata): Banner => {
+  console.log('add!');
   const { file } = state.field(editorInfoField);
   const { dom } = state.field(editorEditorField);
   const wrapper = document.createElement('div');
@@ -24,29 +25,28 @@ const addBanner = (state: EditorState, bannerData: BannerMetadata): Banner => {
   dom.querySelector('.cm-sizer')?.prepend(wrapper);
 
   setBannerInMap(state, banner);
-  console.log('add!');
   return banner;
 };
 
 const updateBanner = (banner: Banner, bannerData: BannerMetadata): Banner => {
-  banner.$set({ ...bannerData });
   console.log('update!');
+  banner.$set({ ...bannerData });
   return banner;
 };
 
 const removeBanner = (banner: Banner | null = null, state: EditorState): null => {
+  console.log('remove!?');
   const { dom } = state.field(editorEditorField);
   banner?.$destroy();
   dom.querySelector('.obsidian-banner-wrapper')?.remove();
   setBannerInMap(state);
-  console.log('remove!?');
   return null;
 };
 
 const assignBanner = (banner: Banner, state: EditorState): Banner => {
+  console.log('assign!');
   const { file } = state.field(editorInfoField);
   banner.$set({ file: file! });
-  console.log('assign!');
   return banner;
 };
 

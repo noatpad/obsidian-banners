@@ -11,10 +11,16 @@ import {
   upsertBannerEffect
 } from './utils';
 
-// Helper function to get the banner data from a raw frontmatter string
+const yamlRegex = new RegExp(/^---(?<yaml>.*)---/, 's');
+
+// Parse raw frontmatter to get banner metadata
 const parseBannerFrontmatter = (state: EditorState): BannerMetadata => {
-  const { rawFrontmatter } = state.field(editorInfoField);
-  const frontmatter = parseYaml(rawFrontmatter);
+  const { data } = state.field(editorInfoField);
+  const match = data?.match(yamlRegex);
+  if (!match?.groups?.yaml) return extractBannerData();
+
+  const { yaml } = match.groups;
+  const frontmatter = parseYaml(yaml);
   return extractBannerData(frontmatter);
 };
 
@@ -25,10 +31,10 @@ const bannerExtender = EditorState.transactionExtender.of((transaction) => {
   if (isBannerEffect(effects)) return null;
 
   const bannerData = parseBannerFrontmatter(state);
+  const newEffects: StateEffect<any>[] = [];
   const effectFromData = bannerData.source
     ? upsertBannerEffect.of(bannerData)
     : removeBannerEffect.of(null);
-  const newEffects: StateEffect<any>[] = [];
   if (hasEffect(effects, openNoteEffect)) {
     console.log('open note!');
     const { leaf } = state.field(editorInfoField);

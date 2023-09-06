@@ -3,10 +3,12 @@
   import { getSetting } from 'src/settings';
   import settingsStore from 'src/settings/store';
   import { dragBanner } from './actions';
+  import type { XY } from './actions';
 
   export let src: string | null;
-  export let x: number | undefined;
-  export let y: number | undefined;
+  export let x: number;
+  export let y: number;
+  let objectPos = { x, y };
 
   const dispatch = createEventDispatcher<{
     'drag-banner': Partial<BannerMetadata>;
@@ -14,12 +16,14 @@
   let dragging = false;
 
   const dragStart = () => { dragging = true; };
+  const dragMove = ({ detail }: CustomEvent<XY>) => { objectPos = detail; };
   const dragEnd = ({ detail }: CustomEvent<Partial<BannerMetadata>>) => {
     dispatch('drag-banner', detail);
     dragging = false;
   };
 
   $: gradient = (getSetting('style', $settingsStore.style) === 'gradient');
+  $: objectPosStyle = `${objectPos.x * 100}% ${objectPos.y * 100}%`;
 </script>
 
 <img
@@ -27,10 +31,12 @@
   alt="Banner"
   class:gradient
   class:dragging
+  style:object-position={objectPosStyle}
   draggable={false}
   aria-hidden={true}
   use:dragBanner={{ x, y }}
   on:dragBannerStart={dragStart}
+  on:dragBannerMove={dragMove}
   on:dragBannerEnd={dragEnd}
 />
 

@@ -45,10 +45,9 @@ declare module 'obsidian' {
   }
 
   interface MarkdownFileInfo {
+    data: string;
     leaf: WorkspaceLeaf;
     file: TFile;
-    frontmatterValid: boolean;
-    rawFrontmatter: string;
   }
 
   interface MarkdownPreviewView {

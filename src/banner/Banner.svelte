@@ -13,8 +13,8 @@
   import type { ComponentEvents } from 'svelte';
 
   export let source: string | undefined;
-  export let x: number | undefined;
-  export let y: number | undefined;
+  export let x = 0.5;
+  export let y = 0.5;
   export let file: TFile;
   export let embed: Embedded = false;
   let heightValue: number;
@@ -24,8 +24,8 @@
     (key === 'source') ? 'banner' : `banner_${key}`
   );
 
-  const updateBannerData = ({ detail }: ComponentEvents<BannerImage>['drag-banner']) => {
-    plug.app.fileManager.processFrontMatter(file, async (frontmatter) => {
+  const updateBannerData = async ({ detail }: ComponentEvents<BannerImage>['drag-banner']) => {
+    await plug.app.fileManager.processFrontMatter(file, async (frontmatter) => {
       for (const [key, val] of Object.entries(detail)) {
         frontmatter[getBannerKey(key as keyof BannerMetadata)] = val;
       }
