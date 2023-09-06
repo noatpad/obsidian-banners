@@ -3,18 +3,16 @@ import type { Action } from 'svelte/action';
 
 type MTEvent = MouseEvent | TouchEvent;
 
-export interface XY {
-  x: number;
-  y: number;
-}
+export interface XY { x: number; y: number }
+export interface DragParams extends XY { draggable: boolean }
 
-interface Attributes {
+interface DragAttributes {
   'on:dragBannerStart': (e: CustomEvent) => void;
   'on:dragBannerMove': (e: CustomEvent<XY>) => void;
   'on:dragBannerEnd': (e: CustomEvent<Partial<BannerMetadata>>) => void;
 }
 
-type DragBannerAction = Action<HTMLImageElement, XY, Attributes>;
+type DragBannerAction = Action<HTMLImageElement, DragParams, DragAttributes>;
 
 // Clamp a value if needed, otherwise round it to 3 decimals
 const clampAndRound = (min: number, value: number, max: number) => {
@@ -28,8 +26,12 @@ const getMousePos = (e: MTEvent): [number, number] => {
   return [clientX, clientY];
 };
 
-// TODO: Reimplement touch dragging
-export const dragBanner: DragBannerAction = (img, { x, y }) => {
+// TODO: Reimplement drag modifer setting
+// TODO: Reimplement experimental touch dragging
+// TODO: Implement experimental dragging for embeds
+// Svelte action for banner dragging
+export const dragBanner: DragBannerAction = (img, { x, y, draggable: _draggable }) => {
+  let draggable = _draggable;
   let dragging = false;
   let isVerticalDrag = false;
   let imageSize = { width: 0, height: 0 };
@@ -38,6 +40,10 @@ export const dragBanner: DragBannerAction = (img, { x, y }) => {
 
   const dragStart = (e: MTEvent) => {
     const [x, y] = getMousePos(e);
+    prev = { x, y };
+    dragging = true;
+
+    // Get "drag area" dimensions (image size with "covered" area, then subtract image dimensions)
     const {
       clientHeight,
       clientWidth,
@@ -46,10 +52,7 @@ export const dragBanner: DragBannerAction = (img, { x, y }) => {
     } = img;
     const clientRatio = clientWidth / clientHeight;
     const naturalRatio = naturalWidth / naturalHeight;
-    dragging = true;
     isVerticalDrag = naturalRatio <= clientRatio;
-    prev = { x, y };
-    // Get "drag area" dimensions (image size with "covered" area, then subtract image dimensions)
     imageSize = isVerticalDrag
       ? { width: 0, height: clientWidth / naturalRatio - clientHeight }
       : { width: clientHeight * naturalRatio - clientWidth, height: 0 };
@@ -59,10 +62,12 @@ export const dragBanner: DragBannerAction = (img, { x, y }) => {
   const dragMove = (e: MTEvent) => {
     if (!dragging) return;
 
+    // Get the movement delta
     const [x, y] = getMousePos(e);
     const delta = { x: prev.x - x, y: prev.y - y };
     prev = { x, y };
 
+    // Calculate the drag offset and add this result to the object-position percentages
     const drag = {
       x: isVerticalDrag ? 0 : delta.x / imageSize.width,
       y: isVerticalDrag ? delta.y / imageSize.height : 0
@@ -76,26 +81,46 @@ export const dragBanner: DragBannerAction = (img, { x, y }) => {
 
   const dragEnd = () => {
     if (!dragging) return;
+
     dragging = false;
     const detail = isVerticalDrag ? { y: objectPos.y } : { x: objectPos.x };
     img.dispatchEvent(new CustomEvent<Partial<BannerMetadata>>('dragBannerEnd', { detail }));
   };
 
-  img.addEventListener('mousedown', dragStart);
-  img.addEventListener('mousemove', dragMove);
-  img.addEventListener('mouseup', dragEnd);
-  document.addEventListener('mouseup', dragEnd);
+  const addListeners = () => {
+    img.addEventListener('mousedown', dragStart);
+    img.addEventListener('mousemove', dragMove);
+    img.addEventListener('mouseup', dragEnd);
+    document.addEventListener('mouseup', dragEnd);
+    draggable = true;
+  };
+
+  const removeListeners = () => {
+    img.removeEventListener('mousedown', dragStart);
+    img.removeEventListener('mousemove', dragMove);
+    img.removeEventListener('mouseup', dragEnd);
+    document.removeEventListener('mouseup', dragEnd);
+    draggable = false;
+  };
+
+  if (draggable) {
+    addListeners();
+  }
 
   return {
-    update({ x, y }) {
+    update({ x, y, draggable: _draggable }) {
+      if (draggable !== _draggable) {
+        if (_draggable) {
+          addListeners();
+        } else {
+          removeListeners();
+        }
+      }
       objectPos = { x, y };
       img.dispatchEvent(new CustomEvent<XY>('dragBannerMove', { detail: objectPos }));
     },
     destroy() {
-      img.removeEventListener('mousedown', dragStart);
-      img.removeEventListener('mousemove', dragMove);
-      img.removeEventListener('mouseup', dragEnd);
-      document.removeEventListener('mouseup', dragEnd);
+      removeListeners();
     }
   };
 };

@@ -62,6 +62,7 @@
       {src}
       {x}
       {y}
+      {embed}
       on:drag-banner={updateBannerData}
     />
   {:catch error}

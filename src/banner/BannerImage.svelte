@@ -3,11 +3,13 @@
   import { getSetting } from 'src/settings';
   import settingsStore from 'src/settings/store';
   import { dragBanner } from './actions';
-  import type { XY } from './actions';
+  import type { DragParams, XY } from './actions';
+  import type { Embedded } from 'src/reading/BannerRenderChild';
 
   export let src: string | null;
   export let x: number;
   export let y: number;
+  export let embed: Embedded;
   let objectPos = { x, y };
 
   const dispatch = createEventDispatcher<{
@@ -22,7 +24,17 @@
     dragging = false;
   };
 
-  $: gradient = (getSetting('style', $settingsStore.style) === 'gradient');
+  const isDraggable = (embed: Embedded): boolean => {
+    // if (embed === 'internal') return showInInternalEmbed;
+    // if (embed === 'popover') return showInPopover;
+    // return true;
+    return !embed;
+  };
+
+  let dragBannerParams: DragParams;
+  $: ({ style } = $settingsStore);
+  $: dragBannerParams = { x, y, draggable: isDraggable(embed) };
+  $: gradient = (getSetting('style', style) === 'gradient');
   $: objectPosStyle = `${objectPos.x * 100}% ${objectPos.y * 100}%`;
 </script>
 
@@ -30,11 +42,12 @@
   {src}
   alt="Banner"
   class:gradient
+  class:draggable={dragBannerParams.draggable}
   class:dragging
   style:object-position={objectPosStyle}
   draggable={false}
   aria-hidden={true}
-  use:dragBanner={{ x, y }}
+  use:dragBanner={dragBannerParams}
   on:dragBannerStart={dragStart}
   on:dragBannerMove={dragMove}
   on:dragBannerEnd={dragEnd}
@@ -48,15 +61,13 @@
     max-width: none;
     object-fit: cover;
     user-select: none;
-    cursor: grab;
 
     &.gradient {
       mask-image: linear-gradient(to bottom, black 50%, transparent);
       -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent);
     }
 
-    &.dragging {
-      cursor: grabbing;
-    }
+    &.draggable { cursor: grab; }
+    &.dragging { cursor: grabbing; }
   }
 </style>
