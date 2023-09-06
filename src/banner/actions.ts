@@ -1,12 +1,14 @@
 /* eslint-disable import/no-duplicates */
-import type { EventDispatcher } from 'svelte';
 import type { Action } from 'svelte/action';
 
 type MTEvent = MouseEvent | TouchEvent;
-type DragBannerActionParams = {
+interface DragBannerActionParams {
   x: number | undefined;
   y: number | undefined;
-  dispatch: EventDispatcher<{'drag-banner': Partial<BannerMetadata>}>;
+}
+interface Attributes {
+  'on:dragBannerStart': (e: CustomEvent) => void;
+  'on:dragBannerEnd': (e: CustomEvent<Partial<BannerMetadata>>) => void;
 }
 
 // Clamp a value if needed, otherwise round it to 3 decimals
@@ -22,9 +24,9 @@ const getMousePos = (e: MTEvent): [number, number] => {
 };
 
 // TODO: Reimplement touch dragging
-export const dragBanner: Action<HTMLImageElement, DragBannerActionParams> = (
+export const dragBanner: Action<HTMLImageElement, DragBannerActionParams, Attributes> = (
   img,
-  { x = 0.5, y = 0.5, dispatch }
+  { x = 0.5, y = 0.5 }
 ) => {
   let dragging = false;
   let isVerticalDrag = false;
@@ -53,7 +55,8 @@ export const dragBanner: Action<HTMLImageElement, DragBannerActionParams> = (
     imageSize = isVerticalDrag
       ? { width: 0, height: clientWidth / naturalRatio - clientHeight }
       : { width: clientHeight * naturalRatio - clientWidth, height: 0 };
-    img.addClass('dragging');
+    // img.addClass('dragging');
+    img.dispatchEvent(new CustomEvent('dragBannerStart'));
   };
 
   const dragMove = (e: MTEvent) => {
@@ -78,8 +81,10 @@ export const dragBanner: Action<HTMLImageElement, DragBannerActionParams> = (
     if (!dragging) return;
     dragging = false;
     setObjectPos();
-    dispatch('drag-banner', isVerticalDrag ? { y: objectPos.y } : { x: objectPos.x });
-    img.removeClass('dragging');
+    const detail = isVerticalDrag ? { y: objectPos.y } : { x: objectPos.x };
+    img.dispatchEvent(new CustomEvent<Partial<BannerMetadata>>('dragBannerEnd', { detail }));
+    // dispatch('drag-banner', isVerticalDrag ? { y: objectPos.y } : { x: objectPos.x });
+    // img.removeClass('dragging');
   };
 
   img.addEventListener('mousedown', dragStart);
