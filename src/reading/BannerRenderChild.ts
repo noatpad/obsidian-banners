@@ -9,7 +9,7 @@ export type Embedded = 'internal' | 'popover' | false;
 
 export default class BannerRenderChild extends MarkdownRenderChild {
   banner!: Banner;
-  bannerData: BannerMetadata;
+  bannerData: Partial<BannerMetadata>;
   contentEl: HTMLElement;
   pusherEl?: HTMLElement | null;
   file: TFile;
@@ -20,7 +20,7 @@ export default class BannerRenderChild extends MarkdownRenderChild {
   constructor(
     el: HTMLElement,
     ctx: MarkdownPostProcessorContext,
-    bannerData: BannerMetadata,
+    bannerData: Partial<BannerMetadata>,
     file: TFile,
     embedded: Embedded
   ) {

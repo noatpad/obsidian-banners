@@ -14,13 +14,15 @@ import {
 const yamlRegex = new RegExp(/^---(?<yaml>.*)---/, 's');
 
 // Parse raw frontmatter to get banner metadata
-const parseBannerFrontmatter = (state: EditorState): BannerMetadata => {
+/* BUG: Undos and redos do not have the latest frontmatter in the editing view,
+causing desynced banner data to pass through until an extra change is done */
+const parseBannerFrontmatter = (state: EditorState): Partial<BannerMetadata> => {
   const { data } = state.field(editorInfoField);
   const match = data?.match(yamlRegex);
   if (!match?.groups?.yaml) return extractBannerData();
 
   const { yaml } = match.groups;
-  const frontmatter = parseYaml(yaml);
+  const frontmatter = parseYaml(yaml) as Record<string, unknown>;
   return extractBannerData(frontmatter);
 };
 

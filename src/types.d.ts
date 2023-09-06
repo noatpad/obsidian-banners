@@ -69,8 +69,8 @@ declare module 'obsidian' {
 
 declare global {
   interface BannerMetadata {
-    source: string | undefined;
-    x: number | undefined;
-    y: number | undefined;
+    source: string;
+    x: number;
+    y: number;
   }
 }

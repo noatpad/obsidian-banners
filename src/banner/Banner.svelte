@@ -12,7 +12,7 @@
   import type { Embedded } from 'src/reading/BannerRenderChild';
   import type { ComponentEvents } from 'svelte';
 
-  export let source: string | undefined;
+  export let source: string | undefined = undefined;
   export let x = 0.5;
   export let y = 0.5;
   export let file: TFile;

@@ -10,7 +10,7 @@ import {
 } from './utils';
 
 
-const addBanner = (state: EditorState, bannerData: BannerMetadata): Banner => {
+const addBanner = (state: EditorState, bannerData: Partial<BannerMetadata>): Banner => {
   console.log('add!');
   const { file } = state.field(editorInfoField);
   const { dom } = state.field(editorEditorField);
@@ -28,7 +28,7 @@ const addBanner = (state: EditorState, bannerData: BannerMetadata): Banner => {
   return banner;
 };
 
-const updateBanner = (banner: Banner, bannerData: BannerMetadata): Banner => {
+const updateBanner = (banner: Banner, bannerData: Partial<BannerMetadata>): Banner => {
   console.log('update!');
   banner.$set({ ...bannerData });
   return banner;

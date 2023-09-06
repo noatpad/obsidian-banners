@@ -87,7 +87,7 @@ export const dragBanner: DragBannerAction = (img, { x, y }) => {
   document.addEventListener('mouseup', dragEnd);
 
   return {
-    update({ x = 0.5, y = 0.5 }) {
+    update({ x, y }) {
       objectPos = { x, y };
       img.dispatchEvent(new CustomEvent<XY>('dragBannerMove', { detail: objectPos }));
     },
