@@ -1,5 +1,5 @@
-import { EditorState } from '@codemirror/state';
-import { editorInfoField } from 'obsidian';
+import { EditorState, StateEffect } from '@codemirror/state';
+import { editorInfoField, parseYaml } from 'obsidian';
 import { extractBannerData } from 'src/utils';
 import {
   assignBannerEffect,
@@ -13,17 +13,8 @@ import {
 
 // Helper function to get the banner data from a raw frontmatter string
 const parseBannerFrontmatter = (state: EditorState): BannerMetadata => {
-  const { file, frontmatterValid, rawFrontmatter } = state.field(editorInfoField);
-  if (!file || !frontmatterValid) return extractBannerData();
-
-  const frontmatter: Record<string, string> = {};
-  for (const line of rawFrontmatter.split('\n').slice(1, -1)) {
-    const pair = line.split(':');
-    if (pair.length < 2 || !pair[1]) continue;
-    const [field, ...rest] = pair;
-    const value = rest.join(':');
-    frontmatter[field.trim()] = value.trim();
-  }
+  const { rawFrontmatter } = state.field(editorInfoField);
+  const frontmatter = parseYaml(rawFrontmatter);
   return extractBannerData(frontmatter);
 };
 
@@ -31,24 +22,24 @@ const parseBannerFrontmatter = (state: EditorState): BannerMetadata => {
 effects to `bannerField` */
 const bannerExtender = EditorState.transactionExtender.of((transaction) => {
   const { docChanged, effects, state } = transaction;
-  const bannerData = parseBannerFrontmatter(state);
+  if (isBannerEffect(effects)) return null;
 
+  const bannerData = parseBannerFrontmatter(state);
+  const effectFromData = bannerData.source
+    ? upsertBannerEffect.of(bannerData)
+    : removeBannerEffect.of(null);
+  const newEffects: StateEffect<any>[] = [];
   if (hasEffect(effects, openNoteEffect)) {
     console.log('open note!');
     const { leaf } = state.field(editorInfoField);
-    const upsertEffect = upsertBannerEffect.of(bannerData);
-    const effects = leafBannerMap[leaf.id]
-      ? [assignBannerEffect.of(leafBannerMap[leaf.id]), upsertEffect]
-      : [upsertEffect];
-    return { effects };
-  } else if (!isBannerEffect(effects) && docChanged) {
-    const effects = bannerData.source
-      ? upsertBannerEffect.of(bannerData)
-      : removeBannerEffect.of(null);
-    return { effects };
+    const banner = leafBannerMap[leaf.id];
+    if (banner) newEffects.push(assignBannerEffect.of(banner));
+    newEffects.push(effectFromData);
+  } else if (docChanged) {
+    newEffects.push(effectFromData);
   }
 
-  return null;
+  return { effects: newEffects };
 });
 
 export default bannerExtender;

@@ -8,7 +8,11 @@ export const openNoteEffect = StateEffect.define<Banner | null>();
 export const upsertBannerEffect = StateEffect.define<BannerMetadata>();
 export const removeBannerEffect = StateEffect.define();
 export const assignBannerEffect = StateEffect.define<Banner>();
-const bannerEffects = [upsertBannerEffect, removeBannerEffect, openNoteEffect];
+const bannerEffects = [
+  upsertBannerEffect,
+  removeBannerEffect,
+  assignBannerEffect
+];
 
 export const hasEffect = (effects: readonly StateEffect<any>[], target: StateEffectType<any>) => (
   effects.some((e) => e.is(target))
