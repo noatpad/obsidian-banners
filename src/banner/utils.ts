@@ -1,21 +1,6 @@
 import { plug } from 'src/main';
 import type { TFile } from 'obsidian';
 
-
-export type MTEvent = MouseEvent | TouchEvent;
-
-// Clamp a value if needed, otherwise round it to 3 decimals
-export const clampAndRound = (min: number, value: number, max: number) => {
-  if (value > max) return max;
-  if (value < min) return min;
-  return Math.round(value * 1000) / 1000;
-};
-
-export const getMousePos = (e: MTEvent): [number, number] => {
-  const { clientX, clientY } = (e instanceof MouseEvent) ? e : e.targetTouches[0];
-  return [clientX, clientY];
-};
-
 const parseInternalLink = (src: string, file: TFile): string | null => {
   const isInternalLink = /^\[\[.+\]\]/.test(src);
   if (!isInternalLink) return null;

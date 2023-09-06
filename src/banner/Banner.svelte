@@ -1,7 +1,6 @@
 <svelte:options accessors />
 
 <script lang="ts">
-
   import { plug } from 'src/main';
   import { getSetting } from 'src/settings';
   import settingsStore from 'src/settings/store';
@@ -11,6 +10,7 @@
   import { fetchImage } from './utils';
   import type { TFile } from 'obsidian';
   import type { Embedded } from 'src/reading/BannerRenderChild';
+  import type { ComponentEvents } from 'svelte';
 
   export let source: string | undefined;
   export let x: number | undefined;
@@ -24,7 +24,7 @@
     (key === 'source') ? 'banner' : `banner_${key}`
   );
 
-  const updateBannerData = ({ detail }: CustomEvent<Partial<BannerMetadata>>) => {
+  const updateBannerData = ({ detail }: ComponentEvents<BannerImage>['drag-banner']) => {
     plug.app.fileManager.processFrontMatter(file, async (frontmatter) => {
       for (const [key, val] of Object.entries(detail)) {
         frontmatter[getBannerKey(key as keyof BannerMetadata)] = val;
