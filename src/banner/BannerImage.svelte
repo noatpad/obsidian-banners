@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher  } from 'svelte';
+  import { createEventDispatcher } from 'svelte';
   import { getSetting } from 'src/settings';
   import settingsStore from 'src/settings/store';
   import { dragBanner } from './actions';
@@ -32,7 +32,8 @@
     x,
     y,
     embed,
-    modKey: bannerDragModifier
+    modKey: bannerDragModifier,
+    experiments: {}
   };
   $: gradient = (getSetting('style', style) === 'gradient');
   $: objectPosStyle = `${objectPos.x * 100}% ${objectPos.y * 100}%`;

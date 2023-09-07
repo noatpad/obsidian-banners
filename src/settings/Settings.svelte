@@ -23,7 +23,7 @@
     Display the banner in the internal file embed. This is the embed that appears when you
     write <code>![[file]]</code> in a file.
     <br/>
-    <em>Note:</em> You might need to reload Obsidian after toggling this setting
+    <b>Note:</b> You might need to reload Obsidian after toggling this setting
   </span>
 </ToggleSetting>
 {#if showInInternalEmbed}
@@ -54,3 +54,5 @@
     move a banner by dragging it. This can help avoid accidental banner movements.
   </span>
 </SelectSetting>
+<Header title="Experimental" description="Not as well-tested and probably finicky" />
+<p>soon...</p>

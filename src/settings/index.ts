@@ -25,6 +25,7 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   bannerDragModifier: 'None'
 };
 
+// TODO: Turn into enums
 const STYLE_OPTION_LABELS: Record<StyleOption, string> = {
   solid: 'Solid',
   gradient: 'Gradient'

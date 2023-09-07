@@ -7,9 +7,11 @@ import type { Action } from 'svelte/action';
 type MTEvent = MouseEvent | TouchEvent;
 
 export interface XY { x: number; y: number }
+export interface Experiments {}
 export interface DragParams extends XY {
   embed: Embedded;
   modKey: BannerDragModOption;
+  experiments: Experiments;
 }
 
 interface DragAttributes {
@@ -28,7 +30,8 @@ const clampAndRound = (min: number, value: number, max: number) => {
   return Math.round(value * 1000) / 1000;
 };
 
-const isDraggable = (embed: Embedded): boolean => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const isDraggable = (embed: Embedded, experiments: Experiments): boolean => {
   return !embed;
 };
 
@@ -37,7 +40,6 @@ const getMousePos = (e: MTEvent): [number, number] => {
   return [clientX, clientY];
 };
 
-// TODO: Reimplement experimental touch dragging
 // TODO: Implement experimental dragging for embeds
 // Svelte action for banner dragging
 export const dragBanner: DragBannerAction = (img, params) => {
@@ -45,9 +47,10 @@ export const dragBanner: DragBannerAction = (img, params) => {
     x,
     y,
     embed,
-    modKey: _modKey
+    modKey: _modKey,
+    experiments
   } = params;
-  let draggable = isDraggable(embed);
+  let draggable = isDraggable(embed, experiments);
   let dragging = false;
   let isVerticalDrag = false;
   let imageSize = { width: 0, height: 0 };
@@ -112,7 +115,7 @@ export const dragBanner: DragBannerAction = (img, params) => {
     img.dispatchEvent(new CustomEvent<boolean>('toggleDrag', { detail }));
   };
 
-  // Drag listener addition/removal
+  // Drag listeners
   const addDragListeners = () => {
     img.addEventListener('mousedown', dragStart);
     img.addEventListener('mousemove', dragMove);
@@ -133,7 +136,7 @@ export const dragBanner: DragBannerAction = (img, params) => {
     else removeDragListeners();
   };
 
-  // Toggle listener addition/removal
+  // Toggle listeners
   const addToggleListeners = () => {
     document.addEventListener('keydown', modKeyHeld);
     document.addEventListener('keyup', modKeyHeld);
@@ -159,9 +162,10 @@ export const dragBanner: DragBannerAction = (img, params) => {
         x,
         y,
         embed,
-        modKey: newModKey
+        modKey: newModKey,
+        experiments
       } = params;
-      const newDraggable = isDraggable(embed);
+      const newDraggable = isDraggable(embed, experiments);
       if (draggable !== newDraggable) toggleDragListeners(newDraggable);
       if (modKey !== newModKey) toggleToggleListeners(newModKey);
 
