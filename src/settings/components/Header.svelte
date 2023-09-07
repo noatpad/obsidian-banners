@@ -1,17 +1,16 @@
 <script lang="ts">
   export let title: string;
   export let description: string;
+  export let big = false;
 </script>
 
 <div class="setting-item setting-item-heading">
-  <p class="title">{title}</p>
+  <p class="title" class:big>{title}</p>
   <p class="description">{description}</p>
 </div>
 
 <style lang="scss">
-  p {
-    margin: 0;
-  }
+  p { margin: 0; }
 
   .setting-item-heading {
     display: block;
@@ -21,6 +20,8 @@
   .title {
     font-size: 1.4em;
     margin-bottom: 2px;
+
+    &.big { font-size: 1.6em; }
   }
 
   .description {

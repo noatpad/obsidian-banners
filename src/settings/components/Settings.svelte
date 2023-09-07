@@ -11,7 +11,7 @@
 </script>
 
 <!-- General banner settings -->
-<Header title="Banners" description="A nice, lil' thing to add some flair to your notes :)" />
+<Header title="Banners" description="A nice, lil' thing to add some flair to your notes :)" big />
 <InputSetting key="height" type="number">
   <span slot="name">Banner height</span>
   <span slot="description">Set how big the banner should be in pixels</span>
