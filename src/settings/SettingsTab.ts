@@ -1,6 +1,6 @@
 import { PluginSettingTab } from 'obsidian';
 import { plug } from 'src/main';
-import Settings from './Settings.svelte';
+import Settings from './components/Settings.svelte';
 
 export class SettingsTab extends PluginSettingTab {
   component: Settings | undefined;

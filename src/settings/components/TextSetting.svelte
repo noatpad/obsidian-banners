@@ -1,7 +1,7 @@
 <script lang="ts">
+  import { DEFAULT_SETTINGS } from '..';
   import SettingItem from './SettingItem.svelte';
-  import { DEFAULT_SETTINGS } from '.';
-  import type { BannerSettings } from '.';
+  import type { BannerSettings } from '..';
 
   export let key: keyof BannerSettings;
   $: placeholder = (DEFAULT_SETTINGS[key] as number).toString();

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { getContext, setContext } from 'svelte';
-  import settings from './store';
-  import type { BannerSettings } from '.';
+  import settings from '../store';
+  import type { BannerSettings } from '..';
 
   export let on: keyof BannerSettings | (() => boolean);
   setContext('level', (getContext<number>('level') ?? 0) + 1);
