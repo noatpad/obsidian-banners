@@ -1,5 +1,4 @@
 import { plug } from 'src/main';
-import { getSetting } from 'src/settings';
 import type { MarkdownViewState } from 'src/types';
 import {
   doesLeafHaveMarkdownMode,
@@ -12,7 +11,8 @@ import {
   leafBannerMap,
   openNoteEffect,
   refreshEffect,
-  removeBannerEffect
+  removeBannerEffect,
+  resizeBannerEffect
 } from './extensions/utils';
 
 export const loadExtensions = () => {
@@ -25,18 +25,17 @@ export const loadExtensions = () => {
 };
 
 export const registerEditorBannerEvents = () => {
+  // Refresh banner for specific setting changes
   registerSettingChangeEvent('frontmatterField', () => {
     iterateMarkdownLeaves((leaf) => {
       leaf.view.editor.cm.dispatch({ effects: refreshEffect.of(null) });
     }, 'editing');
   });
 
-  // TODO: Use the new `registerSettingChangeEvent` + new effect for this
   // Resize banner wrapper
   registerSettingChangeEvent('height', () => {
     iterateMarkdownLeaves((leaf) => {
-      leaf.containerEl.querySelector<HTMLElement>('.obsidian-banner-wrapper')!
-        .setCssStyles({ height: `${getSetting('height')}px` });
+      leaf.view.editor.cm.dispatch({ effects: resizeBannerEffect.of(null) });
     }, 'editing');
   });
 

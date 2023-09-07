@@ -5,10 +5,15 @@ import { getSetting } from 'src/settings';
 import {
   assignBannerEffect,
   removeBannerEffect,
+  resizeBannerEffect,
   setBannerInMap,
   upsertBannerEffect
 } from './utils';
 
+const setWrapperHeight = (wrapper: HTMLElement) => {
+  const height = getSetting('height');
+  wrapper.setCssStyles({ height: `${height}px` });
+};
 
 const addBanner = (state: EditorState, bannerData: Partial<BannerMetadata>): Banner => {
   console.log('add!');
@@ -17,7 +22,7 @@ const addBanner = (state: EditorState, bannerData: Partial<BannerMetadata>): Ban
   const wrapper = document.createElement('div');
 
   wrapper.addClass('obsidian-banner-wrapper');
-  wrapper.setCssStyles({ height: `${getSetting('height')}px` });
+  setWrapperHeight(wrapper);
   const banner = new Banner({
     target: wrapper,
     props: { ...bannerData, file: file! }
@@ -32,6 +37,12 @@ const updateBanner = (banner: Banner, bannerData: Partial<BannerMetadata>): Bann
   console.log('update!');
   banner.$set({ ...bannerData });
   return banner;
+};
+
+const resizeBanner = (state: EditorState) => {
+  const { dom } = state.field(editorEditorField);
+  const wrapper = dom.querySelector<HTMLElement>('.obsidian-banner-wrapper')!;
+  setWrapperHeight(wrapper);
 };
 
 const removeBanner = (banner: Banner | null = null, state: EditorState): null => {
@@ -66,6 +77,8 @@ const bannerField = StateField.define<Banner | null>({
         now = now ? updateBanner(now, effect.value) : addBanner(state, effect.value);
       } else if (effect.is(removeBannerEffect)) {
         now = removeBanner(now, state);
+      } else if (effect.is(resizeBannerEffect)) {
+        resizeBanner(state);
       } else if (effect.is(assignBannerEffect)) {
         now = assignBanner(effect.value, state);
       }
