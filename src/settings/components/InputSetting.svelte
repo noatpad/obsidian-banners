@@ -2,8 +2,10 @@
   import { DEFAULT_SETTINGS } from '..';
   import SettingItem from './SettingItem.svelte';
   import type { BannerSettings } from '..';
+  import type { HTMLInputTypeAttribute } from 'svelte/elements';
 
   export let key: keyof BannerSettings;
+  export let type: HTMLInputTypeAttribute = 'text';
   $: placeholder = (DEFAULT_SETTINGS[key] as number).toString();
 </script>
 
@@ -14,7 +16,7 @@
     slot="setting"
     let:value
     let:update
-    type="number"
+    {type}
     {value}
     {placeholder}
     on:change={(e) => update(e.currentTarget.value || undefined)}

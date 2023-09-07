@@ -1,17 +1,17 @@
 <script lang="ts">
   import Depends from './Depends.svelte';
   import Header from './Header.svelte';
+  import InputSetting from './InputSetting.svelte';
   import SelectSetting from './SelectSetting.svelte';
-  import TextSetting from './TextSetting.svelte';
   import ToggleSetting from './ToggleSetting.svelte';
 </script>
 
 <!-- General banner settings -->
 <Header title="Banners" description="A nice, lil' thing to add some flair to your notes :)" />
-<TextSetting key="height">
+<InputSetting key="height" type="number">
   <span slot="name">Banner height</span>
   <span slot="description">Set how big the banner should be in pixels</span>
-</TextSetting>
+</InputSetting>
 <SelectSetting key="style">
   <span slot="name">Banner style</span>
   <span slot="description">Set a style for all of your banners</span>
@@ -28,10 +28,10 @@
   </span>
 </ToggleSetting>
 <Depends on="showInInternalEmbed">
-  <TextSetting key="internalEmbedHeight">
+  <InputSetting key="internalEmbedHeight" type="number">
     <span slot="name">Internal embed banner height</span>
     <span slot="description">Set how big the banner should be within an internal embed</span>
-  </TextSetting>
+  </InputSetting>
   <ToggleSetting key="enableDragInInternalEmbed">
     <span slot="name">Enable drag in internal embed</span>
     <span slot="description">Allow banner dragging from within an internal embed</span>
@@ -47,10 +47,10 @@
 
 <!-- Banners in preview popovers -->
 <Depends on="showInPopover">
-  <TextSetting key="popoverHeight">
+  <InputSetting key="popoverHeight" type="number">
     <span slot="name">Preview popover banner height</span>
     <span slot="description">Set how big the banner should be within the preview popover</span>
-  </TextSetting>
+  </InputSetting>
   <ToggleSetting key="enableDragInPopover">
     <span slot="name">Enable drag in preview popover</span>
     <span slot="description">
