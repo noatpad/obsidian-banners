@@ -7,11 +7,14 @@ import type { Action } from 'svelte/action';
 type MTEvent = MouseEvent | TouchEvent;
 
 export interface XY { x: number; y: number }
-export interface Experiments {}
+interface BannerDragSettings {
+  modKey: BannerDragModOption;
+  enableInInternalEmbed: boolean;
+  enableInPopover: boolean;
+}
 export interface DragParams extends XY {
   embed: Embedded;
-  modKey: BannerDragModOption;
-  experiments: Experiments;
+  settings: BannerDragSettings;
 }
 
 interface DragAttributes {
@@ -30,9 +33,10 @@ const clampAndRound = (min: number, value: number, max: number) => {
   return Math.round(value * 1000) / 1000;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const isDraggable = (embed: Embedded, experiments: Experiments): boolean => {
-  return !embed;
+const isDraggable = (embed: Embedded, settings: BannerDragSettings): boolean => {
+  if (embed === 'internal') return settings.enableInInternalEmbed;
+  if (embed === 'popover') return settings.enableInPopover;
+  return true;
 };
 
 const getMousePos = (e: MTEvent): [number, number] => {
@@ -40,23 +44,21 @@ const getMousePos = (e: MTEvent): [number, number] => {
   return [clientX, clientY];
 };
 
-// TODO: Implement experimental dragging for embeds
 // Svelte action for banner dragging
 export const dragBanner: DragBannerAction = (img, params) => {
   const {
     x,
     y,
     embed,
-    modKey: _modKey,
-    experiments
+    settings
   } = params;
-  let draggable = isDraggable(embed, experiments);
+  let draggable = isDraggable(embed, settings);
   let dragging = false;
   let isVerticalDrag = false;
   let imageSize = { width: 0, height: 0 };
   let prev = { x: 0, y: 0 };
   let objectPos = { x, y };
-  let modKey = _modKey;
+  let modKey = settings.modKey;
 
   const dragStart = (e: MTEvent) => {
     if (modKey !== 'None' && !Keymap.isModifier(e, modKey)) return;
@@ -111,7 +113,7 @@ export const dragBanner: DragBannerAction = (img, params) => {
 
   const modKeyHeld = (e: KeyboardEvent) => {
     if (e.repeat) return;
-    const detail = modKey === 'None' || Keymap.isModifier(e, modKey);
+    const detail = draggable && (modKey === 'None' || Keymap.isModifier(e, modKey));
     img.dispatchEvent(new CustomEvent<boolean>('toggleDrag', { detail }));
   };
 
@@ -162,12 +164,11 @@ export const dragBanner: DragBannerAction = (img, params) => {
         x,
         y,
         embed,
-        modKey: newModKey,
-        experiments
+        settings
       } = params;
-      const newDraggable = isDraggable(embed, experiments);
+      const newDraggable = isDraggable(embed, settings);
       if (draggable !== newDraggable) toggleDragListeners(newDraggable);
-      if (modKey !== newModKey) toggleToggleListeners(newModKey);
+      if (modKey !== settings.modKey) toggleToggleListeners(settings.modKey);
 
       objectPos = { x, y };
       img.dispatchEvent(new CustomEvent<XY>('dragBannerMove', { detail: objectPos }));

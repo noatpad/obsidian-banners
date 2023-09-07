@@ -12,9 +12,14 @@
   export let x: number;
   export let y: number;
   export let embed: Embedded;
-  $: ({ bannerDragModifier, style } = $settingsStore);
+  $: ({
+    bannerDragModifier,
+    enableDragInInternalEmbed,
+    enableDragInPopover,
+    style
+  } = $settingsStore);
   let objectPos = { x, y };
-  let draggable = (bannerDragModifier !== 'None');
+  let draggable = (bannerDragModifier === 'None');
   let dragging = false;
 
   const dispatch = createEventDispatcher<BannerImageDispatch>();
@@ -32,8 +37,11 @@
     x,
     y,
     embed,
-    modKey: bannerDragModifier,
-    experiments: {}
+    settings: {
+      modKey: getSetting('bannerDragModifier', bannerDragModifier),
+      enableInInternalEmbed: getSetting('enableDragInInternalEmbed', enableDragInInternalEmbed),
+      enableInPopover: getSetting('enableDragInPopover', enableDragInPopover)
+    }
   };
   $: gradient = (getSetting('style', style) === 'gradient');
   $: objectPosStyle = `${objectPos.x * 100}% ${objectPos.y * 100}%`;

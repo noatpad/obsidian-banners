@@ -13,6 +13,8 @@ export interface BannerSettings {
   showInPopover: boolean;
   popoverHeight: number;
   bannerDragModifier: BannerDragModOption;
+  enableDragInInternalEmbed: boolean;
+  enableDragInPopover: boolean;
 }
 
 export const DEFAULT_SETTINGS: BannerSettings = {
@@ -22,7 +24,9 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   internalEmbedHeight: 200,
   showInPopover: true,
   popoverHeight: 120,
-  bannerDragModifier: 'None'
+  bannerDragModifier: 'None',
+  enableDragInInternalEmbed: false,
+  enableDragInPopover: false
 };
 
 // TODO: Turn into enums
