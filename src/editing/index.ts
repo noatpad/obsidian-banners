@@ -1,7 +1,11 @@
 import { plug } from 'src/main';
 import { getSetting } from 'src/settings';
 import type { MarkdownViewState } from 'src/types';
-import { doesLeafHaveMarkdownMode, registerEvents, registerSettingChangeEvent } from 'src/utils';
+import {
+  doesLeafHaveMarkdownMode,
+  iterateMarkdownLeaves,
+  registerSettingChangeEvent
+} from 'src/utils';
 import bannerExtender from './extensions/bannerExtender';
 import bannerField from './extensions/bannerField';
 import {
@@ -15,37 +19,30 @@ export const loadExtensions = () => {
   plug.registerEditorExtension([bannerExtender, bannerField]);
 
   // Properly insert a banner upon loading the banner
-  plug.app.workspace.iterateRootLeaves((leaf) => {
-    if (doesLeafHaveMarkdownMode(leaf, 'editing')) {
-      leaf.view.editor.cm.dispatch({ effects: openNoteEffect.of(null) });
-    }
-  });
+  iterateMarkdownLeaves((leaf) => {
+    leaf.view.editor.cm.dispatch({ effects: openNoteEffect.of(null) });
+  }, 'editing');
 };
 
 export const registerEditorBannerEvents = () => {
   registerSettingChangeEvent('frontmatterField', () => {
-    plug.app.workspace.iterateRootLeaves((leaf) => {
-      if (doesLeafHaveMarkdownMode(leaf, 'editing')) {
-        leaf.view.editor.cm.dispatch({ effects: refreshEffect.of(null) });
-      }
-    });
+    iterateMarkdownLeaves((leaf) => {
+      leaf.view.editor.cm.dispatch({ effects: refreshEffect.of(null) });
+    }, 'editing');
   });
 
   // TODO: Use the new `registerSettingChangeEvent` + new effect for this
-  registerEvents([
-    // Listen for setting changes
-    plug.events.on('setting-change', (changed) => {
-      if ('height' in changed) {
-        plug.app.workspace.iterateRootLeaves((leaf) => {
-          if (doesLeafHaveMarkdownMode(leaf, 'editing')) {
-            leaf.containerEl.querySelector<HTMLElement>('.obsidian-banner-wrapper')!
-              .setCssStyles({ height: `${getSetting('height')}px` });
-          }
-        });
-      }
-    }),
-    /* Remove unused banners when switching to reading view,
+  // Resize banner wrapper
+  registerSettingChangeEvent('height', () => {
+    iterateMarkdownLeaves((leaf) => {
+      leaf.containerEl.querySelector<HTMLElement>('.obsidian-banner-wrapper')!
+        .setCssStyles({ height: `${getSetting('height')}px` });
+    }, 'editing');
+  });
+
+  /* Remove unused banners when switching to reading view,
     as well as assign the correct banners when opening/switching notes in an editor */
+  plug.registerEvent(
     plug.app.workspace.on('layout-change', () => {
       plug.app.workspace.iterateRootLeaves((leaf) => {
         const { id, view } = leaf;
@@ -62,7 +59,7 @@ export const registerEditorBannerEvents = () => {
         }
       });
     })
-  ]);
+  );
 };
 
 export const unloadEditingViewBanners = () => {

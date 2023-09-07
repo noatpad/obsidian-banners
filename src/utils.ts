@@ -1,6 +1,8 @@
 import type { EventRef, WorkspaceLeaf } from 'obsidian';
 import { plug } from './main';
-import { BannerSettings, getSetting } from './settings';
+import { getSetting } from './settings';
+import type { BannerSettings } from './settings';
+import type { MarkdownViewState } from './types';
 
 type Settings = keyof BannerSettings | Array<keyof BannerSettings>;
 
@@ -20,6 +22,22 @@ export const doesLeafHaveMarkdownMode = (leaf: WorkspaceLeaf, mode?: 'reading' |
   if (type !== 'markdown') return false;
   if (!mode) return true;
   return (mode === 'reading') ? (state.mode === 'preview') : (state.mode === 'source');
+};
+
+
+// Helper to iterate through all markdown leaves, and if specified, those with a specific view
+export const iterateMarkdownLeaves = (
+  cb: (leaf: WorkspaceLeaf) => void,
+  mode?: 'reading' | 'editing'
+) => {
+  let leaves = plug.app.workspace.getLeavesOfType('markdown');
+  if (mode) {
+    leaves = leaves.filter((leaf) => {
+      const { state } = leaf.getViewState() as MarkdownViewState;
+      return (mode === 'reading') ? (state.mode === 'preview') : (state.mode === 'source');
+    });
+  }
+  for (const leaf of leaves) cb(leaf);
 };
 
 // Helper to register multiple events at once
