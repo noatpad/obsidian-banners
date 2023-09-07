@@ -1,14 +1,11 @@
 <script lang="ts">
+  import Depends from './Depends.svelte';
   import Header from './Header.svelte';
   import SelectSetting from './SelectSetting.svelte';
-  import settings from './store';
   import TextSetting from './TextSetting.svelte';
   import ToggleSetting from './ToggleSetting.svelte';
-
-  $: ({ showInInternalEmbed, showInPopover } = $settings);
 </script>
 
-<!-- TODO: Add indent for dependent settings -->
 <Header title="Banners" description="A nice lil' thing to add some flair to your notes :)" />
 <TextSetting key="height">
   <span slot="name">Banner height</span>
@@ -27,7 +24,7 @@
     <b>Note:</b> You might need to reload Obsidian after toggling this setting
   </span>
 </ToggleSetting>
-{#if showInInternalEmbed}
+<Depends on="showInInternalEmbed">
   <TextSetting key="internalEmbedHeight">
     <span slot="name">Internal embed banner height</span>
     <span slot="description">Set how big the banner should be within an internal embed</span>
@@ -36,7 +33,7 @@
     <span slot="name">Enable drag in internal embed</span>
     <span slot="description">Allow banner dragging from within an internal embed</span>
   </ToggleSetting>
-{/if}
+</Depends>
 <ToggleSetting key="showInPopover">
   <span slot="name">Show in preview popover</span>
   <span slot="description">
@@ -44,7 +41,7 @@
     <em>Page Preview</em> core plugin.
   </span>
 </ToggleSetting>
-{#if showInPopover}
+<Depends on="showInPopover">
   <TextSetting key="popoverHeight">
     <span slot="name">Preview popover banner height</span>
     <span slot="description">Set how big the banner should be within the preview popover</span>
@@ -53,7 +50,7 @@
     <span slot="name">Enable drag in preview popover</span>
     <span slot="description">Allow banner dragging from within the preview popover</span>
   </ToggleSetting>
-{/if}
+</Depends>
 <SelectSetting key="bannerDragModifier">
   <span slot="name">Banner drag modifier key</span>
   <span slot="description">

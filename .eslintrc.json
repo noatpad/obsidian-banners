@@ -62,6 +62,7 @@
       }
     }],
     "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
+    "import/no-duplicates": "off",
     "import/newline-after-import": "error"
   },
   "overrides": [
