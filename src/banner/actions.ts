@@ -1,15 +1,22 @@
 /* eslint-disable import/no-duplicates */
+import { Keymap } from 'obsidian';
+import type { Embedded } from 'src/reading/BannerRenderChild';
+import type { BannerDragModOption } from 'src/settings';
 import type { Action } from 'svelte/action';
 
 type MTEvent = MouseEvent | TouchEvent;
 
 export interface XY { x: number; y: number }
-export interface DragParams extends XY { draggable: boolean }
+export interface DragParams extends XY {
+  embed: Embedded;
+  modKey: BannerDragModOption;
+}
 
 interface DragAttributes {
   'on:dragBannerStart': (e: CustomEvent) => void;
   'on:dragBannerMove': (e: CustomEvent<XY>) => void;
   'on:dragBannerEnd': (e: CustomEvent<Partial<BannerMetadata>>) => void;
+  'on:toggleDrag': (e: CustomEvent<boolean>) => void;
 }
 
 type DragBannerAction = Action<HTMLImageElement, DragParams, DragAttributes>;
@@ -21,24 +28,36 @@ const clampAndRound = (min: number, value: number, max: number) => {
   return Math.round(value * 1000) / 1000;
 };
 
+const isDraggable = (embed: Embedded): boolean => {
+  return !embed;
+};
+
 const getMousePos = (e: MTEvent): [number, number] => {
   const { clientX, clientY } = (e instanceof MouseEvent) ? e : e.targetTouches[0];
   return [clientX, clientY];
 };
 
-// TODO: Reimplement drag modifer setting
 // TODO: Reimplement experimental touch dragging
 // TODO: Implement experimental dragging for embeds
 // Svelte action for banner dragging
-export const dragBanner: DragBannerAction = (img, { x, y, draggable: _draggable }) => {
-  let draggable = _draggable;
+export const dragBanner: DragBannerAction = (img, params) => {
+  const {
+    x,
+    y,
+    embed,
+    modKey: _modKey
+  } = params;
+  let draggable = isDraggable(embed);
   let dragging = false;
   let isVerticalDrag = false;
   let imageSize = { width: 0, height: 0 };
   let prev = { x: 0, y: 0 };
   let objectPos = { x, y };
+  let modKey = _modKey;
 
   const dragStart = (e: MTEvent) => {
+    if (modKey !== 'None' && !Keymap.isModifier(e, modKey)) return;
+
     const [x, y] = getMousePos(e);
     prev = { x, y };
     dragging = true;
@@ -87,40 +106,71 @@ export const dragBanner: DragBannerAction = (img, { x, y, draggable: _draggable 
     img.dispatchEvent(new CustomEvent<Partial<BannerMetadata>>('dragBannerEnd', { detail }));
   };
 
-  const addListeners = () => {
+  const modKeyHeld = (e: KeyboardEvent) => {
+    if (e.repeat) return;
+    const detail = modKey === 'None' || Keymap.isModifier(e, modKey);
+    img.dispatchEvent(new CustomEvent<boolean>('toggleDrag', { detail }));
+  };
+
+  // Drag listener addition/removal
+  const addDragListeners = () => {
     img.addEventListener('mousedown', dragStart);
     img.addEventListener('mousemove', dragMove);
     img.addEventListener('mouseup', dragEnd);
     document.addEventListener('mouseup', dragEnd);
-    draggable = true;
   };
 
-  const removeListeners = () => {
+  const removeDragListeners = () => {
     img.removeEventListener('mousedown', dragStart);
     img.removeEventListener('mousemove', dragMove);
     img.removeEventListener('mouseup', dragEnd);
     document.removeEventListener('mouseup', dragEnd);
-    draggable = false;
   };
 
-  if (draggable) {
-    addListeners();
-  }
+  const toggleDragListeners = (newDraggable: boolean) => {
+    draggable = newDraggable;
+    if (draggable) addDragListeners();
+    else removeDragListeners();
+  };
+
+  // Toggle listener addition/removal
+  const addToggleListeners = () => {
+    document.addEventListener('keydown', modKeyHeld);
+    document.addEventListener('keyup', modKeyHeld);
+  };
+
+  const removeToggleListeners = () => {
+    document.removeEventListener('keydown', modKeyHeld);
+    document.removeEventListener('keyup', modKeyHeld);
+  };
+
+  const toggleToggleListeners = (newModKey: BannerDragModOption) => {
+    modKey = newModKey;
+    if (modKey === 'None') removeToggleListeners();
+    else addToggleListeners();
+  };
+
+  if (draggable) addDragListeners();
+  if (modKey !== 'None') addToggleListeners();
 
   return {
-    update({ x, y, draggable: _draggable }) {
-      if (draggable !== _draggable) {
-        if (_draggable) {
-          addListeners();
-        } else {
-          removeListeners();
-        }
-      }
+    update(params) {
+      const {
+        x,
+        y,
+        embed,
+        modKey: newModKey
+      } = params;
+      const newDraggable = isDraggable(embed);
+      if (draggable !== newDraggable) toggleDragListeners(newDraggable);
+      if (modKey !== newModKey) toggleToggleListeners(newModKey);
+
       objectPos = { x, y };
       img.dispatchEvent(new CustomEvent<XY>('dragBannerMove', { detail: objectPos }));
     },
     destroy() {
-      removeListeners();
+      removeDragListeners();
+      removeToggleListeners();
     }
   };
 };

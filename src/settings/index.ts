@@ -1,9 +1,9 @@
-import { PluginSettingTab } from 'obsidian';
 import { plug } from 'src/main';
-import Settings from './Settings.svelte';
+import { SettingsTab } from './SettingsTab';
 import store from './store';
 
 type StyleOption = 'solid' | 'gradient';
+export type BannerDragModOption = 'None' | 'Shift' | 'Ctrl' | 'Alt' | 'Meta';
 
 export interface BannerSettings {
   height: number;
@@ -12,6 +12,7 @@ export interface BannerSettings {
   internalEmbedHeight: number;
   showInPopover: boolean;
   popoverHeight: number;
+  bannerDragModifier: BannerDragModOption;
 }
 
 export const DEFAULT_SETTINGS: BannerSettings = {
@@ -20,7 +21,8 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   showInInternalEmbed: true,
   internalEmbedHeight: 200,
   showInPopover: true,
-  popoverHeight: 120
+  popoverHeight: 120,
+  bannerDragModifier: 'None'
 };
 
 const STYLE_OPTION_LABELS: Record<StyleOption, string> = {
@@ -28,24 +30,18 @@ const STYLE_OPTION_LABELS: Record<StyleOption, string> = {
   gradient: 'Gradient'
 };
 
-export const SELECT_OPTIONS_MAP = { style: STYLE_OPTION_LABELS };
+const BANNER_DRAG_MOD_OPION_LABELS: Record<BannerDragModOption, string> = {
+  None: 'None',
+  Shift: '⇧ Shift',
+  Ctrl: '⌃ Ctrl',
+  Alt: '⎇ Alt',
+  Meta: '⌘ Meta'
+};
 
-class SettingsTab extends PluginSettingTab {
-  component: Settings | undefined;
-
-  constructor() {
-    super(plug.app, plug);
-  }
-
-  display() {
-    this.component = this.component || new Settings({ target: this.containerEl });
-  }
-
-  hide() {
-    this.component?.$destroy();
-    this.component = undefined;
-  }
-}
+export const SELECT_OPTIONS_MAP: Record<string, Record<string, string>> = {
+  style: STYLE_OPTION_LABELS,
+  bannerDragModifier: BANNER_DRAG_MOD_OPION_LABELS
+};
 
 /* TODO: The `value` parameter is redundant, but is implemented for Svelte store values.
  * Perhaps think of something cleaner */

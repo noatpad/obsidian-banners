@@ -45,3 +45,12 @@
     <span slot="description">Set how big the banner should be within the preview popover.</span>
   </TextSetting>
 {/if}
+<SelectSetting key="bannerDragModifier">
+  <span slot="name">Banner drag modifier key</span>
+  <span slot="description">
+    Set a modifier key that must be used to drag a banner.
+    <br />
+    For example, setting it to <b>⇧ Shift</b> means you must hold down <b>Shift</b> in order to
+    move a banner by dragging it. This can help avoid accidental banner movements.
+  </span>
+</SelectSetting>

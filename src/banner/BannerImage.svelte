@@ -6,16 +6,18 @@
   import type { DragParams, XY } from './actions';
   import type { Embedded } from 'src/reading/BannerRenderChild';
 
+  interface BannerImageDispatch { 'drag-banner': Partial<BannerMetadata> }
+
   export let src: string | null;
   export let x: number;
   export let y: number;
   export let embed: Embedded;
+  $: ({ bannerDragModifier, style } = $settingsStore);
   let objectPos = { x, y };
-
-  const dispatch = createEventDispatcher<{
-    'drag-banner': Partial<BannerMetadata>;
-  }>();
+  let draggable = (bannerDragModifier !== 'None');
   let dragging = false;
+
+  const dispatch = createEventDispatcher<BannerImageDispatch>();
 
   const dragStart = () => { dragging = true; };
   const dragMove = ({ detail }: CustomEvent<XY>) => { objectPos = detail; };
@@ -23,17 +25,15 @@
     dispatch('drag-banner', detail);
     dragging = false;
   };
-
-  const isDraggable = (embed: Embedded): boolean => {
-    // if (embed === 'internal') return showInInternalEmbed;
-    // if (embed === 'popover') return showInPopover;
-    // return true;
-    return !embed;
-  };
+  const toggleDrag = ({ detail }: CustomEvent<boolean>) => { draggable = detail; };
 
   let dragBannerParams: DragParams;
-  $: ({ style } = $settingsStore);
-  $: dragBannerParams = { x, y, draggable: isDraggable(embed) };
+  $: dragBannerParams = {
+    x,
+    y,
+    embed,
+    modKey: bannerDragModifier
+  };
   $: gradient = (getSetting('style', style) === 'gradient');
   $: objectPosStyle = `${objectPos.x * 100}% ${objectPos.y * 100}%`;
 </script>
@@ -42,7 +42,7 @@
   {src}
   alt="Banner"
   class:gradient
-  class:draggable={dragBannerParams.draggable}
+  class:draggable
   class:dragging
   style:object-position={objectPosStyle}
   draggable={false}
@@ -51,6 +51,7 @@
   on:dragBannerStart={dragStart}
   on:dragBannerMove={dragMove}
   on:dragBannerEnd={dragEnd}
+  on:toggleDrag={toggleDrag}
 />
 
 <style lang="scss">
