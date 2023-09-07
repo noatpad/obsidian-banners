@@ -6,7 +6,8 @@
   import ToggleSetting from './ToggleSetting.svelte';
 </script>
 
-<Header title="Banners" description="A nice lil' thing to add some flair to your notes :)" />
+<!-- General banner settings -->
+<Header title="Banners" description="A nice, lil' thing to add some flair to your notes :)" />
 <TextSetting key="height">
   <span slot="name">Banner height</span>
   <span slot="description">Set how big the banner should be in pixels</span>
@@ -15,6 +16,8 @@
   <span slot="name">Banner style</span>
   <span slot="description">Set a style for all of your banners</span>
 </SelectSetting>
+
+<!-- Banners in internal embeds  -->
 <ToggleSetting key="showInInternalEmbed">
   <span slot="name">Show in internal embed</span>
   <span slot="description">
@@ -41,6 +44,8 @@
     <em>Page Preview</em> core plugin.
   </span>
 </ToggleSetting>
+
+<!-- Banners in preview popovers -->
 <Depends on="showInPopover">
   <TextSetting key="popoverHeight">
     <span slot="name">Preview popover banner height</span>
@@ -48,7 +53,10 @@
   </TextSetting>
   <ToggleSetting key="enableDragInPopover">
     <span slot="name">Enable drag in preview popover</span>
-    <span slot="description">Allow banner dragging from within the preview popover</span>
+    <span slot="description">
+      Allow banner dragging from within the preview popover.
+      This may act a bit finicky though.
+    </span>
   </ToggleSetting>
 </Depends>
 <SelectSetting key="bannerDragModifier">

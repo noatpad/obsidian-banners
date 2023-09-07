@@ -78,7 +78,7 @@ export const registerReadingBannerEvents = () => {
   );
 };
 
-/* BUG: This doesn't rerender banners in internal embeds within an Editing view.
+/* BUG: This doesn't rerender banners in internal embeds properly.
 Reload app or manually edit the view/contents to fix */
 export const unloadReadingViewBanners = () => {
   rerender();
