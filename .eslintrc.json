@@ -29,6 +29,7 @@
     "semi": ["error", "always"],
     "quotes": ["error", "single"],
     "comma-dangle": ["error", "never"],
+    "no-multi-spaces": ["error", { "ignoreEOLComments": true }],
     "array-bracket-newline": ["error", {
       "multiline": true,
       "minItems": 4
@@ -52,8 +53,7 @@
         "internal",
         "parent",
         "sibling",
-        "index",
-        "type"
+        "index"
       ],
       "newlines-between": "never",
       "alphabetize": {
@@ -61,7 +61,7 @@
         "caseInsensitive": true
       }
     }],
-    "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
+    "import/consistent-type-specifier-style": "error",
     "import/no-duplicates": "off",
     "import/newline-after-import": "error"
   },

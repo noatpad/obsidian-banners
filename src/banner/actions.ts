@@ -1,8 +1,8 @@
 /* eslint-disable import/no-duplicates */
 import { Keymap } from 'obsidian';
+import type { Action } from 'svelte/action';
 import type { Embedded } from 'src/reading/BannerRenderChild';
 import type { BannerDragModOption } from 'src/settings';
-import type { Action } from 'svelte/action';
 
 type MTEvent = MouseEvent | TouchEvent;
 

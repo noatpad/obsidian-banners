@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { DEFAULT_SETTINGS } from '..';
-  import SettingItem from './SettingItem.svelte';
-  import type { BannerSettings } from '..';
   import type { HTMLInputTypeAttribute } from 'svelte/elements';
+  import { DEFAULT_SETTINGS } from '..';
+  import type { BannerSettings } from '..';
+  import SettingItem from './SettingItem.svelte';
 
   export let key: keyof BannerSettings;
   export let type: HTMLInputTypeAttribute = 'text';

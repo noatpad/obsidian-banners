@@ -6,7 +6,8 @@
   "scripts": {
     "start": "tsx esbuild.config.ts",
     "build": "tsx esbuild.config.ts prod",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",

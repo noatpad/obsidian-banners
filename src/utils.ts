@@ -1,5 +1,5 @@
-import { plug } from './main';
 import type { EventRef, WorkspaceLeaf } from 'obsidian';
+import { plug } from './main';
 
 // eslint-disable-next-line max-len
 export const extractBannerData = (frontmatter?: Record<string, unknown>): Partial<BannerMetadata> => ({

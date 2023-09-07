@@ -1,6 +1,6 @@
 <script lang="ts">
-  import SettingItem from './SettingItem.svelte';
   import type { BannerSettings } from '..';
+  import SettingItem from './SettingItem.svelte';
 
   export let key: keyof BannerSettings;
 </script>

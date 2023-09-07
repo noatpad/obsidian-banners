@@ -1,10 +1,10 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
+  import type { Embedded } from 'src/reading/BannerRenderChild';
   import { getSetting } from 'src/settings';
   import settingsStore from 'src/settings/store';
   import { dragBanner } from './actions';
   import type { DragParams, XY } from './actions';
-  import type { Embedded } from 'src/reading/BannerRenderChild';
 
   interface BannerImageDispatch { 'drag-banner': Partial<BannerMetadata> }
 
