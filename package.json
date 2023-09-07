@@ -11,11 +11,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@codemirror/state": "^6.2.1",
+    "@codemirror/view": "^6.17.0",
     "obsidian": "^1.4.4"
   },
   "devDependencies": {
-    "@codemirror/state": "^6.2.1",
-    "@codemirror/view": "^6.17.0",
     "@tsconfig/svelte": "^5.0.2",
     "@types/node": "^20.5.9",
     "@typescript-eslint/eslint-plugin": "^6.6.0",
