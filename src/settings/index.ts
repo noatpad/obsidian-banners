@@ -13,9 +13,12 @@ export interface BannerSettings {
   showInPopover: boolean;
   popoverHeight: number;
   bannerDragModifier: BannerDragModOption;
+  frontmatterField: string;
   enableDragInInternalEmbed: boolean;
   enableDragInPopover: boolean;
 }
+
+const TEXT_SETTINGS: Array<keyof BannerSettings> = ['frontmatterField'];
 
 export const DEFAULT_SETTINGS: BannerSettings = {
   height: 300,
@@ -25,15 +28,15 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   showInPopover: true,
   popoverHeight: 120,
   bannerDragModifier: 'None',
+  frontmatterField: 'banner',
   enableDragInInternalEmbed: false,
   enableDragInPopover: false
 };
 
-// TODO: Turn into enums
 const STYLE_OPTION_LABELS: Record<StyleOption, string> = {
   solid: 'Solid',
   gradient: 'Gradient'
-};
+} as const;
 
 const BANNER_DRAG_MOD_OPION_LABELS: Record<BannerDragModOption, string> = {
   None: 'None',
@@ -41,7 +44,7 @@ const BANNER_DRAG_MOD_OPION_LABELS: Record<BannerDragModOption, string> = {
   Ctrl: '⌃ Ctrl',
   Alt: '⎇ Alt',
   Meta: '⌘ Meta'
-};
+} as const;
 
 export const SELECT_OPTIONS_MAP: Record<string, Record<string, string>> = {
   style: STYLE_OPTION_LABELS,
@@ -58,7 +61,10 @@ export const getSetting = <T extends keyof BannerSettings>(
 export const loadSettings = async () => {
   const settings = Object.assign({}, DEFAULT_SETTINGS, await plug.loadData()) as BannerSettings;
   for (const [key, val] of Object.entries(settings) as [keyof BannerSettings, unknown][]) {
-    if (DEFAULT_SETTINGS[key] === val && typeof val === 'number') delete settings[key];
+    if (
+      DEFAULT_SETTINGS[key] === val &&
+      (typeof val === 'number' || TEXT_SETTINGS.includes(key))
+    ) delete settings[key];
   }
   plug.settings = settings;
   await saveSettings();

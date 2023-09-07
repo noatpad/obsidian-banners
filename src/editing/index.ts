@@ -1,10 +1,15 @@
 import { plug } from 'src/main';
 import { getSetting } from 'src/settings';
 import type { MarkdownViewState } from 'src/types';
-import { doesLeafHaveMarkdownMode, registerEvents } from 'src/utils';
+import { doesLeafHaveMarkdownMode, registerEvents, registerSettingChangeEvent } from 'src/utils';
 import bannerExtender from './extensions/bannerExtender';
 import bannerField from './extensions/bannerField';
-import { leafBannerMap, openNoteEffect, removeBannerEffect } from './extensions/utils';
+import {
+  leafBannerMap,
+  openNoteEffect,
+  refreshEffect,
+  removeBannerEffect
+} from './extensions/utils';
 
 export const loadExtensions = () => {
   plug.registerEditorExtension([bannerExtender, bannerField]);
@@ -18,6 +23,15 @@ export const loadExtensions = () => {
 };
 
 export const registerEditorBannerEvents = () => {
+  registerSettingChangeEvent('frontmatterField', () => {
+    plug.app.workspace.iterateRootLeaves((leaf) => {
+      if (doesLeafHaveMarkdownMode(leaf, 'editing')) {
+        leaf.view.editor.cm.dispatch({ effects: refreshEffect.of(null) });
+      }
+    });
+  });
+
+  // TODO: Use the new `registerSettingChangeEvent` + new effect for this
   registerEvents([
     // Listen for setting changes
     plug.events.on('setting-change', (changed) => {
@@ -37,10 +51,10 @@ export const registerEditorBannerEvents = () => {
         const { id, view } = leaf;
         if (doesLeafHaveMarkdownMode(leaf)) {
           const { mode } = (leaf.getViewState() as MarkdownViewState).state;
-          const effect = mode === 'source'
+          const effects = mode === 'source'
             ? openNoteEffect.of(leafBannerMap[id])
             : removeBannerEffect.of(null);
-          view.editor.cm.dispatch({ effects: effect });
+          view.editor.cm.dispatch({ effects });
         } else if (leafBannerMap[id]) {
           // When switching to a view where the editor isn't available, remove the banner manually
           leafBannerMap[id].$destroy();

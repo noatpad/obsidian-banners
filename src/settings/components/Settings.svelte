@@ -1,9 +1,13 @@
 <script lang="ts">
+  import { getSetting } from '..';
+  import settings from '../store';
   import Depends from './Depends.svelte';
   import Header from './Header.svelte';
   import InputSetting from './InputSetting.svelte';
   import SelectSetting from './SelectSetting.svelte';
   import ToggleSetting from './ToggleSetting.svelte';
+
+  $: frontmatterField = getSetting('frontmatterField', $settings.frontmatterField);
 </script>
 
 <!-- General banner settings -->
@@ -16,6 +20,25 @@
   <span slot="name">Banner style</span>
   <span slot="description">Set a style for all of your banners</span>
 </SelectSetting>
+<SelectSetting key="bannerDragModifier">
+  <span slot="name">Banner drag modifier key</span>
+  <span slot="description">
+    Set a modifier key that must be used to drag a banner.
+    <br />
+    For example, setting it to <b>⇧ Shift</b> means you must hold down <b>Shift</b> in order to
+    move a banner by dragging it. This can help avoid accidental banner movements.
+  </span>
+</SelectSetting>
+<InputSetting key="frontmatterField">
+  <span slot="name">Property field name</span>
+  <span slot="description">
+    Set a prefix field name to be used for banner data in the frontmatter/<em>Properties</em> view.
+    <br />
+    For example, using <code>{frontmatterField}</code> means that banner data will be extracted from
+    fields like <code>{frontmatterField}</code>, <code>{frontmatterField}_x</code>,
+    <code>{frontmatterField}_icon</code>, etc.
+  </span>
+</InputSetting>
 
 <!-- Banners in internal embeds  -->
 <ToggleSetting key="showInInternalEmbed">
@@ -37,6 +60,8 @@
     <span slot="description">Allow banner dragging from within an internal embed</span>
   </ToggleSetting>
 </Depends>
+
+<!-- Banners in preview popovers -->
 <ToggleSetting key="showInPopover">
   <span slot="name">Show in preview popover</span>
   <span slot="description">
@@ -44,8 +69,6 @@
     <em>Page Preview</em> core plugin.
   </span>
 </ToggleSetting>
-
-<!-- Banners in preview popovers -->
 <Depends on="showInPopover">
   <InputSetting key="popoverHeight" type="number">
     <span slot="name">Preview popover banner height</span>
@@ -59,12 +82,3 @@
     </span>
   </ToggleSetting>
 </Depends>
-<SelectSetting key="bannerDragModifier">
-  <span slot="name">Banner drag modifier key</span>
-  <span slot="description">
-    Set a modifier key that must be used to drag a banner.
-    <br />
-    For example, setting it to <b>⇧ Shift</b> means you must hold down <b>Shift</b> in order to
-    move a banner by dragging it. This can help avoid accidental banner movements.
-  </span>
-</SelectSetting>

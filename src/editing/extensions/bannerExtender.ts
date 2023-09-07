@@ -7,6 +7,7 @@ import {
   isBannerEffect,
   leafBannerMap,
   openNoteEffect,
+  refreshEffect,
   removeBannerEffect,
   upsertBannerEffect
 } from './utils';
@@ -43,7 +44,7 @@ const bannerExtender = EditorState.transactionExtender.of((transaction) => {
     const banner = leafBannerMap[leaf.id];
     if (banner) newEffects.push(assignBannerEffect.of(banner));
     newEffects.push(effectFromData);
-  } else if (docChanged) {
+  } else if (hasEffect(effects, refreshEffect) || docChanged) {
     newEffects.push(effectFromData);
   }
 

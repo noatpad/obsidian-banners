@@ -1,13 +1,15 @@
 import type { MarkdownPostProcessor } from 'obsidian';
 import { plug } from 'src/main';
 import { getSetting } from 'src/settings';
-import { extractBannerData } from 'src/utils';
+import { extractBannerData, registerSettingChangeEvent } from 'src/utils';
 import BannerRenderChild from './BannerRenderChild';
 import type { Embedded } from './BannerRenderChild';
 
 // Helper to associate a banner to a specific view/document
 const currentBanners: Record<string, BannerRenderChild> = {};
 
+/* BUG: This doesn't rerender banners in internal embeds properly.
+Reload app or manually edit the view/contents to fix */
 const rerender = () => {
   for (const banner of Object.values(currentBanners)) {
     banner.unload();
@@ -69,15 +71,9 @@ export const loadPostProcessor = () => {
 };
 
 export const registerReadingBannerEvents = () => {
-  plug.registerEvent(
-    plug.events.on('setting-change', (changed) => {
-      if ('showInInternalEmbed' in changed) rerender();
-    })
-  );
+  registerSettingChangeEvent(['frontmatterField', 'showInInternalEmbed'], rerender);
 };
 
-/* BUG: This doesn't rerender banners in internal embeds properly.
-Reload app or manually edit the view/contents to fix */
 export const unloadReadingViewBanners = () => {
   rerender();
 };
