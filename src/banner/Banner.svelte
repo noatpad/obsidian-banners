@@ -31,6 +31,7 @@
         break;
     }
   }
+  // TODO: Add setting for banner height specifically for mobile devices
   $: height = `${heightValue}px`;
 </script>
 
