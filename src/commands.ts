@@ -1,4 +1,5 @@
 import type { Command } from 'obsidian';
+import { extractBannerDataFromFile, updateBannerData } from './bannerData';
 import { plug } from './main';
 import LocalImageModal from './modals/LocalImageModal';
 
@@ -10,6 +11,15 @@ const commands: Command[] = [
       const file = plug.app.workspace.getActiveFile();
       if (checking) return !!file;
       new LocalImageModal(plug.app, file!).open();
+    }
+  },
+  {
+    id: 'banner:removeBanner',
+    name: 'Remove banner',
+    checkCallback(checking) {
+      const file = plug.app.workspace.getActiveFile();
+      if (checking) return !!file && !!extractBannerDataFromFile(file)?.source;
+      updateBannerData(file!, { source: undefined, x: undefined, y: undefined });
     }
   }
 ];

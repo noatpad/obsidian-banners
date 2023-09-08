@@ -31,6 +31,12 @@ export const extractBannerData = (frontmatter: Record<string, unknown> = {}): Pa
   }, {} as Partial<BannerMetadata>);
 };
 
+// Helper to extract banner data from a given file
+export const extractBannerDataFromFile = (file: TFile): Partial<BannerMetadata> => {
+  const { frontmatter } = plug.app.metadataCache.getFileCache(file) ?? {};
+  return extractBannerData(frontmatter);
+};
+
 // Upsert banner data into the frontmatter with its associated field
 export const updateBannerData = async (file: TFile, bannerData: Partial<BannerMetadata>) => {
   await plug.app.fileManager.processFrontMatter(file, async (frontmatter) => {
