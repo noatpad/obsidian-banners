@@ -1,6 +1,6 @@
 import { EditorState, StateEffect } from '@codemirror/state';
 import { editorInfoField, parseYaml } from 'obsidian';
-import { extractBannerData } from 'src/utils';
+import { extractBannerData } from 'src/bannerData';
 import {
   assignBannerEffect,
   hasEffect,

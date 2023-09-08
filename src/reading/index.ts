@@ -1,7 +1,8 @@
 import type { MarkdownPostProcessor } from 'obsidian';
+import { extractBannerData } from 'src/bannerData';
 import { plug } from 'src/main';
 import { getSetting } from 'src/settings';
-import { extractBannerData, registerSettingChangeEvent } from 'src/utils';
+import { registerSettingChangeEvent } from 'src/utils';
 import BannerRenderChild from './BannerRenderChild';
 import type { Embedded } from './BannerRenderChild';
 

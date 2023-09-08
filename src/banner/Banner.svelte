@@ -2,10 +2,10 @@
 
 <script lang="ts">
   import type { TFile } from 'obsidian';
+  import { updateBannerData } from 'src/bannerData';
   import type { Embedded } from 'src/reading/BannerRenderChild';
   import { getSetting } from 'src/settings';
   import settingsStore from 'src/settings/store';
-  import { updateBannerData } from 'src/utils';
   import BannerImage from './BannerImage.svelte';
   import Error from './Error.svelte';
   import Loading from './Loading.svelte';
