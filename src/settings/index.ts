@@ -51,7 +51,7 @@ export const SELECT_OPTIONS_MAP: Record<string, Record<string, string>> = {
   bannerDragModifier: BANNER_DRAG_MOD_OPION_LABELS
 };
 
-/* TODO: The `value` parameter is redundant, but is implemented for Svelte store values.
+/* NOTE: The `value` parameter is redundant, but is implemented for Svelte store values.
  * Perhaps think of something cleaner */
 export const getSetting = <T extends keyof BannerSettings>(
   key: T,

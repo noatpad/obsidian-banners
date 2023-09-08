@@ -2,11 +2,10 @@
 
 <script lang="ts">
   import type { TFile } from 'obsidian';
-  import type { ComponentEvents } from 'svelte';
-  import { plug } from 'src/main';
   import type { Embedded } from 'src/reading/BannerRenderChild';
   import { getSetting } from 'src/settings';
   import settingsStore from 'src/settings/store';
+  import { updateBannerData } from 'src/utils';
   import BannerImage from './BannerImage.svelte';
   import Error from './Error.svelte';
   import Loading from './Loading.svelte';
@@ -18,19 +17,6 @@
   export let file: TFile;
   export let embed: Embedded = false;
   let heightValue: number;
-
-  // TODO: The key should be a dynamic prefix + property value
-  const getBannerKey = (key: keyof BannerMetadata): string => (
-    (key === 'source') ? 'banner' : `banner_${key}`
-  );
-
-  const updateBannerData = async ({ detail }: ComponentEvents<BannerImage>['drag-banner']) => {
-    await plug.app.fileManager.processFrontMatter(file, async (frontmatter) => {
-      for (const [key, val] of Object.entries(detail)) {
-        frontmatter[getBannerKey(key as keyof BannerMetadata)] = val;
-      }
-    });
-  };
 
   $: {
     switch (embed) {
@@ -63,7 +49,7 @@
       {x}
       {y}
       {embed}
-      on:drag-banner={updateBannerData}
+      on:drag-banner={async ({ detail }) => updateBannerData(file, detail)}
     />
   {:catch error}
     <Error {error} />
