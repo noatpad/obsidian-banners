@@ -32,6 +32,7 @@ const commands: Command[] = [
       pasteBanner(file!);
     }
   }
+  // TODO: Add lock banner command
 ];
 
 const loadCommands = () => {

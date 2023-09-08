@@ -35,8 +35,8 @@ export default class BannerRenderChild extends MarkdownRenderChild {
   }
 
   private resizePusher(reset = false) {
-    const height = reset ? '' : `${getSetting(this.heightKey)}px`;
-    this.pusherEl!.setCssStyles({ height });
+    const marginTop = reset ? '' : `${getSetting(this.heightKey)}px`;
+    this.pusherEl!.setCssStyles({ marginTop });
   }
 
   // Helper to grab the pusher element once it's loaded in
