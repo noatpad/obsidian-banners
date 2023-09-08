@@ -24,6 +24,7 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
     this.activeFile = file;
   }
 
+  // TODO: Allow only searching files within a specific directory through a setting
   getItems(): TFile[] {
     return this.app.vault.getFiles()
       .filter((file) => IMAGE_FORMATS.includes(file.extension));

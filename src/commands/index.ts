@@ -1,11 +1,12 @@
 import type { Command } from 'obsidian';
-import { extractBannerDataFromFile, updateBannerData } from './bannerData';
-import { plug } from './main';
-import LocalImageModal from './modals/LocalImageModal';
+import { extractBannerDataFromFile, updateBannerData } from 'src/bannerData';
+import { plug } from 'src/main';
+import LocalImageModal from 'src/modals/LocalImageModal';
+import { pasteBanner } from './utils';
 
 const commands: Command[] = [
   {
-    id: 'banner:upsertBanner',
+    id: 'banners:upsertBanner',
     name: 'Add/Change banner with local image',
     checkCallback(checking) {
       const file = plug.app.workspace.getActiveFile();
@@ -14,12 +15,21 @@ const commands: Command[] = [
     }
   },
   {
-    id: 'banner:removeBanner',
+    id: 'banners:removeBanner',
     name: 'Remove banner',
     checkCallback(checking) {
       const file = plug.app.workspace.getActiveFile();
       if (checking) return !!file && !!extractBannerDataFromFile(file)?.source;
       updateBannerData(file!, { source: undefined, x: undefined, y: undefined });
+    }
+  },
+  {
+    id: 'banners:pasteBanner',
+    name: 'Paste banner from clipboard',
+    checkCallback(checking) {
+      const file = plug.app.workspace.getActiveFile();
+      if (checking) return !!file;
+      pasteBanner(file!);
     }
   }
 ];
