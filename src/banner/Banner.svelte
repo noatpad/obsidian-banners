@@ -1,6 +1,7 @@
 <svelte:options accessors />
 
 <script lang="ts">
+  import { Platform } from 'obsidian';
   import type { TFile } from 'obsidian';
   import { updateBannerData } from 'src/bannerData';
   import type { Embedded } from 'src/reading/BannerRenderChild';
@@ -17,29 +18,38 @@
   export let file: TFile;
   export let embed: Embedded = false;
   let heightValue: number;
+  $: ({
+    height,
+    mobileHeight,
+    popoverHeight,
+    internalEmbedHeight
+  } = $settingsStore);
 
   $: {
-    switch (embed) {
-      case 'internal':
-        heightValue = getSetting('internalEmbedHeight', $settingsStore.internalEmbedHeight);
-        break;
-      case 'popover':
-        heightValue = getSetting('popoverHeight', $settingsStore.popoverHeight);
-        break;
-      default:
-        heightValue = getSetting('height', $settingsStore.height);
-        break;
+    if (Platform.isMobile) {
+      heightValue = getSetting('mobileHeight', mobileHeight);
+    } else {
+      switch (embed) {
+        case 'internal':
+          heightValue = getSetting('internalEmbedHeight', internalEmbedHeight);
+          break;
+        case 'popover':
+          heightValue = getSetting('popoverHeight', popoverHeight);
+          break;
+        default:
+          heightValue = getSetting('height', height);
+          break;
+      }
     }
   }
-  // TODO: Add setting for banner height specifically for mobile devices
-  $: height = `${heightValue}px`;
+  $: heightStyle = `${heightValue}px`;
 </script>
 
 <div
   class="obsidian-banner"
   class:in-internal-embed={embed === 'internal'}
   class:in-popover={embed === 'popover'}
-  style:height
+  style:height={heightStyle}
 >
   <!-- IDEA: Add fade-in transition? -->
   {#await fetchImage(source, file)}

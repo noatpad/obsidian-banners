@@ -7,6 +7,7 @@ export type BannerDragModOption = 'None' | 'Shift' | 'Ctrl' | 'Alt' | 'Meta';
 
 export interface BannerSettings {
   height: number;
+  mobileHeight: number;
   style: StyleOption;
   showInInternalEmbed: boolean;
   internalEmbedHeight: number;
@@ -22,6 +23,7 @@ const TEXT_SETTINGS: Array<keyof BannerSettings> = ['frontmatterField'];
 
 export const DEFAULT_SETTINGS: BannerSettings = {
   height: 300,
+  mobileHeight: 180,
   style: 'solid',
   showInInternalEmbed: true,
   internalEmbedHeight: 200,

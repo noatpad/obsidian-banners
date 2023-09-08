@@ -1,5 +1,5 @@
 import { EditorState, StateField } from '@codemirror/state';
-import { editorEditorField, editorInfoField } from 'obsidian';
+import { Platform, editorEditorField, editorInfoField } from 'obsidian';
 import Banner from 'src/banner/Banner.svelte';
 import { getSetting } from 'src/settings';
 import {
@@ -11,7 +11,7 @@ import {
 } from './utils';
 
 const setWrapperHeight = (wrapper: HTMLElement) => {
-  const height = getSetting('height');
+  const height = Platform.isMobile ? getSetting('mobileHeight') : getSetting('height');
   wrapper.setCssStyles({ height: `${height}px` });
 };
 

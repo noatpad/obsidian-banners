@@ -33,7 +33,7 @@ export const registerEditorBannerEvents = () => {
   });
 
   // Resize banner wrapper
-  registerSettingChangeEvent('height', () => {
+  registerSettingChangeEvent(['height', 'mobileHeight'], () => {
     iterateMarkdownLeaves((leaf) => {
       leaf.view.editor.cm.dispatch({ effects: resizeBannerEffect.of(null) });
     }, 'editing');

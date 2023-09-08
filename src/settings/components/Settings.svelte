@@ -16,6 +16,13 @@
   <span slot="name">Banner height</span>
   <span slot="description">Set how big the banner should be in pixels</span>
 </InputSetting>
+<InputSetting key="mobileHeight" type="number">
+  <span slot="name">Mobile banner height</span>
+  <span slot="description">
+    Set how big the banner should be on mobile devices. If left blank, it will inherit the
+    <b>Banner height</b> setting above.
+  </span>
+</InputSetting>
 <SelectSetting key="style">
   <span slot="name">Banner style</span>
   <span slot="description">Set a style for all of your banners</span>

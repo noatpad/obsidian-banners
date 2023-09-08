@@ -1,8 +1,8 @@
-import { MarkdownRenderChild, TFile } from 'obsidian';
+import { MarkdownRenderChild, Platform, TFile } from 'obsidian';
 import type { MarkdownPostProcessorContext } from 'obsidian';
-import { plug } from 'src/main';
 import { getSetting } from 'src/settings';
 import type { BannerSettings } from 'src/settings';
+import { registerSettingChangeEvent } from 'src/utils';
 import Banner from '../banner/Banner.svelte';
 
 export type Embedded = 'internal' | 'popover' | false;
@@ -35,8 +35,12 @@ export default class BannerRenderChild extends MarkdownRenderChild {
   }
 
   private resizePusher(reset = false) {
-    const marginTop = reset ? '' : `${getSetting(this.heightKey)}px`;
-    this.pusherEl!.setCssStyles({ marginTop });
+    if (reset) {
+      this.pusherEl!.setCssStyles({ marginTop: '' });
+    } else {
+      const size = Platform.isMobile ? getSetting('mobileHeight') : getSetting(this.heightKey);
+      this.pusherEl!.setCssStyles({ marginTop: `${size}px` });
+    }
   }
 
   // Helper to grab the pusher element once it's loaded in
@@ -56,28 +60,11 @@ export default class BannerRenderChild extends MarkdownRenderChild {
   }
 
   private registerListener() {
+    const cb = () => this.resizePusher();
     switch (this.embedded) {
-      case 'internal':
-        this.registerEvent(
-          plug.events.on('setting-change', (changed) => {
-            if ('internalEmbedHeight' in changed) this.resizePusher();
-          })
-        );
-        break;
-      case 'popover':
-        this.registerEvent(
-          plug.events.on('setting-change', (changed) => {
-            if ('popoverHeight' in changed) this.resizePusher();
-          })
-        );
-        break;
-      default:
-        this.registerEvent(
-          plug.events.on('setting-change', (changed) => {
-            if ('height' in changed) this.resizePusher();
-          })
-        );
-        break;
+      case 'internal': return registerSettingChangeEvent('internalEmbedHeight', cb);
+      case 'popover': return registerSettingChangeEvent('popoverHeight', cb);
+      default: return registerSettingChangeEvent(['height', 'mobileHeight'], cb);
     }
   }
 
