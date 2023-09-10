@@ -3,6 +3,7 @@ import type { TFile } from 'obsidian';
 import { plug } from 'src/main';
 import type { Embedded } from 'src/reading/BannerRenderChild';
 import { getSetting } from 'src/settings';
+import type { IconHorizontalAlignmentOption, IconVerticalAlignmentOption } from 'src/settings';
 
 export type ViewType = 'editing' | 'reading';
 interface Heights { banner: string; icon: string }
@@ -62,4 +63,22 @@ export const getSizerHeight = (heights: Heights, hasSource: boolean, hasIcon: bo
     return `calc(${heights.icon} * 1.5)`;
   }
   return '';
+};
+
+export const getIconTransform = (
+  horizontal: IconHorizontalAlignmentOption,
+  hTransform: string,
+  vertical: IconVerticalAlignmentOption,
+  vTransform: string
+): string => {
+  const h = (horizontal === 'custom') ? hTransform : '0px';
+  let v: string;
+  switch (vertical) {
+    case 'center': v = '50%'; break;
+    case 'above': v = '0%'; break;
+    case 'edge': v = '50%'; break;
+    case 'below': v = '100%'; break;
+    case 'custom': v = vTransform; break;
+  }
+  return `translate(${h}, ${v})`;
 };

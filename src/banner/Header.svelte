@@ -3,24 +3,28 @@
   import { getSetting } from 'src/settings';
   import settings from 'src/settings/store';
   import Icon from './Icon.svelte';
+  import { getIconTransform } from './utils';
 
   export let icon: IconString;
-  $: ({ iconHorizontalAlignment, iconHorizontalTransform } = $settings);
+  $: ({
+    iconHorizontalAlignment,
+    iconHorizontalTransform,
+    iconVerticalAlignment,
+    iconVerticalTransform
+  } = $settings);
   $: horizontal = getSetting('iconHorizontalAlignment', iconHorizontalAlignment);
   $: hTransform = getSetting('iconHorizontalTransform', iconHorizontalTransform);
-  $: alignLeft = (horizontal === 'left');
-  $: alignCenter = (horizontal === 'center');
-  $: alignRight = (horizontal === 'right');
-  $: transform = (horizontal === 'custom') ?
-    `translate(${hTransform}, 50%)`
-    : null;
+  $: vertical = getSetting('iconVerticalAlignment', iconVerticalAlignment);
+  $: vTransform = getSetting('iconVerticalTransform', iconVerticalTransform);
+  $: transform = getIconTransform(horizontal, hTransform, vertical, vTransform);
 </script>
 
 <div
   class="header"
-  class:align-left={alignLeft}
-  class:align-center={alignCenter}
-  class:align-right={alignRight}
+  class:align-left={horizontal === 'left'}
+  class:align-center={horizontal === 'center'}
+  class:align-right={horizontal === 'right'}
+  class:center-of-banner={vertical === 'center'}
   style:transform
 >
   <Icon {icon} />
@@ -37,10 +41,10 @@
     max-width: calc(var(--file-line-width) + (var(--file-margins) * 2));
     padding: 0 var(--file-margins);
     margin: 0 auto;
-    transform: translateY(50%);
   }
 
   .align-left { justify-content: start; }
   .align-center { justify-content: center; }
   .align-right { justify-content: end; }
+  .center-of-banner { bottom: 50%; }
 </style>

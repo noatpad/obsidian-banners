@@ -4,7 +4,8 @@ import store from './store';
 
 type StyleOption = 'solid' | 'gradient';
 export type BannerDragModOption = 'None' | 'Shift' | 'Ctrl' | 'Alt' | 'Meta';
-type IconHorizontalAlignmentOption = 'left' | 'center' | 'right' | 'custom';
+export type IconHorizontalAlignmentOption = 'left' | 'center' | 'right' | 'custom';
+export type IconVerticalAlignmentOption = 'center' | 'above' | 'edge' | 'below' | 'custom';
 
 export interface BannerSettings {
   height: number;
@@ -20,6 +21,8 @@ export interface BannerSettings {
   enableDragInPopover: boolean;
   iconHorizontalAlignment: IconHorizontalAlignmentOption;
   iconHorizontalTransform: string;
+  iconVerticalAlignment: IconVerticalAlignmentOption;
+  iconVerticalTransform: string;
 }
 
 export const DEFAULT_SETTINGS: BannerSettings = {
@@ -35,12 +38,15 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   enableDragInInternalEmbed: false,
   enableDragInPopover: false,
   iconHorizontalAlignment: 'left',
-  iconHorizontalTransform: '0px'
+  iconHorizontalTransform: '0px',
+  iconVerticalAlignment: 'edge',
+  iconVerticalTransform: '0px'
 };
 
 const TEXT_SETTINGS: Array<keyof BannerSettings> = [
   'frontmatterField',
-  'iconHorizontalTransform'
+  'iconHorizontalTransform',
+  'iconVerticalTransform'
 ];
 
 const STYLE_OPTION_LABELS: Record<StyleOption, string> = {
@@ -63,10 +69,19 @@ const ICON_HORIZONTAL_ALIGN_OPTION_LABELS: Record<IconHorizontalAlignmentOption,
   custom: 'Custom'
 };
 
+const ICON_VERTICAL_ALIGN_OPTION_LABELS: Record<IconVerticalAlignmentOption, string> = {
+  center: 'Center of the banner',
+  above: 'Just above the banner',
+  edge: 'Edge of the banner',
+  below: 'Just below the banner',
+  custom: 'Custom'
+};
+
 export const SELECT_OPTIONS_MAP = {
   style: STYLE_OPTION_LABELS,
   bannerDragModifier: BANNER_DRAG_MOD_OPION_LABELS,
-  iconHorizontalAlignment: ICON_HORIZONTAL_ALIGN_OPTION_LABELS
+  iconHorizontalAlignment: ICON_HORIZONTAL_ALIGN_OPTION_LABELS,
+  iconVerticalAlignment: ICON_VERTICAL_ALIGN_OPTION_LABELS
 };
 
 /* NOTE: The `value` parameter is redundant, but is implemented for Svelte store values.
