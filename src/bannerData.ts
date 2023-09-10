@@ -3,22 +3,42 @@ import { editorInfoField, parseYaml } from 'obsidian';
 import type { TFile } from 'obsidian';
 import { plug } from './main';
 import { getSetting } from './settings';
+import { extractIconFromData, extractIconFromYaml } from './transformers';
 
-/* NOTE: These are bi-directional maps between "suffixes" for YAML banner keys and
-`BannerMetadata` keys, to help read and write banner data from/to frontmatter */
-const SUFFIX_TO_KEY_MAP: Record<string, keyof BannerMetadata> = {
-  '': 'source',
-  x: 'x',
-  y: 'y'
+interface ReadWriteProperty { transform?: CallableFunction }
+interface ReadProperty extends ReadWriteProperty { key: keyof BannerMetadata }
+interface WriteProperty extends ReadWriteProperty { suffix: string }
+
+export interface IconString {
+  type: 'text' | 'emoji';
+  value: string;
+}
+
+/* NOTE: These are bi-directional maps between YAML banner keys and `BannerMetadata` keys,
+to help read, write, & transform banner data between them */
+// Read: YAML -> BannerMetadata
+const READ_MAP: Record<string, ReadProperty> = {
+  '': { key: 'source' },
+  x: { key: 'x' },
+  y: { key: 'y' },
+  icon: {
+    key: 'icon',
+    transform: extractIconFromYaml
+  }
 } as const;
 
-const KEY_TO_SUFFIX_MAP: Record<keyof BannerMetadata, string> = {
-  source: '',
-  x: 'x',
-  y: 'y'
+// Write: BannerMetadata -> YAML
+const WRITE_MAP: Record<keyof BannerMetadata, WriteProperty> = {
+  source: { suffix: '' },
+  x: { suffix: 'x' },
+  y: { suffix: 'y' },
+  icon: {
+    suffix: 'icon',
+    transform: extractIconFromData
+  }
 } as const;
 
-const YAML_REGEX = new RegExp(/^---(?<yaml>.*)---/, 's');
+const YAML_REGEX = /^---(?<yaml>.*)---/s;
 
 const getYamlKey = (suffix: string) => {
   const prefix = getSetting('frontmatterField');
@@ -28,9 +48,13 @@ const getYamlKey = (suffix: string) => {
 // Extract banner data from a given frontmatter-like object (key:value form)
 // eslint-disable-next-line max-len
 export const extractBannerData = (frontmatter: Record<string, unknown> = {}): Partial<BannerMetadata> => {
-  return Object.entries(SUFFIX_TO_KEY_MAP).reduce((data, [suffix, dataKey]) => {
+  return Object.entries(READ_MAP).reduce((data, [suffix, item]) => {
+    const { key, transform } = item;
     const yamlKey = getYamlKey(suffix);
-    if (Object.hasOwn(frontmatter, yamlKey)) data[dataKey] = frontmatter[yamlKey] as any;
+    if (Object.hasOwn(frontmatter, yamlKey)) {
+      const rawValue = frontmatter[yamlKey] as any;
+      data[key] = transform ? transform(rawValue) : rawValue;
+    }
     return data;
   }, {} as Partial<BannerMetadata>);
 };
@@ -56,9 +80,9 @@ export const extractBannerDataFromState = (state: EditorState): Partial<BannerMe
 export const updateBannerData = async (file: TFile, bannerData: Partial<BannerMetadata>) => {
   await plug.app.fileManager.processFrontMatter(file, async (frontmatter) => {
     for (const [dataKey, val] of Object.entries(bannerData) as [keyof BannerMetadata, any][]) {
-      const suffix = KEY_TO_SUFFIX_MAP[dataKey];
+      const { suffix, transform } = WRITE_MAP[dataKey];
       const yamlKey = getYamlKey(suffix);
-      frontmatter[yamlKey] = val;
+      frontmatter[yamlKey] = transform ? transform(val) : val;
     }
   });
 };

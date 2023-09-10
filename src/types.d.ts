@@ -1,5 +1,6 @@
 import type { EditorView } from '@codemirror/view';
 import type { Editor } from 'obsidian';
+import type { IconString } from './bannerData';
 
 interface EditMode {
   type: 'source';
@@ -72,5 +73,6 @@ declare global {
     source: string;
     x: number;
     y: number;
+    icon: IconString;
   }
 }

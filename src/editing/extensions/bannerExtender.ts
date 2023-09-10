@@ -20,7 +20,7 @@ const bannerExtender = EditorState.transactionExtender.of((transaction) => {
 
   const bannerData = extractBannerDataFromState(state);
   const newEffects: StateEffect<any>[] = [];
-  const effectFromData = bannerData.source
+  const effectFromData = (bannerData.source || bannerData.icon)
     ? upsertBannerEffect.of(bannerData)
     : removeBannerEffect.of(null);
   if (hasEffect(effects, openNoteEffect)) {

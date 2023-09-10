@@ -56,7 +56,7 @@ const postprocessor: MarkdownPostProcessor = (el, ctx) => {
   const file = plug.app.metadataCache.getFirstLinkpathDest(sourcePath, '/')!;
   const bannerData = extractBannerData(frontmatter);
 
-  if (bannerData.source) {
+  if (bannerData.source || bannerData.icon) {
     const banner = new BannerRenderChild(el, ctx, bannerData, file, embed);
     if (currentBanners[docId]) currentBanners[docId].prepareSwap = true;
     ctx.addChild(banner);

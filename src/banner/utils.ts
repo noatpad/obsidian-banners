@@ -10,10 +10,8 @@ const parseInternalLink = (src: string, file: TFile): string | null => {
   return target ? plug.app.vault.getResourcePath(target) : link;
 };
 
-export const fetchImage = async (src: string | undefined, file: TFile): Promise<string | null> => {
-  // Just return the bad link to get the error
-  if (!src) return src ?? null;
-
+// TODO: Get better error handling for this
+export const fetchImage = async (src: string, file: TFile): Promise<string | null> => {
   // Check if it's an internal link and use that if it is
   const internalLink = parseInternalLink(src, file);
   if (internalLink) return internalLink;

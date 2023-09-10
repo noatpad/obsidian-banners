@@ -14,6 +14,7 @@ export default class BannerRenderChild extends MarkdownRenderChild {
   pusherEl?: HTMLElement | null;
   file: TFile;
   embedded: Embedded;
+  // heights: [string, string];
   prepareSwap = false;
   heightKey: keyof BannerSettings = 'height';
 
@@ -29,18 +30,45 @@ export default class BannerRenderChild extends MarkdownRenderChild {
     this.bannerData = bannerData;
     this.file = file;
     this.embedded = embedded;
+    // this.heights = this.getHeights();
 
     if (this.embedded === 'internal') this.heightKey = 'internalEmbedHeight';
     else if (this.embedded === 'popover') this.heightKey = 'popoverHeight';
   }
 
-  private resizePusher(reset = false) {
-    if (reset) {
-      this.pusherEl!.setCssStyles({ marginTop: '' });
+  // private getHeights(): [string, string] {
+  //   let heightKey: keyof BannerSettings = 'height';
+  //   if (this.embedded === 'internal') heightKey = 'internalEmbedHeight';
+  //   else if (this.embedded === 'popover') heightKey = 'popoverHeight';
+
+  //   const bannerHeight = `${getSetting(heightKey)}px`;
+  //   return [bannerHeight, '3em'];
+  // }
+
+  private getPusherSize(): string | null {
+    const bannerHeight = Platform.isMobile
+      ? getSetting('mobileHeight')
+      : getSetting(this.heightKey) as number;
+
+    if (this.bannerData.source) {
+      return `${bannerHeight}px`;
+    } else if (this.bannerData.icon) {
+      return '3em';
     } else {
-      const size = Platform.isMobile ? getSetting('mobileHeight') : getSetting(this.heightKey);
-      this.pusherEl!.setCssStyles({ marginTop: `${size}px` });
+      return null;
     }
+  }
+
+  private resizePusher(reset = false) {
+    // if (reset) {
+    //   this.pusherEl!.setCssStyles({ marginTop: '' });
+    // } else {
+    //   const size = Platform.isMobile ? getSetting('mobileHeight') : getSetting(this.heightKey);
+    //   this.pusherEl!.setCssStyles({ marginTop: `${size}px` });
+    // }
+    if (reset) return this.pusherEl!.setCssStyles({ marginTop: '' });
+    const size = this.getPusherSize();
+    this.pusherEl!.setCssStyles({ marginTop: size ?? '' });
   }
 
   // Helper to grab the pusher element once it's loaded in
