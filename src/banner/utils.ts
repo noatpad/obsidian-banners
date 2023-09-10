@@ -1,5 +1,6 @@
 import { Platform } from 'obsidian';
 import type { TFile } from 'obsidian';
+import type { IconString } from 'src/bannerData';
 import { plug } from 'src/main';
 import type { Embedded } from 'src/reading/BannerRenderChild';
 import { getSetting } from 'src/settings';
@@ -49,17 +50,39 @@ export const getHeights = (embedded: Embedded, _deps?: any[]): Heights => {
   return { banner, icon };
 };
 
-export const getBannerHeight = (heights: Heights, hasSource: boolean, hasIcon: boolean): string => {
-  if (hasSource) return heights.banner;
-  else if (hasIcon) return heights.icon;
+export const getBannerHeight = (
+  heights: Heights,
+  source: string | undefined,
+  icon: IconString | undefined
+): string => {
+  if (source) return heights.banner;
+  else if (icon) return heights.icon;
   return '';
 };
 
-export const getSizerHeight = (heights: Heights, hasSource: boolean, hasIcon: boolean): string => {
-  if (hasSource) {
-    if (hasIcon) return `calc(${heights.banner} + (${heights.icon} / 2))`;
+const getIconExtraOffset = (offset: string, alignment: IconVerticalAlignmentOption): string => {
+  switch (alignment) {
+    case 'center':
+    case 'above': return '0px';
+    case 'edge':
+    case 'custom': return `(${offset} / 2)`;
+    case 'below': return offset;
+  }
+};
+
+export const getSizerHeight = (
+  heights: Heights,
+  source: string | undefined,
+  icon: IconString | undefined,
+  iconAlignment: IconVerticalAlignmentOption
+): string => {
+  if (source) {
+    if (icon) {
+      const extraOffset = getIconExtraOffset(heights.icon, iconAlignment);
+      return `calc(${heights.banner} + ${extraOffset})`;
+    }
     else return heights.banner;
-  } else if (hasIcon) {
+  } else if (icon) {
     return `calc(${heights.icon} * 1.5)`;
   }
   return '';

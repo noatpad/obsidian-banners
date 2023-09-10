@@ -32,7 +32,8 @@
     height: desktopHeight,
     mobileHeight,
     popoverHeight,
-    internalEmbedHeight
+    internalEmbedHeight,
+    iconVerticalAlignment
   } = $settings);
   $: heights = getHeights(embed, [
     desktopHeight,
@@ -45,9 +46,9 @@
     if (!isSwapping) sizerEl?.setCssStyles({ marginTop: '' });
   });
 
-  $: height = getBannerHeight(heights, !!source, !!icon);
+  $: height = getBannerHeight(heights, source, icon);
   $: if (sizerEl) {
-    const marginTop = getSizerHeight(heights, !!source, !!icon);
+    const marginTop = getSizerHeight(heights, source, icon, iconVerticalAlignment);
     sizerEl.setCssStyles({ marginTop });
   }
 </script>
