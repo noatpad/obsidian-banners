@@ -1,66 +1,64 @@
 <svelte:options accessors />
 
 <script lang="ts">
-  import { Platform } from 'obsidian';
   import type { TFile } from 'obsidian';
+  import { onDestroy } from 'svelte';
   import { updateBannerData } from 'src/bannerData';
   import type { IconString } from 'src/bannerData';
   import type { Embedded } from 'src/reading/BannerRenderChild';
-  import { getSetting } from 'src/settings';
-  import settingsStore from 'src/settings/store';
+  import settings from 'src/settings/store';
   import BannerImage from './BannerImage.svelte';
   import Error from './Error.svelte';
   import Header from './Header.svelte';
   import Loading from './Loading.svelte';
-  import { fetchImage } from './utils';
+  import {
+    fetchImage,
+    getBannerHeight,
+    getHeights,
+    getSizerHeight
+  } from './utils';
 
   export let source: string | undefined = undefined;
   export let x = 0.5;
   export let y = 0.5;
   export let icon: IconString | undefined = undefined;
 
+  export let viewType: 'editing' | 'reading';
   export let file: TFile;
   export let embed: Embedded = false;
-  // export let heights: [string, string];
-  // let height: string;
-  // $: {
-  //   if (source) height = heights[0];
-  //   else height = heights[1];
-  // }
-
-  let heightValue: number;
+  export let sizerEl: HTMLElement | null;
+  export let isSwapping = false;
   $: ({
-    height,
+    height: desktopHeight,
     mobileHeight,
     popoverHeight,
     internalEmbedHeight
-  } = $settingsStore);
+  } = $settings);
+  $: heights = getHeights(embed, [
+    desktopHeight,
+    mobileHeight,
+    popoverHeight,
+    internalEmbedHeight
+  ]);
 
-  $: {
-    if (Platform.isMobile) {
-      heightValue = getSetting('mobileHeight', mobileHeight);
-    } else {
-      switch (embed) {
-        case 'internal':
-          heightValue = getSetting('internalEmbedHeight', internalEmbedHeight);
-          break;
-        case 'popover':
-          heightValue = getSetting('popoverHeight', popoverHeight);
-          break;
-        default:
-          heightValue = getSetting('height', height);
-          break;
-      }
-    }
+  onDestroy(() => {
+    if (!isSwapping) sizerEl?.setCssStyles({ marginTop: '' });
+  });
+
+  $: height = getBannerHeight(heights, !!source, !!icon);
+  $: if (sizerEl) {
+    const marginTop = getSizerHeight(heights, !!source, !!icon);
+    sizerEl.setCssStyles({ marginTop });
   }
-  $: heightStyle = `${heightValue}px`;
 </script>
 
 <header
   class="obsidian-banner"
+  class:editing={viewType === 'editing'}
+  class:reading={viewType === 'reading'}
   class:in-internal-embed={embed === 'internal'}
   class:in-popover={embed === 'popover'}
-  style:height={heightStyle}
+  style:height
 >
   <!-- IDEA: Add fade-in transition? -->
   {#if source}
@@ -69,8 +67,8 @@
     {:then src}
       <BannerImage
         {src}
-        {x}
-        {y}
+        x={x ?? 0.5}
+        y={y ?? 0.5}
         {embed}
         on:drag-banner={async ({ detail }) => updateBannerData(file, detail)}
       />

@@ -1,19 +1,14 @@
 import { EditorState, StateField } from '@codemirror/state';
-import { Platform, editorEditorField, editorInfoField } from 'obsidian';
+import { editorEditorField, editorInfoField } from 'obsidian';
 import Banner from 'src/banner/Banner.svelte';
-import { getSetting } from 'src/settings';
+import { WRAPPER_CLASS } from 'src/banner/utils';
+import { BANNER_DATA_KEYS } from 'src/bannerData';
 import {
   assignBannerEffect,
   removeBannerEffect,
-  resizeBannerEffect,
   setBannerInMap,
   upsertBannerEffect
 } from './utils';
-
-const setWrapperHeight = (wrapper: HTMLElement) => {
-  const height = Platform.isMobile ? getSetting('mobileHeight') : getSetting('height');
-  wrapper.setCssStyles({ height: `${height}px` });
-};
 
 const addBanner = (state: EditorState, bannerData: Partial<BannerMetadata>): Banner => {
   console.log('add!');
@@ -21,11 +16,15 @@ const addBanner = (state: EditorState, bannerData: Partial<BannerMetadata>): Ban
   const { dom } = state.field(editorEditorField);
   const wrapper = document.createElement('div');
 
-  wrapper.addClass('obsidian-banner-wrapper');
-  setWrapperHeight(wrapper);
+  wrapper.addClass(WRAPPER_CLASS);
   const banner = new Banner({
     target: wrapper,
-    props: { ...bannerData, file: file! }
+    props: {
+      ...bannerData,
+      viewType: 'editing',
+      file: file!,
+      sizerEl: wrapper
+    }
   });
   dom.querySelector('.cm-sizer')?.prepend(wrapper);
 
@@ -35,21 +34,19 @@ const addBanner = (state: EditorState, bannerData: Partial<BannerMetadata>): Ban
 
 const updateBanner = (banner: Banner, bannerData: Partial<BannerMetadata>): Banner => {
   console.log('update!');
-  banner.$set({ ...bannerData });
+  const data = BANNER_DATA_KEYS.reduce((accum, key) => {
+    accum[key] = bannerData[key];
+    return accum;
+  }, {} as Record<string, unknown>);
+  banner.$set(data);
   return banner;
-};
-
-const resizeBanner = (state: EditorState) => {
-  const { dom } = state.field(editorEditorField);
-  const wrapper = dom.querySelector<HTMLElement>('.obsidian-banner-wrapper')!;
-  setWrapperHeight(wrapper);
 };
 
 const removeBanner = (banner: Banner | null = null, state: EditorState): null => {
   console.log('remove!?');
   const { dom } = state.field(editorEditorField);
   banner?.$destroy();
-  dom.querySelector('.obsidian-banner-wrapper')?.remove();
+  dom.querySelector(`.${WRAPPER_CLASS}`)?.remove();
   setBannerInMap(state);
   return null;
 };
@@ -77,8 +74,6 @@ const bannerField = StateField.define<Banner | null>({
         now = now ? updateBanner(now, effect.value) : addBanner(state, effect.value);
       } else if (effect.is(removeBannerEffect)) {
         now = removeBanner(now, state);
-      } else if (effect.is(resizeBannerEffect)) {
-        resizeBanner(state);
       } else if (effect.is(assignBannerEffect)) {
         now = assignBanner(effect.value, state);
       }

@@ -11,8 +11,7 @@ import {
   leafBannerMap,
   openNoteEffect,
   refreshEffect,
-  removeBannerEffect,
-  resizeBannerEffect
+  removeBannerEffect
 } from './extensions/utils';
 
 export const loadExtensions = () => {
@@ -29,13 +28,6 @@ export const registerEditorBannerEvents = () => {
   registerSettingChangeEvent('frontmatterField', () => {
     iterateMarkdownLeaves((leaf) => {
       leaf.view.editor.cm.dispatch({ effects: refreshEffect.of(null) });
-    }, 'editing');
-  });
-
-  // Resize banner wrapper
-  registerSettingChangeEvent(['height', 'mobileHeight'], () => {
-    iterateMarkdownLeaves((leaf) => {
-      leaf.view.editor.cm.dispatch({ effects: resizeBannerEffect.of(null) });
     }, 'editing');
   });
 

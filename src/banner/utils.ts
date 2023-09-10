@@ -1,5 +1,13 @@
+import { Platform } from 'obsidian';
 import type { TFile } from 'obsidian';
 import { plug } from 'src/main';
+import type { Embedded } from 'src/reading/BannerRenderChild';
+import { getSetting } from 'src/settings';
+
+export type ViewType = 'editing' | 'reading';
+interface Heights { banner: string; icon: string }
+
+export const WRAPPER_CLASS = 'obsidian-banner-wrapper';
 
 const parseInternalLink = (src: string, file: TFile): string | null => {
   const isInternalLink = /^\[\[.+\]\]/.test(src);
@@ -28,4 +36,30 @@ export const fetchImage = async (src: string, file: TFile): Promise<string | nul
   } catch (error: any) {
     throw new Error(error);
   }
+};
+
+export const getHeights = (embedded: Embedded, _deps?: any[]): Heights => {
+  let height = getSetting(Platform.isMobile ? 'mobileHeight' : 'height');
+  if (embedded === 'internal') height = getSetting('internalEmbedHeight');
+  else if (embedded === 'popover') height = getSetting('popoverHeight');
+
+  const banner = `${height}px`;
+  const icon = '3em';
+  return { banner, icon };
+};
+
+export const getBannerHeight = (heights: Heights, hasSource: boolean, hasIcon: boolean): string => {
+  if (hasSource) return heights.banner;
+  else if (hasIcon) return heights.icon;
+  return '';
+};
+
+export const getSizerHeight = (heights: Heights, hasSource: boolean, hasIcon: boolean): string => {
+  if (hasSource) {
+    if (hasIcon) return `calc(${heights.banner} + (${heights.icon} / 2))`;
+    else return heights.banner;
+  } else if (hasIcon) {
+    return `calc(${heights.icon} * 1.5)`;
+  }
+  return '';
 };

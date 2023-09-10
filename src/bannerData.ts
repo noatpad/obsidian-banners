@@ -14,6 +14,13 @@ export interface IconString {
   value: string;
 }
 
+export const BANNER_DATA_KEYS: Array<keyof BannerMetadata> = [
+  'source',
+  'x',
+  'y',
+  'icon'
+];
+
 /* NOTE: These are bi-directional maps between YAML banner keys and `BannerMetadata` keys,
 to help read, write, & transform banner data between them */
 // Read: YAML -> BannerMetadata

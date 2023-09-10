@@ -58,7 +58,7 @@ const postprocessor: MarkdownPostProcessor = (el, ctx) => {
 
   if (bannerData.source || bannerData.icon) {
     const banner = new BannerRenderChild(el, ctx, bannerData, file, embed);
-    if (currentBanners[docId]) currentBanners[docId].prepareSwap = true;
+    if (currentBanners[docId]) currentBanners[docId].prepareSwap();
     ctx.addChild(banner);
     currentBanners[docId] = banner;
   } else {
