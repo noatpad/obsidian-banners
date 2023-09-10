@@ -50,14 +50,19 @@
     const marginTop = getSizerHeight(heights, !!source, !!icon);
     sizerEl.setCssStyles({ marginTop });
   }
+
+  $: editing = (viewType === 'editing');
+  $: reading = (viewType === 'reading');
+  $: inInternalEmbed = (embed === 'internal');
+  $: inPopover = (embed === 'popover');
 </script>
 
 <header
   class="obsidian-banner"
-  class:editing={viewType === 'editing'}
-  class:reading={viewType === 'reading'}
-  class:in-internal-embed={embed === 'internal'}
-  class:in-popover={embed === 'popover'}
+  class:editing
+  class:reading
+  class:in-internal-embed={inInternalEmbed}
+  class:in-popover={inPopover}
   style:height
 >
   <!-- IDEA: Add fade-in transition? -->

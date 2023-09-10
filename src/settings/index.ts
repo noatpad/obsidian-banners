@@ -4,6 +4,7 @@ import store from './store';
 
 type StyleOption = 'solid' | 'gradient';
 export type BannerDragModOption = 'None' | 'Shift' | 'Ctrl' | 'Alt' | 'Meta';
+type IconHorizontalAlignmentOption = 'left' | 'center' | 'right' | 'custom';
 
 export interface BannerSettings {
   height: number;
@@ -17,9 +18,9 @@ export interface BannerSettings {
   frontmatterField: string;
   enableDragInInternalEmbed: boolean;
   enableDragInPopover: boolean;
+  iconHorizontalAlignment: IconHorizontalAlignmentOption;
+  iconHorizontalTransform: string;
 }
-
-const TEXT_SETTINGS: Array<keyof BannerSettings> = ['frontmatterField'];
 
 export const DEFAULT_SETTINGS: BannerSettings = {
   height: 300,
@@ -32,8 +33,15 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   bannerDragModifier: 'None',
   frontmatterField: 'banner',
   enableDragInInternalEmbed: false,
-  enableDragInPopover: false
+  enableDragInPopover: false,
+  iconHorizontalAlignment: 'left',
+  iconHorizontalTransform: '0px'
 };
+
+const TEXT_SETTINGS: Array<keyof BannerSettings> = [
+  'frontmatterField',
+  'iconHorizontalTransform'
+];
 
 const STYLE_OPTION_LABELS: Record<StyleOption, string> = {
   solid: 'Solid',
@@ -48,9 +56,17 @@ const BANNER_DRAG_MOD_OPION_LABELS: Record<BannerDragModOption, string> = {
   Meta: '⌘ Meta'
 } as const;
 
-export const SELECT_OPTIONS_MAP: Record<string, Record<string, string>> = {
+const ICON_HORIZONTAL_ALIGN_OPTION_LABELS: Record<IconHorizontalAlignmentOption, string> = {
+  left: 'Left',
+  center: 'Center',
+  right: 'Right',
+  custom: 'Custom'
+};
+
+export const SELECT_OPTIONS_MAP = {
   style: STYLE_OPTION_LABELS,
-  bannerDragModifier: BANNER_DRAG_MOD_OPION_LABELS
+  bannerDragModifier: BANNER_DRAG_MOD_OPION_LABELS,
+  iconHorizontalAlignment: ICON_HORIZONTAL_ALIGN_OPTION_LABELS
 };
 
 /* NOTE: The `value` parameter is redundant, but is implemented for Svelte store values.

@@ -2,14 +2,20 @@
   import { getSetting } from '..';
   import settings from '../store';
   import Depends from './Depends.svelte';
-  import Header from './Header.svelte';
   import InputSetting from './InputSetting.svelte';
   import SelectSetting from './SelectSetting.svelte';
+  import Header from './SettingHeader.svelte';
   import ToggleSetting from './ToggleSetting.svelte';
 
-  $: frontmatterField = getSetting('frontmatterField', $settings.frontmatterField);
+  $: ({
+    frontmatterField: _frontmatterField,
+    iconHorizontalAlignment: _iconHorizontalAlignment
+  } = $settings);
+  $: frontmatterField = getSetting('frontmatterField', _frontmatterField);
+  $: iconHorizontalAlignment = getSetting('iconHorizontalAlignment', _iconHorizontalAlignment);
 </script>
 
+<!-- eslint-disable max-len -->
 <!-- General banner settings -->
 <Header title="Banners" description="A nice, lil' thing to add some flair to your notes :)" big />
 <InputSetting key="height" type="number">
@@ -41,8 +47,8 @@
   <span slot="description">
     Set a prefix field name to be used for banner data in the frontmatter/<em>Properties</em> view.
     <br />
-    For example, using <code>{frontmatterField}</code> means that banner data will be extracted from
-    fields like <code>{frontmatterField}</code>, <code>{frontmatterField}_x</code>,
+    For example, using <code>{frontmatterField}</code> means that banner data will be extracted
+    from fields like <code>{frontmatterField}</code>, <code>{frontmatterField}_x</code>,
     <code>{frontmatterField}_icon</code>, etc.
   </span>
 </InputSetting>
@@ -88,4 +94,22 @@
       This may act a bit finicky though.
     </span>
   </ToggleSetting>
+</Depends>
+
+<Header title="Banner Icons" description="Give a lil' notion of what your note is about" />
+<SelectSetting key="iconHorizontalAlignment">
+  <span slot="name">Horizontal alignment</span>
+    <span slot="description">
+      Align the icon horizontally.
+    </span>
+</SelectSetting>
+<Depends on={iconHorizontalAlignment === 'custom'}>
+  <InputSetting key="iconHorizontalTransform">
+    <span slot="name">Custom horizontal alignment</span>
+    <span slot="description">
+      Set an offset relative to the left side of the note. This can be any valid
+      <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units#lengths" target="_blank" rel="noopener noreferrer">CSS length value</a>,
+      such as <code>10px</code>, <code>-30%</code>, <code>calc(1em + 10px)</code>, and so on...
+    </span>
+  </InputSetting>
 </Depends>

@@ -2,7 +2,7 @@
   import { createEventDispatcher } from 'svelte';
   import type { Embedded } from 'src/reading/BannerRenderChild';
   import { getSetting } from 'src/settings';
-  import settingsStore from 'src/settings/store';
+  import settings from 'src/settings/store';
   import { dragBanner } from './actions';
   import type { DragParams, XY } from './actions';
 
@@ -17,9 +17,9 @@
     enableDragInInternalEmbed,
     enableDragInPopover,
     style
-  } = $settingsStore);
+  } = $settings);
   let objectPos = { x, y };
-  let draggable = (bannerDragModifier === 'None');
+  let draggable = !bannerDragModifier;
   let dragging = false;
 
   const dispatch = createEventDispatcher<BannerImageDispatch>();

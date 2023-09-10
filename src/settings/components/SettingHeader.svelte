@@ -18,7 +18,7 @@
   }
 
   .title {
-    font-size: 1.4em;
+    font-size: 1.3em;
     margin-bottom: 2px;
 
     &.big { font-size: 1.6em; }
