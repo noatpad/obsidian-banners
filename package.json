@@ -16,6 +16,7 @@
     "@codemirror/state": "^6.2.1",
     "@codemirror/view": "^6.17.0",
     "@twemoji/api": "^14.1.2",
+    "node-emoji": "^2.1.0",
     "obsidian": "^1.4.4"
   },
   "devDependencies": {

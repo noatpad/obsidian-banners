@@ -1,6 +1,7 @@
 /* eslint-disable import/no-duplicates */
 import { Keymap } from 'obsidian';
 import type { Action } from 'svelte/action';
+import type { BannerMetadataWrite } from 'src/bannerData';
 import type { Embedded } from 'src/reading/BannerRenderChild';
 import type { BannerDragModOption } from 'src/settings';
 
@@ -20,7 +21,7 @@ export interface DragParams extends XY {
 interface DragAttributes {
   'on:dragBannerStart': (e: CustomEvent) => void;
   'on:dragBannerMove': (e: CustomEvent<XY>) => void;
-  'on:dragBannerEnd': (e: CustomEvent<Partial<BannerMetadata>>) => void;
+  'on:dragBannerEnd': (e: CustomEvent<Partial<BannerMetadataWrite>>) => void;
   'on:toggleDrag': (e: CustomEvent<boolean>) => void;
 }
 
@@ -108,7 +109,7 @@ export const dragBanner: DragBannerAction = (img, params) => {
 
     dragging = false;
     const detail = isVerticalDrag ? { y: objectPos.y } : { x: objectPos.x };
-    img.dispatchEvent(new CustomEvent<Partial<BannerMetadata>>('dragBannerEnd', { detail }));
+    img.dispatchEvent(new CustomEvent<Partial<BannerMetadataWrite>>('dragBannerEnd', { detail }));
   };
 
   const modKeyHeld = (e: KeyboardEvent) => {

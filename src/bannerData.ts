@@ -3,7 +3,7 @@ import { editorInfoField, parseYaml } from 'obsidian';
 import type { TFile } from 'obsidian';
 import { plug } from './main';
 import { getSetting } from './settings';
-import { extractIconFromData, extractIconFromYaml } from './transformers';
+import { extractIconFromYaml } from './transformers';
 
 interface ReadWriteProperty { transform?: CallableFunction }
 interface ReadProperty extends ReadWriteProperty { key: keyof BannerMetadata }
@@ -12,6 +12,13 @@ interface WriteProperty extends ReadWriteProperty { suffix: string }
 export interface IconString {
   type: 'text' | 'emoji';
   value: string;
+}
+
+export interface BannerMetadataWrite {
+  source: string;
+  x: number;
+  y: number;
+  icon: string;
 }
 
 export const BANNER_DATA_KEYS: Array<keyof BannerMetadata> = [
@@ -39,10 +46,7 @@ const WRITE_MAP: Record<keyof BannerMetadata, WriteProperty> = {
   source: { suffix: '' },
   x: { suffix: 'x' },
   y: { suffix: 'y' },
-  icon: {
-    suffix: 'icon',
-    transform: extractIconFromData
-  }
+  icon: { suffix: 'icon' }
 } as const;
 
 const YAML_REGEX = /^---(?<yaml>.*)---/s;
@@ -84,7 +88,7 @@ export const extractBannerDataFromState = (state: EditorState): Partial<BannerMe
 };
 
 // Upsert banner data into the frontmatter with its associated field
-export const updateBannerData = async (file: TFile, bannerData: Partial<BannerMetadata>) => {
+export const updateBannerData = async (file: TFile, bannerData: Partial<BannerMetadataWrite>) => {
   await plug.app.fileManager.processFrontMatter(file, async (frontmatter) => {
     for (const [dataKey, val] of Object.entries(bannerData) as [keyof BannerMetadata, any][]) {
       const { suffix, transform } = WRITE_MAP[dataKey];

@@ -11,7 +11,3 @@ export const extractIconFromYaml = (str: string | undefined): IconString | null 
     ? { type: 'emoji', value: match.join('\u200d') }
     : { type: 'text', value: str.slice(0, 1) };
 };
-
-export const extractIconFromData = (icon: IconString): string | undefined => {
-  return icon?.value;
-};

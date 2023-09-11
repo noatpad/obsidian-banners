@@ -5,6 +5,7 @@
   import { onDestroy } from 'svelte';
   import { updateBannerData } from 'src/bannerData';
   import type { IconString } from 'src/bannerData';
+  import IconModal from 'src/modals/IconModal';
   import type { Embedded } from 'src/reading/BannerRenderChild';
   import settings from 'src/settings/store';
   import BannerImage from './BannerImage.svelte';
@@ -48,6 +49,8 @@
     if (!isSwapping) sizerEl?.setCssStyles({ marginTop: '' });
   });
 
+  const openIconModal = () => new IconModal(file).open();
+
   $: height = getBannerHeight(heights, source, icon);
   $: if (sizerEl) {
     const marginTop = getSizerHeight(heights, source, icon, iconVerticalAlignment);
@@ -80,7 +83,10 @@
     {/await}
   {/if}
   {#if icon}
-    <Header {icon} />
+    <Header
+      {icon}
+      on:open-icon-modal={openIconModal}
+    />
   {/if}
 </header>
 

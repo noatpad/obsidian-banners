@@ -27,7 +27,7 @@
   class:center-of-banner={vertical === 'center'}
   style:transform
 >
-  <Icon {icon} />
+  <Icon {icon} on:open-icon-modal />
 </div>
 
 <style lang="scss">

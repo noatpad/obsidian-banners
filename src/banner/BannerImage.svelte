@@ -1,12 +1,14 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
+  import type { BannerMetadataWrite } from 'src/bannerData';
   import type { Embedded } from 'src/reading/BannerRenderChild';
   import { getSetting } from 'src/settings';
   import settings from 'src/settings/store';
   import { dragBanner } from './actions';
   import type { DragParams, XY } from './actions';
 
-  interface BannerImageDispatch { 'drag-banner': Partial<BannerMetadata> }
+  interface BannerImageDispatch { 'drag-banner': Partial<BannerMetadataWrite> }
+  const dispatch = createEventDispatcher<BannerImageDispatch>();
 
   export let src: string | null;
   export let x: number;
@@ -22,11 +24,9 @@
   let draggable = !bannerDragModifier;
   let dragging = false;
 
-  const dispatch = createEventDispatcher<BannerImageDispatch>();
-
   const dragStart = () => { dragging = true; };
   const dragMove = ({ detail }: CustomEvent<XY>) => { objectPos = detail; };
-  const dragEnd = ({ detail }: CustomEvent<Partial<BannerMetadata>>) => {
+  const dragEnd = ({ detail }: CustomEvent<Partial<BannerMetadataWrite>>) => {
     dispatch('drag-banner', detail);
     dragging = false;
   };
