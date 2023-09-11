@@ -4,6 +4,7 @@ import store from './store';
 
 type StyleOption = 'solid' | 'gradient';
 export type BannerDragModOption = 'None' | 'Shift' | 'Ctrl' | 'Alt' | 'Meta';
+type HeaderTextDecorOption = 'none' | 'shadow' | 'border';
 export type IconHorizontalAlignmentOption = 'left' | 'center' | 'right' | 'custom';
 export type IconVerticalAlignmentOption = 'center' | 'above' | 'edge' | 'below' | 'custom';
 
@@ -20,6 +21,7 @@ export interface BannerSettings {
   enableDragInInternalEmbed: boolean;
   enableDragInPopover: boolean;
   headerSize: string;
+  headerTextDecor: HeaderTextDecorOption;
   iconSize: string;
   iconHorizontalAlignment: IconHorizontalAlignmentOption;
   iconHorizontalTransform: string;
@@ -41,6 +43,7 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   enableDragInInternalEmbed: false,
   enableDragInPopover: false,
   headerSize: '3em',
+  headerTextDecor: 'shadow',
   iconSize: '1.2em',
   iconHorizontalAlignment: 'left',
   iconHorizontalTransform: '0px',
@@ -60,7 +63,7 @@ const TEXT_SETTINGS: Array<keyof BannerSettings> = [
 const STYLE_OPTION_LABELS: Record<StyleOption, string> = {
   solid: 'Solid',
   gradient: 'Gradient'
-} as const;
+};
 
 const BANNER_DRAG_MOD_OPION_LABELS: Record<BannerDragModOption, string> = {
   None: 'None',
@@ -68,7 +71,13 @@ const BANNER_DRAG_MOD_OPION_LABELS: Record<BannerDragModOption, string> = {
   Ctrl: '⌃ Ctrl',
   Alt: '⎇ Alt',
   Meta: '⌘ Meta'
-} as const;
+};
+
+const HEADER_TEXT_DECOR_OPTION_LABELS: Record<HeaderTextDecorOption, string> = {
+  none: 'None',
+  shadow: 'Shadow behind text',
+  border: 'Border around text'
+};
 
 const ICON_HORIZONTAL_ALIGN_OPTION_LABELS: Record<IconHorizontalAlignmentOption, string> = {
   left: 'Left',
@@ -88,6 +97,7 @@ const ICON_VERTICAL_ALIGN_OPTION_LABELS: Record<IconVerticalAlignmentOption, str
 export const SELECT_OPTIONS_MAP = {
   style: STYLE_OPTION_LABELS,
   bannerDragModifier: BANNER_DRAG_MOD_OPION_LABELS,
+  headerTextDecor: HEADER_TEXT_DECOR_OPTION_LABELS,
   iconHorizontalAlignment: ICON_HORIZONTAL_ALIGN_OPTION_LABELS,
   iconVerticalAlignment: ICON_VERTICAL_ALIGN_OPTION_LABELS
 };
