@@ -21,7 +21,7 @@ export interface BannerSettings {
   enableDragInInternalEmbed: boolean;
   enableDragInPopover: boolean;
   headerSize: string;
-  headerTextDecor: HeaderTextDecorOption;
+  headerDecor: HeaderTextDecorOption;
   iconSize: string;
   iconHorizontalAlignment: IconHorizontalAlignmentOption;
   iconHorizontalTransform: string;
@@ -43,7 +43,7 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   enableDragInInternalEmbed: false,
   enableDragInPopover: false,
   headerSize: '3em',
-  headerTextDecor: 'shadow',
+  headerDecor: 'shadow',
   iconSize: '1.2em',
   iconHorizontalAlignment: 'left',
   iconHorizontalTransform: '0px',
@@ -97,7 +97,7 @@ const ICON_VERTICAL_ALIGN_OPTION_LABELS: Record<IconVerticalAlignmentOption, str
 export const SELECT_OPTIONS_MAP = {
   style: STYLE_OPTION_LABELS,
   bannerDragModifier: BANNER_DRAG_MOD_OPION_LABELS,
-  headerTextDecor: HEADER_TEXT_DECOR_OPTION_LABELS,
+  headerDecor: HEADER_TEXT_DECOR_OPTION_LABELS,
   iconHorizontalAlignment: ICON_HORIZONTAL_ALIGN_OPTION_LABELS,
   iconVerticalAlignment: ICON_VERTICAL_ALIGN_OPTION_LABELS
 };

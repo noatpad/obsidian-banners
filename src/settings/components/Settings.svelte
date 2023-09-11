@@ -108,9 +108,11 @@
     such as <code>10px</code>, <code>-30%</code>, <code>calc(1em + 10px)</code>, and so on...
   </span>
 </InputSetting>
-<SelectSetting key="headerTextDecor">
-  <span slot="name">Header text decoration</span>
-  <span slot="description">Add a shadow or a border on the header to help with readability.</span>
+<SelectSetting key="headerDecor">
+  <span slot="name">Header decoration</span>
+  <span slot="description">
+    Add a shadow or border on the header elements to help with readability.
+  </span>
 </SelectSetting>
 
 <!-- Banner Icons -->

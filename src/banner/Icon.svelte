@@ -10,31 +10,26 @@
   const dispatch = createEventDispatcher();
 
   export let icon: IconString;
-  let div: HTMLElement;
-  $: ({ iconSize, useTwemoji } = $settings);
+  $: ({ headerDecor, iconSize, useTwemoji } = $settings);
   $: ({ type, value } = icon);
+  $: decor = getSetting('headerDecor', headerDecor);
   $: fontSize = getSetting('iconSize', iconSize);
   $: html = (type === 'emoji' && useTwemoji)
     ? twemoji.parse(value, { className: 'banner-emoji' })
     : value;
-  $: if (div && html) {
-    div.querySelector<HTMLElement>('img.banner-emoji')?.setCssStyles({
-      height: '1em',
-      width: '1em'
-    });
-  }
 </script>
 
 <div
   class="banner-icon"
   class:text-icon={type === 'text'}
   class:emoji-icon={type === 'emoji'}
+  class:shadow={decor === 'shadow'}
+  class:border={decor === 'border'}
   style:font-size={fontSize}
   role="button"
   tabindex="-1"
   on:click={() => dispatch('open-icon-modal')}
   on:keydown={(e) => e.code === 'Enter' && dispatch('open-icon-modal')}
-  bind:this={div}
 >
   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
   {@html html}
@@ -51,8 +46,23 @@
     cursor: pointer;
     transition: ease 0.2s background;
 
-    &:hover {
-      background: #aaa4;
+    &.emoji-icon {
+      &.shadow :global(img.banner-emoji) {
+        filter: drop-shadow(0 0 3px var(--background-primary));
+      }
+      &.border :global(img.banner-emoji) {
+        filter: drop-shadow(1px 1px 0 var(--background-primary))
+          drop-shadow(1px -1px 0 var(--background-primary))
+          drop-shadow(-1px 1px 0 var(--background-primary))
+          drop-shadow(-1px -1px 0 var(--background-primary));
+      }
+    }
+
+    &:hover { background: #aaa4; }
+
+    :global(img.banner-emoji) {
+      height: 1em;
+      width: 1em;
     }
   }
 </style>

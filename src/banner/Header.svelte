@@ -9,14 +9,14 @@
   export let header: string | undefined;
   $: ({
     headerSize,
-    headerTextDecor,
+    headerDecor,
     iconHorizontalAlignment,
     iconHorizontalTransform,
     iconVerticalAlignment,
     iconVerticalTransform
   } = $settings);
 
-  $: textDecor = getSetting('headerTextDecor', headerTextDecor);
+  $: decor = getSetting('headerDecor', headerDecor);
   $: horizontal = getSetting('iconHorizontalAlignment', iconHorizontalAlignment);
   $: hTransform = getSetting('iconHorizontalTransform', iconHorizontalTransform);
   $: vertical = getSetting('iconVerticalAlignment', iconVerticalAlignment);
@@ -27,8 +27,8 @@
 
 <div
   class="banner-header"
-  class:shadow={textDecor === 'shadow'}
-  class:border={textDecor === 'border'}
+  class:shadow={decor === 'shadow'}
+  class:border={decor === 'border'}
   class:align-left={horizontal === 'left'}
   class:align-center={horizontal === 'center'}
   class:align-right={horizontal === 'right'}
@@ -58,8 +58,8 @@
     padding: 4px var(--file-margins);
     margin: 0 auto;
 
-    &.shadow { text-shadow: var(--background-primary) 0 0 8px; }
-    &.border { -webkit-text-stroke: 1px var(--background-primary); }
+    &.shadow { text-shadow: var(--background-primary) 0 0 6px; }
+    &.border { -webkit-text-stroke: 2px var(--background-primary); }
 
     &.align-left { justify-content: start; }
     &.align-center { justify-content: center; }
