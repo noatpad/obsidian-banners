@@ -73,16 +73,17 @@ const getIconExtraOffset = (offset: string, alignment: HeaderVerticalAlignmentOp
 export const getSizerHeight = (
   heights: Heights,
   source: string | undefined,
+  header: string | undefined,
   icon: IconString | undefined,
   iconAlignment: HeaderVerticalAlignmentOption
 ): string => {
   if (source) {
-    if (icon) {
+    if (icon || header) {
       const extraOffset = getIconExtraOffset(heights.icon, iconAlignment);
       return `calc(${heights.banner} + ${extraOffset})`;
     }
     else return heights.banner;
-  } else if (icon) {
+  } else if (icon || header) {
     return `calc(${heights.icon} * 1.5)`;
   }
   return '';

@@ -54,7 +54,7 @@
 
   $: height = getBannerHeight(heights, source, icon);
   $: if (sizerEl) {
-    const marginTop = getSizerHeight(heights, source, icon, headerVerticalAlignment);
+    const marginTop = getSizerHeight(heights, source, header, icon, headerVerticalAlignment);
     sizerEl.setCssStyles({ marginTop });
   }
 </script>
