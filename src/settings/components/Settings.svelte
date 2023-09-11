@@ -133,3 +133,10 @@
     </span>
   </InputSetting>
 </Depends>
+<ToggleSetting key="useTwemoji">
+  <span slot="name">Use Twemoji</span>
+  <span slot="description">
+    Use <a href="https://github.com/jdecked/twemoji" target="_blank" rel="noopener noreferrer">Twemoji</a>
+    instead of your device's native emoji set. Makes emojis consistent across devices
+  </span>
+</ToggleSetting>

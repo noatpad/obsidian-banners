@@ -23,6 +23,7 @@ export interface BannerSettings {
   iconHorizontalTransform: string;
   iconVerticalAlignment: IconVerticalAlignmentOption;
   iconVerticalTransform: string;
+  useTwemoji: boolean;
 }
 
 export const DEFAULT_SETTINGS: BannerSettings = {
@@ -40,7 +41,8 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   iconHorizontalAlignment: 'left',
   iconHorizontalTransform: '0px',
   iconVerticalAlignment: 'edge',
-  iconVerticalTransform: '0px'
+  iconVerticalTransform: '0px',
+  useTwemoji: true
 };
 
 const TEXT_SETTINGS: Array<keyof BannerSettings> = [

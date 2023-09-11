@@ -68,6 +68,12 @@ declare module 'obsidian' {
   }
 }
 
+// Fix tyings with twemoji package
+declare module '@twemoji/api' {
+  const twemoji: Twemoji;
+  export default twemoji;
+}
+
 declare global {
   interface BannerMetadata {
     source: string;
