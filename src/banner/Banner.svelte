@@ -23,7 +23,7 @@
   export let x = 0.5;
   export let y = 0.5;
   export let icon: IconString | undefined = undefined;
-  export let header: string | undefined = undefined;
+  export let header: string | boolean | undefined = undefined;
 
   export let viewType: 'editing' | 'reading';
   export let file: TFile;
@@ -57,6 +57,9 @@
     const marginTop = getSizerHeight(heights, source, header, icon, headerVerticalAlignment);
     sizerEl.setCssStyles({ marginTop });
   }
+  $: headerText = (typeof header === 'boolean')
+    ? (header ? file.basename : undefined)
+    : header;
 </script>
 
 <header
@@ -86,7 +89,7 @@
   {#if icon || header}
     <Header
       {icon}
-      {header}
+      header={headerText}
       on:open-icon-modal={openIconModal}
     />
   {/if}

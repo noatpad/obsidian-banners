@@ -73,7 +73,7 @@ const getIconExtraOffset = (offset: string, alignment: HeaderVerticalAlignmentOp
 export const getSizerHeight = (
   heights: Heights,
   source: string | undefined,
-  header: string | undefined,
+  header: string | boolean | undefined,
   icon: IconString | undefined,
   iconAlignment: HeaderVerticalAlignmentOption
 ): string => {

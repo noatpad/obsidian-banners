@@ -80,6 +80,6 @@ declare global {
     x: number;
     y: number;
     icon: IconString;
-    header: string;
+    header: string | boolean;
   }
 }

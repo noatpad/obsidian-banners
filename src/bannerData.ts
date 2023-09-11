@@ -6,7 +6,6 @@ import { getSetting } from './settings';
 import { extractIconFromYaml } from './transformers';
 
 interface ReadProperty { key: keyof BannerMetadata; transform?: CallableFunction }
-interface WriteProperty { suffix: string }
 
 export interface IconString {
   type: 'text' | 'emoji';
@@ -19,12 +18,12 @@ export interface BannerMetadataWrite {
   x: number;
   y: number;
   icon: string;
-  header: string;
+  header: string | number;
 }
 
 /* NOTE: These are bi-directional maps between YAML banner keys and `BannerMetadata` keys,
 to help read, write, & transform banner data between them */
-// Read: YAML -> BannerMetadata
+// Read: YAML -> BannerMetadata key/transform
 const READ_MAP: Record<string, ReadProperty> = {
   '': { key: 'source' },
   x: { key: 'x' },
@@ -36,13 +35,13 @@ const READ_MAP: Record<string, ReadProperty> = {
   header: { key: 'header' }
 } as const;
 
-// Write: BannerMetadata -> YAML
-const WRITE_MAP: Record<keyof BannerMetadata, WriteProperty> = {
-  source: { suffix: '' },
-  x: { suffix: 'x' },
-  y: { suffix: 'y' },
-  icon: { suffix: 'icon' },
-  header: { suffix: 'header' }
+// Write: BannerMetadata -> YAML suffix
+const WRITE_MAP: Record<keyof BannerMetadata, string> = {
+  source: '',
+  x: 'x',
+  y: 'y',
+  icon: 'icon',
+  header: 'header'
 } as const;
 
 export const BANNER_WRITE_KEYS = Object.keys(WRITE_MAP) as Array<keyof BannerMetadata>;
@@ -88,7 +87,7 @@ export const extractBannerDataFromState = (state: EditorState): Partial<BannerMe
 export const updateBannerData = async (file: TFile, bannerData: Partial<BannerMetadataWrite>) => {
   await plug.app.fileManager.processFrontMatter(file, async (frontmatter) => {
     for (const [dataKey, val] of Object.entries(bannerData) as [keyof BannerMetadata, any][]) {
-      const { suffix } = WRITE_MAP[dataKey];
+      const suffix = WRITE_MAP[dataKey];
       const yamlKey = getYamlKey(suffix);
       frontmatter[yamlKey] = val;
     }
