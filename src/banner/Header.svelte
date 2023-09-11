@@ -10,17 +10,17 @@
   $: ({
     headerSize,
     headerDecor,
-    iconHorizontalAlignment,
-    iconHorizontalTransform,
-    iconVerticalAlignment,
-    iconVerticalTransform
+    headerHorizontalAlignment,
+    headerHorizontalTransform,
+    headerVerticalAlignment,
+    headerVerticalTransform
   } = $settings);
 
   $: decor = getSetting('headerDecor', headerDecor);
-  $: horizontal = getSetting('iconHorizontalAlignment', iconHorizontalAlignment);
-  $: hTransform = getSetting('iconHorizontalTransform', iconHorizontalTransform);
-  $: vertical = getSetting('iconVerticalAlignment', iconVerticalAlignment);
-  $: vTransform = getSetting('iconVerticalTransform', iconVerticalTransform);
+  $: horizontal = getSetting('headerHorizontalAlignment', headerHorizontalAlignment);
+  $: hTransform = getSetting('headerHorizontalTransform', headerHorizontalTransform);
+  $: vertical = getSetting('headerVerticalAlignment', headerVerticalAlignment);
+  $: vTransform = getSetting('headerVerticalTransform', headerVerticalTransform);
   $: transform = getIconTransform(horizontal, hTransform, vertical, vTransform);
   $: fontSize = getSetting('headerSize', headerSize);
 </script>

@@ -8,13 +8,13 @@
   import ToggleSetting from './ToggleSetting.svelte';
 
   $: ({
-    frontmatterField: _frontmatterField,
-    iconHorizontalAlignment: _iconHorizontalAlignment,
-    iconVerticalAlignment: _iconVerticalAlignment
+    frontmatterField: ff,
+    headerHorizontalAlignment: hha,
+    headerVerticalAlignment: hva
   } = $settings);
-  $: frontmatterField = getSetting('frontmatterField', _frontmatterField);
-  $: iconHorizontalAlignment = getSetting('iconHorizontalAlignment', _iconHorizontalAlignment);
-  $: iconVerticalAlignment = getSetting('iconVerticalAlignment', _iconVerticalAlignment);
+  $: frontmatterField = getSetting('frontmatterField', ff);
+  $: headerHorizontalAlignment = getSetting('headerHorizontalAlignment', hha);
+  $: headerVerticalAlignment = getSetting('headerVerticalAlignment', hva);
 </script>
 
 <!-- eslint-disable max-len -->
@@ -114,6 +114,37 @@
     Add a shadow or border on the header elements to help with readability.
   </span>
 </SelectSetting>
+<SelectSetting key="headerHorizontalAlignment">
+  <span slot="name">Horizontal alignment</span>
+  <span slot="description">Align the header horizontally.</span>
+</SelectSetting>
+<Depends on={headerHorizontalAlignment === 'custom'}>
+  <InputSetting key="headerHorizontalTransform">
+    <span slot="name">Custom horizontal alignment</span>
+    <span slot="description">
+      Set an offset relative to the left side of the note. This can be any valid
+      <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units#lengths" target="_blank" rel="noopener noreferrer">CSS length value</a>,
+      such as <code>10px</code>, <code>-30%</code>, <code>calc(1em + 10px)</code>, and so on...
+    </span>
+  </InputSetting>
+</Depends>
+<SelectSetting key="headerVerticalAlignment">
+  <span slot="name">Vertical alignment</span>
+  <span slot="description">
+    Align the header vertically relative to a banner, if any. If there's no banner, this setting
+    has no effect.
+  </span>
+</SelectSetting>
+<Depends on={headerVerticalAlignment === 'custom'}>
+  <InputSetting key="headerVerticalTransform">
+    <span slot="name">Custom horizontal alignment</span>
+    <span slot="description">
+      Set an offset relative to the bottom edge of the banner, if any. This can be any valid
+      <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units#lengths" target="_blank" rel="noopener noreferrer">CSS length value</a>,
+      such as <code>10px</code>, <code>-30%</code>, <code>calc(1em + 10px)</code>, and so on...
+    </span>
+  </InputSetting>
+</Depends>
 
 <!-- Banner Icons -->
 <Header title="Banner Icons" description="Give a lil' notion of what your note is about" />
@@ -127,37 +158,6 @@
     <span><em>Note:</em> this setting stacks with the <b>Header font size</b> setting above</span>
   </span>
 </InputSetting>
-<SelectSetting key="iconHorizontalAlignment">
-  <span slot="name">Horizontal alignment</span>
-  <span slot="description">Align the icon horizontally.</span>
-</SelectSetting>
-<Depends on={iconHorizontalAlignment === 'custom'}>
-  <InputSetting key="iconHorizontalTransform">
-    <span slot="name">Custom horizontal alignment</span>
-    <span slot="description">
-      Set an offset relative to the left side of the note. This can be any valid
-      <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units#lengths" target="_blank" rel="noopener noreferrer">CSS length value</a>,
-      such as <code>10px</code>, <code>-30%</code>, <code>calc(1em + 10px)</code>, and so on...
-    </span>
-  </InputSetting>
-</Depends>
-<SelectSetting key="iconVerticalAlignment">
-  <span slot="name">Vertical alignment</span>
-  <span slot="description">
-    Align the icon vertically relative to a banner, if any. If there's no banner, this setting
-    has no effect.
-  </span>
-</SelectSetting>
-<Depends on={iconVerticalAlignment === 'custom'}>
-  <InputSetting key="iconVerticalTransform">
-    <span slot="name">Custom horizontal alignment</span>
-    <span slot="description">
-      Set an offset relative to the bottom edge of the banner, if any. This can be any valid
-      <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units#lengths" target="_blank" rel="noopener noreferrer">CSS length value</a>,
-      such as <code>10px</code>, <code>-30%</code>, <code>calc(1em + 10px)</code>, and so on...
-    </span>
-  </InputSetting>
-</Depends>
 <ToggleSetting key="useTwemoji">
   <span slot="name">Use Twemoji</span>
   <span slot="description">

@@ -36,7 +36,7 @@
     popoverHeight,
     internalEmbedHeight,
     headerSize,
-    iconVerticalAlignment
+    headerVerticalAlignment
   } = $settings);
   $: heights = getHeights(embed, [
     desktopHeight,
@@ -54,7 +54,7 @@
 
   $: height = getBannerHeight(heights, source, icon);
   $: if (sizerEl) {
-    const marginTop = getSizerHeight(heights, source, icon, iconVerticalAlignment);
+    const marginTop = getSizerHeight(heights, source, icon, headerVerticalAlignment);
     sizerEl.setCssStyles({ marginTop });
   }
 </script>

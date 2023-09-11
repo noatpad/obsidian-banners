@@ -4,7 +4,7 @@ import type { IconString } from 'src/bannerData';
 import { plug } from 'src/main';
 import type { Embedded } from 'src/reading/BannerRenderChild';
 import { getSetting } from 'src/settings';
-import type { IconHorizontalAlignmentOption, IconVerticalAlignmentOption } from 'src/settings';
+import type { HeaderHorizontalAlignmentOption, HeaderVerticalAlignmentOption } from 'src/settings';
 
 export type ViewType = 'editing' | 'reading';
 interface Heights { banner: string; icon: string }
@@ -60,7 +60,7 @@ export const getBannerHeight = (
   return '';
 };
 
-const getIconExtraOffset = (offset: string, alignment: IconVerticalAlignmentOption): string => {
+const getIconExtraOffset = (offset: string, alignment: HeaderVerticalAlignmentOption): string => {
   switch (alignment) {
     case 'center':
     case 'above': return '0px';
@@ -74,7 +74,7 @@ export const getSizerHeight = (
   heights: Heights,
   source: string | undefined,
   icon: IconString | undefined,
-  iconAlignment: IconVerticalAlignmentOption
+  iconAlignment: HeaderVerticalAlignmentOption
 ): string => {
   if (source) {
     if (icon) {
@@ -89,9 +89,9 @@ export const getSizerHeight = (
 };
 
 export const getIconTransform = (
-  horizontal: IconHorizontalAlignmentOption,
+  horizontal: HeaderHorizontalAlignmentOption,
   hTransform: string,
-  vertical: IconVerticalAlignmentOption,
+  vertical: HeaderVerticalAlignmentOption,
   vTransform: string
 ): string => {
   const h = (horizontal === 'custom') ? hTransform : '0px';
