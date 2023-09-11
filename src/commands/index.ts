@@ -1,6 +1,7 @@
 import type { Command } from 'obsidian';
 import { extractBannerDataFromFile, updateBannerData } from 'src/bannerData';
 import { plug } from 'src/main';
+import IconModal from 'src/modals/IconModal';
 import LocalImageModal from 'src/modals/LocalImageModal';
 import { pasteBanner } from './utils';
 
@@ -31,8 +32,26 @@ const commands: Command[] = [
       if (checking) return !!file;
       pasteBanner(file!);
     }
-  }
+  },
   // TODO: Add lock banner command
+  {
+    id: 'banners:upsertIcon',
+    name: 'Add/Change icon',
+    checkCallback(checking) {
+      const file = plug.app.workspace.getActiveFile();
+      if (checking) return !!file;
+      new IconModal(file!).open();
+    }
+  },
+  {
+    id: 'banners:removeIcon',
+    name: 'Remove icon',
+    checkCallback(checking) {
+      const file = plug.app.workspace.getActiveFile();
+      if (checking) return !!file && !!extractBannerDataFromFile(file)?.icon;
+      updateBannerData(file!, { icon: undefined });
+    }
+  }
 ];
 
 const loadCommands = () => {
