@@ -100,11 +100,17 @@
 
 <!-- Banner Icons -->
 <Header title="Banner Icons" description="Give a lil' notion of what your note is about" />
+<InputSetting key="iconSize">
+  <span slot="name">Icon size</span>
+  <span slot="description">
+    Set the size of the banner icon. This can be any valid
+    <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units#lengths" target="_blank" rel="noopener noreferrer">CSS length value</a>,
+    such as <code>10px</code>, <code>-30%</code>, <code>calc(1em + 10px)</code>, and so on...
+  </span>
+</InputSetting>
 <SelectSetting key="iconHorizontalAlignment">
   <span slot="name">Horizontal alignment</span>
-    <span slot="description">
-      Align the icon horizontally.
-    </span>
+  <span slot="description">Align the icon horizontally.</span>
 </SelectSetting>
 <Depends on={iconHorizontalAlignment === 'custom'}>
   <InputSetting key="iconHorizontalTransform">

@@ -39,7 +39,7 @@
     right: 0;
     bottom: 0;
     max-width: calc(var(--file-line-width) + (var(--file-margins) * 2));
-    padding: 0 var(--file-margins);
+    padding: 4px var(--file-margins);
     margin: 0 auto;
   }
 

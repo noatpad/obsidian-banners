@@ -41,12 +41,12 @@ export const fetchImage = async (src: string, file: TFile): Promise<string | nul
 };
 
 export const getHeights = (embedded: Embedded, _deps?: any[]): Heights => {
-  let height = getSetting(Platform.isMobile ? 'mobileHeight' : 'height');
-  if (embedded === 'internal') height = getSetting('internalEmbedHeight');
-  else if (embedded === 'popover') height = getSetting('popoverHeight');
+  let bannerHeight = getSetting(Platform.isMobile ? 'mobileHeight' : 'height');
+  if (embedded === 'internal') bannerHeight = getSetting('internalEmbedHeight');
+  else if (embedded === 'popover') bannerHeight = getSetting('popoverHeight');
 
-  const banner = `${height}px`;
-  const icon = '3em';
+  const banner = `${bannerHeight}px`;
+  const icon = getSetting('iconSize');
   return { banner, icon };
 };
 
@@ -97,8 +97,8 @@ export const getIconTransform = (
   const h = (horizontal === 'custom') ? hTransform : '0px';
   let v: string;
   switch (vertical) {
-    case 'center': v = '50%'; break;
     case 'above': v = '0%'; break;
+    case 'center':
     case 'edge': v = '50%'; break;
     case 'below': v = '100%'; break;
     case 'custom': v = vTransform; break;

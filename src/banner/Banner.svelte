@@ -33,13 +33,15 @@
     mobileHeight,
     popoverHeight,
     internalEmbedHeight,
+    iconSize,
     iconVerticalAlignment
   } = $settings);
   $: heights = getHeights(embed, [
     desktopHeight,
     mobileHeight,
     popoverHeight,
-    internalEmbedHeight
+    internalEmbedHeight,
+    iconSize
   ]);
 
   onDestroy(() => {
