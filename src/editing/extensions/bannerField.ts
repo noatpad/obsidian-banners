@@ -2,7 +2,7 @@ import { EditorState, StateField } from '@codemirror/state';
 import { editorEditorField, editorInfoField } from 'obsidian';
 import Banner from 'src/banner/Banner.svelte';
 import { WRAPPER_CLASS } from 'src/banner/utils';
-import { BANNER_DATA_KEYS } from 'src/bannerData';
+import { BANNER_WRITE_KEYS } from 'src/bannerData';
 import {
   assignBannerEffect,
   removeBannerEffect,
@@ -34,7 +34,7 @@ const addBanner = (state: EditorState, bannerData: Partial<BannerMetadata>): Ban
 
 const updateBanner = (banner: Banner, bannerData: Partial<BannerMetadata>): Banner => {
   console.log('update!');
-  const data = BANNER_DATA_KEYS.reduce((accum, key) => {
+  const data = BANNER_WRITE_KEYS.reduce((accum, key) => {
     accum[key] = bannerData[key];
     return accum;
   }, {} as Record<string, unknown>);

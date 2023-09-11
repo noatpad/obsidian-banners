@@ -46,7 +46,7 @@ export const getHeights = (embedded: Embedded, _deps?: any[]): Heights => {
   else if (embedded === 'popover') bannerHeight = getSetting('popoverHeight');
 
   const banner = `${bannerHeight}px`;
-  const icon = getSetting('iconSize');
+  const icon = getSetting('headerSize');
   return { banner, icon };
 };
 

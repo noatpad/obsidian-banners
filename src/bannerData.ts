@@ -5,28 +5,22 @@ import { plug } from './main';
 import { getSetting } from './settings';
 import { extractIconFromYaml } from './transformers';
 
-interface ReadWriteProperty { transform?: CallableFunction }
-interface ReadProperty extends ReadWriteProperty { key: keyof BannerMetadata }
-interface WriteProperty extends ReadWriteProperty { suffix: string }
+interface ReadProperty { key: keyof BannerMetadata; transform?: CallableFunction }
+interface WriteProperty { suffix: string }
 
 export interface IconString {
   type: 'text' | 'emoji';
   value: string;
 }
 
+// NOTE: This must have every key in `BannerMetadata` and its corresponding type
 export interface BannerMetadataWrite {
   source: string;
   x: number;
   y: number;
   icon: string;
+  header: string;
 }
-
-export const BANNER_DATA_KEYS: Array<keyof BannerMetadata> = [
-  'source',
-  'x',
-  'y',
-  'icon'
-];
 
 /* NOTE: These are bi-directional maps between YAML banner keys and `BannerMetadata` keys,
 to help read, write, & transform banner data between them */
@@ -38,7 +32,8 @@ const READ_MAP: Record<string, ReadProperty> = {
   icon: {
     key: 'icon',
     transform: extractIconFromYaml
-  }
+  },
+  header: { key: 'header' }
 } as const;
 
 // Write: BannerMetadata -> YAML
@@ -46,9 +41,11 @@ const WRITE_MAP: Record<keyof BannerMetadata, WriteProperty> = {
   source: { suffix: '' },
   x: { suffix: 'x' },
   y: { suffix: 'y' },
-  icon: { suffix: 'icon' }
+  icon: { suffix: 'icon' },
+  header: { suffix: 'header' }
 } as const;
 
+export const BANNER_WRITE_KEYS = Object.keys(WRITE_MAP) as Array<keyof BannerMetadata>;
 const YAML_REGEX = /^---(?<yaml>.*)---/s;
 
 const getYamlKey = (suffix: string) => {
@@ -91,9 +88,9 @@ export const extractBannerDataFromState = (state: EditorState): Partial<BannerMe
 export const updateBannerData = async (file: TFile, bannerData: Partial<BannerMetadataWrite>) => {
   await plug.app.fileManager.processFrontMatter(file, async (frontmatter) => {
     for (const [dataKey, val] of Object.entries(bannerData) as [keyof BannerMetadata, any][]) {
-      const { suffix, transform } = WRITE_MAP[dataKey];
+      const { suffix } = WRITE_MAP[dataKey];
       const yamlKey = getYamlKey(suffix);
-      frontmatter[yamlKey] = transform ? transform(val) : val;
+      frontmatter[yamlKey] = val;
     }
   });
 };

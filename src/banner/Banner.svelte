@@ -23,6 +23,7 @@
   export let x = 0.5;
   export let y = 0.5;
   export let icon: IconString | undefined = undefined;
+  export let header: string | undefined = undefined;
 
   export let viewType: 'editing' | 'reading';
   export let file: TFile;
@@ -34,7 +35,7 @@
     mobileHeight,
     popoverHeight,
     internalEmbedHeight,
-    iconSize,
+    headerSize,
     iconVerticalAlignment
   } = $settings);
   $: heights = getHeights(embed, [
@@ -42,7 +43,7 @@
     mobileHeight,
     popoverHeight,
     internalEmbedHeight,
-    iconSize
+    headerSize
   ]);
 
   onDestroy(() => {
@@ -82,9 +83,10 @@
       <Error {error} />
     {/await}
   {/if}
-  {#if icon}
+  {#if icon || header}
     <Header
       {icon}
+      {header}
       on:open-icon-modal={openIconModal}
     />
   {/if}

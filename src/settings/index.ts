@@ -19,6 +19,7 @@ export interface BannerSettings {
   frontmatterField: string;
   enableDragInInternalEmbed: boolean;
   enableDragInPopover: boolean;
+  headerSize: string;
   iconSize: string;
   iconHorizontalAlignment: IconHorizontalAlignmentOption;
   iconHorizontalTransform: string;
@@ -39,7 +40,8 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   frontmatterField: 'banner',
   enableDragInInternalEmbed: false,
   enableDragInPopover: false,
-  iconSize: '4.5em',
+  headerSize: '3em',
+  iconSize: '1.2em',
   iconHorizontalAlignment: 'left',
   iconHorizontalTransform: '0px',
   iconVerticalAlignment: 'edge',
@@ -49,6 +51,7 @@ export const DEFAULT_SETTINGS: BannerSettings = {
 
 const TEXT_SETTINGS: Array<keyof BannerSettings> = [
   'frontmatterField',
+  'headerSize',
   'iconSize',
   'iconHorizontalTransform',
   'iconVerticalTransform'

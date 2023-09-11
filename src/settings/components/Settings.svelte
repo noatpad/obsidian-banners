@@ -98,6 +98,17 @@
   </ToggleSetting>
 </Depends>
 
+<!-- Banner Headers -->
+<Header title="Banner Headers" description="Kinda like inline titles, but with a bit of pizazz" />
+<InputSetting key="headerSize">
+  <span slot="name">Header font size</span>
+  <span slot="description">
+    Set the font size of the banner header. This can be any valid
+    <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units#lengths" target="_blank" rel="noopener noreferrer">CSS length value</a>,
+    such as <code>10px</code>, <code>-30%</code>, <code>calc(1em + 10px)</code>, and so on...
+  </span>
+</InputSetting>
+
 <!-- Banner Icons -->
 <Header title="Banner Icons" description="Give a lil' notion of what your note is about" />
 <InputSetting key="iconSize">
@@ -106,6 +117,8 @@
     Set the size of the banner icon. This can be any valid
     <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units#lengths" target="_blank" rel="noopener noreferrer">CSS length value</a>,
     such as <code>10px</code>, <code>-30%</code>, <code>calc(1em + 10px)</code>, and so on...
+    <br />
+    <span><em>Note:</em> this setting stacks with the <b>Header font size</b> setting above</span>
   </span>
 </InputSetting>
 <SelectSetting key="iconHorizontalAlignment">
