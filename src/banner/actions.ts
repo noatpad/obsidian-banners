@@ -3,20 +3,15 @@ import { Keymap } from 'obsidian';
 import type { Action } from 'svelte/action';
 import type { BannerMetadataWrite } from 'src/bannerData';
 import type { Embedded } from 'src/reading/BannerRenderChild';
+import { getSetting } from 'src/settings';
 import type { BannerDragModOption } from 'src/settings';
 
 type MTEvent = MouseEvent | TouchEvent;
 
 export interface XY { x: number; y: number }
-interface BannerDragSettings {
-  modKey: BannerDragModOption;
-  enableInInternalEmbed: boolean;
-  enableInPopover: boolean;
-}
 export interface DragParams extends XY {
-  embed: Embedded;
-  lock: boolean;
-  settings: BannerDragSettings;
+  draggable: boolean;
+  modKey: BannerDragModOption;
 }
 
 interface DragAttributes {
@@ -35,9 +30,10 @@ const clampAndRound = (min: number, value: number, max: number) => {
   return Math.round(value * 1000) / 1000;
 };
 
-const isDraggable = (embed: Embedded, settings: BannerDragSettings): boolean => {
-  if (embed === 'internal') return settings.enableInInternalEmbed;
-  if (embed === 'popover') return settings.enableInPopover;
+export const isDraggable = (lock: boolean, embed: Embedded, _deps: any[]): boolean => {
+  if (lock) return false;
+  if (embed === 'internal') return getSetting('enableDragInInternalEmbed');
+  if (embed === 'popover') return getSetting('enableDragInPopover');
   return true;
 };
 
@@ -51,17 +47,16 @@ export const dragBanner: DragBannerAction = (img, params) => {
   const {
     x,
     y,
-    embed,
-    lock,
-    settings
+    draggable: _draggable,
+    modKey: _modKey
   } = params;
-  let draggable = !lock && isDraggable(embed, settings);
+  let draggable = _draggable;
   let dragging = false;
   let isVerticalDrag = false;
   let imageSize = { width: 0, height: 0 };
   let prev = { x: 0, y: 0 };
   let objectPos = { x, y };
-  let modKey = settings.modKey;
+  let modKey = _modKey;
 
   const dragStart = (e: MTEvent) => {
     if (modKey !== 'None' && !Keymap.isModifier(e, modKey)) return;
@@ -166,13 +161,11 @@ export const dragBanner: DragBannerAction = (img, params) => {
       const {
         x,
         y,
-        embed,
-        lock,
-        settings
+        draggable: newDraggable,
+        modKey: newModKey
       } = params;
-      const newDraggable = !lock && isDraggable(embed, settings);
       if (draggable !== newDraggable) toggleDragListeners(newDraggable);
-      if (modKey !== settings.modKey) toggleToggleListeners(settings.modKey);
+      if (modKey !== modKey) toggleToggleListeners(newModKey);
 
       objectPos = { x, y };
       img.dispatchEvent(new CustomEvent<XY>('dragBannerMove', { detail: objectPos }));

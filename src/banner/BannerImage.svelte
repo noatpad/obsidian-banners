@@ -5,7 +5,7 @@
   import type { Embedded } from 'src/reading/BannerRenderChild';
   import { getSetting } from 'src/settings';
   import settings from 'src/settings/store';
-  import { dragBanner } from './actions';
+  import { dragBanner, isDraggable } from './actions';
   import type { DragParams, XY } from './actions';
 
   interface BannerImageDispatch {
@@ -43,13 +43,8 @@
   $: dragBannerParams = {
     x,
     y,
-    embed,
-    lock,
-    settings: {
-      modKey: getSetting('bannerDragModifier', bannerDragModifier),
-      enableInInternalEmbed: getSetting('enableDragInInternalEmbed', enableDragInInternalEmbed),
-      enableInPopover: getSetting('enableDragInPopover', enableDragInPopover)
-    }
+    draggable: isDraggable(lock, embed, [enableDragInInternalEmbed, enableDragInPopover]),
+    modKey: getSetting('bannerDragModifier', bannerDragModifier)
   };
   $: gradient = (getSetting('style', style) === 'gradient');
   $: objectPosStyle = `${objectPos.x * 100}% ${objectPos.y * 100}%`;
