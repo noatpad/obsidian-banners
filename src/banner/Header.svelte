@@ -45,7 +45,6 @@
 </div>
 
 <style lang="scss">
-  // TODO: Adjust for when 'Readable line length' core setting is off
   .banner-header {
     display: flex;
     align-items: center;
@@ -54,9 +53,12 @@
     left: 0;
     right: 0;
     bottom: 0;
-    max-width: calc(var(--file-line-width) + (var(--file-margins) * 2));
     padding: 4px var(--file-margins);
     margin: 0 auto;
+
+    :global(.is-readable-line-width) & {
+      max-width: calc(var(--file-line-width) + (var(--file-margins) * 2));
+    }
 
     &.shadow { text-shadow: var(--background-primary) 0 0 6px; }
     &.border { -webkit-text-stroke: 2px var(--background-primary); }
