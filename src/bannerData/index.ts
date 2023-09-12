@@ -1,8 +1,8 @@
 import type { EditorState } from '@codemirror/state';
 import { editorInfoField, parseYaml } from 'obsidian';
 import type { TFile } from 'obsidian';
-import { plug } from './main';
-import { getSetting } from './settings';
+import { plug } from '../main';
+import { getSetting } from '../settings';
 import { extractIconFromYaml } from './transformers';
 
 interface ReadProperty { key: keyof BannerMetadata; transform?: CallableFunction }

@@ -1,4 +1,4 @@
-import type { IconString } from './bannerData';
+import type { IconString } from '.';
 
 /* NOTE: There is a new regex known as /\p{RGI_Emoji}/v that can do emojis that are made of more
 than one emoji, but the `v` flag is not yet compatible */
