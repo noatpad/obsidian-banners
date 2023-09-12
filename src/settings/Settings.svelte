@@ -30,10 +30,7 @@
 </InputSetting>
 <InputSetting key="mobileHeight" type="number">
   <span slot="name">Mobile banner height</span>
-  <span slot="description">
-    Set how big the banner should be on mobile devices. If left blank, it will inherit the
-    <b>Banner height</b> setting above.
-  </span>
+  <span slot="description">Set how big the banner should be on mobile devices</span>
 </InputSetting>
 <SelectSetting key="style">
   <span slot="name">Banner style</span>
