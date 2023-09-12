@@ -33,7 +33,16 @@ const commands: Command[] = [
       pasteBanner(file!);
     }
   },
-  // TODO: Add lock banner command
+  {
+    id: 'banners:lockBanner',
+    name: 'Lock/Unlock banner position',
+    checkCallback(checking) {
+      const file = plug.app.workspace.getActiveFile();
+      if (checking) return !!file && !!extractBannerDataFromFile(file)?.source;
+      const lock = extractBannerDataFromFile(file!).lock;
+      updateBannerData(file!, { lock: !lock || undefined });
+    }
+  },
   {
     id: 'banners:upsertIcon',
     name: 'Add/Change icon',
