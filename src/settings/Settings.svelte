@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { getSetting } from '..';
-  import settings from '../store';
-  import Depends from './Depends.svelte';
-  import InputSetting from './InputSetting.svelte';
-  import SelectSetting from './SelectSetting.svelte';
-  import Header from './SettingHeader.svelte';
-  import ToggleSetting from './ToggleSetting.svelte';
+  import Depends from './components/Depends.svelte';
+  import InputSetting from './components/InputSetting.svelte';
+  import SelectSetting from './components/SelectSetting.svelte';
+  import Header from './components/SettingHeader.svelte';
+  import ToggleSetting from './components/ToggleSetting.svelte';
+  import settings from './store';
+  import { getSetting } from '.';
 
   $: ({
     frontmatterField: ff,
