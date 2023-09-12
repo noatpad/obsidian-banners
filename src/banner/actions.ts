@@ -1,5 +1,5 @@
 /* eslint-disable import/no-duplicates */
-import { Keymap } from 'obsidian';
+import { Keymap, setIcon } from 'obsidian';
 import type { Action } from 'svelte/action';
 import type { BannerMetadataWrite } from 'src/bannerData';
 import type { Embedded } from 'src/reading/BannerRenderChild';
@@ -23,18 +23,18 @@ interface DragAttributes {
 
 type DragBannerAction = Action<HTMLImageElement, DragParams, DragAttributes>;
 
-// Clamp a value if needed, otherwise round it to 3 decimals
-const clampAndRound = (min: number, value: number, max: number) => {
-  if (value > max) return max;
-  if (value < min) return min;
-  return Math.round(value * 1000) / 1000;
-};
-
 export const isDraggable = (lock: boolean, embed: Embedded, _deps: any[]): boolean => {
   if (lock) return false;
   if (embed === 'internal') return getSetting('enableDragInInternalEmbed');
   if (embed === 'popover') return getSetting('enableDragInPopover');
   return true;
+};
+
+// Clamp a value if needed, otherwise round it to 3 decimals
+const clampAndRound = (min: number, value: number, max: number) => {
+  if (value > max) return max;
+  if (value < min) return min;
+  return Math.round(value * 1000) / 1000;
 };
 
 const getMousePos = (e: MTEvent): [number, number] => {
@@ -175,4 +175,10 @@ export const dragBanner: DragBannerAction = (img, params) => {
       removeToggleListeners();
     }
   };
+};
+
+// Svelte action to toggle lock icon in container
+export const lockIcon: Action<HTMLElement, boolean> = (el, lock) => {
+  setIcon(el, lock ? 'lock' : 'unlock');
+  return { update(newLock) { setIcon(el, newLock ? 'lock' : 'unlock'); } };
 };

@@ -1,11 +1,10 @@
 <script lang="ts">
-  import { setIcon } from 'obsidian';
   import { createEventDispatcher } from 'svelte';
   import type { BannerMetadataWrite } from 'src/bannerData';
   import type { Embedded } from 'src/reading/BannerRenderChild';
   import { getSetting } from 'src/settings';
   import settings from 'src/settings/store';
-  import { dragBanner, isDraggable } from './actions';
+  import { dragBanner, isDraggable, lockIcon } from './actions';
   import type { DragParams, XY } from './actions';
 
   interface BannerImageDispatch {
@@ -30,6 +29,8 @@
   let draggable = !bannerDragModifier;
   let dragging = false;
 
+  const hoverOn = () => { hovering = true; };
+  const hoverOff = () => { hovering = false; };
   const dragStart = () => { dragging = true; };
   const dragMove = ({ detail }: CustomEvent<XY>) => { objectPos = detail; };
   const dragEnd = ({ detail }: CustomEvent<Partial<BannerMetadataWrite>>) => {
@@ -59,8 +60,8 @@
   style:object-position={objectPosStyle}
   draggable={false}
   aria-hidden={true}
-  on:mouseenter={() => { hovering = true; }}
-  on:mouseleave={() => { hovering = false; }}
+  on:mouseenter={hoverOn}
+  on:mouseleave={hoverOff}
   use:dragBanner={dragBannerParams}
   on:dragBannerStart={dragStart}
   on:dragBannerMove={dragMove}
@@ -71,8 +72,8 @@
   class="lock-button"
   class:show={hovering}
   on:click={toggleLock}
-  on:mouseenter={() => { hovering = true; }}
-  use:setIcon={'lock'}
+  on:mouseenter={hoverOn}
+  use:lockIcon={lock}
 />
 
 <style lang="scss">
