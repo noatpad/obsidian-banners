@@ -15,6 +15,7 @@ interface BannerDragSettings {
 }
 export interface DragParams extends XY {
   embed: Embedded;
+  lock: boolean;
   settings: BannerDragSettings;
 }
 
@@ -51,9 +52,10 @@ export const dragBanner: DragBannerAction = (img, params) => {
     x,
     y,
     embed,
+    lock,
     settings
   } = params;
-  let draggable = isDraggable(embed, settings);
+  let draggable = !lock && isDraggable(embed, settings);
   let dragging = false;
   let isVerticalDrag = false;
   let imageSize = { width: 0, height: 0 };
@@ -165,9 +167,10 @@ export const dragBanner: DragBannerAction = (img, params) => {
         x,
         y,
         embed,
+        lock,
         settings
       } = params;
-      const newDraggable = isDraggable(embed, settings);
+      const newDraggable = !lock && isDraggable(embed, settings);
       if (draggable !== newDraggable) toggleDragListeners(newDraggable);
       if (modKey !== settings.modKey) toggleToggleListeners(settings.modKey);
 

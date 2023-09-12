@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { setIcon } from 'obsidian';
   import { createEventDispatcher } from 'svelte';
   import type { BannerMetadataWrite } from 'src/bannerData';
   import type { Embedded } from 'src/reading/BannerRenderChild';
@@ -7,12 +8,16 @@
   import { dragBanner } from './actions';
   import type { DragParams, XY } from './actions';
 
-  interface BannerImageDispatch { 'drag-banner': Partial<BannerMetadataWrite> }
+  interface BannerImageDispatch {
+    'drag-banner': Partial<BannerMetadataWrite>;
+    'toggle-lock': null;
+  }
   const dispatch = createEventDispatcher<BannerImageDispatch>();
 
   export let src: string | null;
   export let x: number;
   export let y: number;
+  export let lock: boolean;
   export let embed: Embedded;
   $: ({
     bannerDragModifier,
@@ -21,6 +26,7 @@
     style
   } = $settings);
   let objectPos = { x, y };
+  let hovering = false;
   let draggable = !bannerDragModifier;
   let dragging = false;
 
@@ -31,12 +37,14 @@
     dragging = false;
   };
   const toggleDrag = ({ detail }: CustomEvent<boolean>) => { draggable = detail; };
+  const toggleLock = () => dispatch('toggle-lock');
 
   let dragBannerParams: DragParams;
   $: dragBannerParams = {
     x,
     y,
     embed,
+    lock,
     settings: {
       modKey: getSetting('bannerDragModifier', bannerDragModifier),
       enableInInternalEmbed: getSetting('enableDragInInternalEmbed', enableDragInInternalEmbed),
@@ -56,11 +64,20 @@
   style:object-position={objectPosStyle}
   draggable={false}
   aria-hidden={true}
+  on:mouseenter={() => { hovering = true; }}
+  on:mouseleave={() => { hovering = false; }}
   use:dragBanner={dragBannerParams}
   on:dragBannerStart={dragStart}
   on:dragBannerMove={dragMove}
   on:dragBannerEnd={dragEnd}
   on:toggleDrag={toggleDrag}
+/>
+<button
+  class="lock-button"
+  class:show={hovering}
+  on:click={toggleLock}
+  on:mouseenter={() => { hovering = true; }}
+  use:setIcon={'lock'}
 />
 
 <style lang="scss">
@@ -79,5 +96,19 @@
 
     &.draggable { cursor: grab; }
     &.dragging { cursor: grabbing; }
+  }
+
+  .lock-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 42px;
+    width: 42px;
+    margin: 6px;
+    opacity: 0;
+    cursor: pointer;
+    transition: 0.2s ease opacity;
+
+    &.show { opacity: 1; }
   }
 </style>

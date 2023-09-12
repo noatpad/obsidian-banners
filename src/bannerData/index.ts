@@ -19,6 +19,7 @@ export interface BannerMetadataWrite {
   y: number;
   icon: string;
   header: string | number;
+  lock: boolean;
 }
 
 /* NOTE: These are bi-directional maps between YAML banner keys and `BannerMetadata` keys,
@@ -32,7 +33,8 @@ const READ_MAP: Record<string, ReadProperty> = {
     key: 'icon',
     transform: extractIconFromYaml
   },
-  header: { key: 'header' }
+  header: { key: 'header' },
+  lock: { key: 'lock' }
 } as const;
 
 // Write: BannerMetadata -> YAML suffix
@@ -41,7 +43,8 @@ const WRITE_MAP: Record<keyof BannerMetadata, string> = {
   x: 'x',
   y: 'y',
   icon: 'icon',
-  header: 'header'
+  header: 'header',
+  lock: 'lock'
 } as const;
 
 export const BANNER_WRITE_KEYS = Object.keys(WRITE_MAP) as Array<keyof BannerMetadata>;

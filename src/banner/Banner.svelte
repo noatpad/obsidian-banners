@@ -24,6 +24,7 @@
   export let y = 0.5;
   export let icon: IconString | undefined = undefined;
   export let header: string | boolean | undefined = undefined;
+  export let lock = false;
 
   export let viewType: 'editing' | 'reading';
   export let file: TFile;
@@ -50,6 +51,7 @@
     if (!isSwapping) sizerEl?.setCssStyles({ marginTop: '' });
   });
 
+  const toggleLock = () => updateBannerData(file, { lock: !lock || undefined });
   const openIconModal = () => new IconModal(file).open();
 
   $: height = getBannerHeight(heights, source, icon);
@@ -57,6 +59,9 @@
     const marginTop = getSizerHeight(heights, source, header, icon, headerVerticalAlignment);
     sizerEl.setCssStyles({ marginTop });
   }
+  $: bannerX = x ?? 0.5;
+  $: bannerY = y ?? 0.5;
+  $: lockValue = lock ?? false;
   $: headerText = (typeof header === 'boolean')
     ? (header ? file.basename : undefined)
     : header;
@@ -77,10 +82,12 @@
     {:then src}
       <BannerImage
         {src}
-        x={x ?? 0.5}
-        y={y ?? 0.5}
+        x={bannerX}
+        y={bannerY}
+        lock={lockValue}
         {embed}
         on:drag-banner={async ({ detail }) => updateBannerData(file, detail)}
+        on:toggle-lock={toggleLock}
       />
     {:catch error}
       <Error {error} />

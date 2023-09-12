@@ -81,5 +81,6 @@ declare global {
     y: number;
     icon: IconString;
     header: string | boolean;
+    lock: boolean;
   }
 }
