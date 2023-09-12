@@ -22,6 +22,19 @@ export interface BannerMetadataWrite {
   lock: boolean;
 }
 
+export const IMAGE_FORMATS = [
+  'apng',
+  'avif',
+  'gif',
+  'jpg',
+  'jpeg',
+  'jpe',
+  'jif',
+  'jfif',
+  'png',
+  'webp'
+];
+
 /* NOTE: These are bi-directional maps between YAML banner keys and `BannerMetadata` keys,
 to help read, write, & transform banner data between them */
 // Read: YAML -> BannerMetadata key/transform

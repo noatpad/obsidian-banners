@@ -1,5 +1,6 @@
 import { Platform } from 'obsidian';
 import type { TFile } from 'obsidian';
+import { IMAGE_FORMATS } from 'src/bannerData';
 import type { IconString } from 'src/bannerData';
 import { plug } from 'src/main';
 import type { Embedded } from 'src/reading/BannerRenderChild';
@@ -11,20 +12,23 @@ interface Heights { banner: string; icon: string }
 
 export const WRAPPER_CLASS = 'obsidian-banner-wrapper';
 
-const parseInternalLink = (src: string, file: TFile): string | null => {
+const getInternalFile = (src: string, file: TFile): TFile | null => {
   const isInternalLink = /^\[\[.+\]\]/.test(src);
   if (!isInternalLink) return null;
 
   const link = src.slice(2, -2);
-  const target = plug.app.metadataCache.getFirstLinkpathDest(link, file.path);
-  return target ? plug.app.vault.getResourcePath(target) : link;
+  return plug.app.metadataCache.getFirstLinkpathDest(link, file.path);
 };
 
-// TODO: Get better error handling for this
 export const fetchImage = async (src: string, file: TFile): Promise<string | null> => {
-  // Check if it's an internal link and use that if it is
-  const internalLink = parseInternalLink(src, file);
-  if (internalLink) return internalLink;
+  // Check if it's an internal link to an image and use that if it is
+  const internalFile = getInternalFile(src, file);
+  if (internalFile) {
+    if (!IMAGE_FORMATS.includes(internalFile.extension)) {
+      throw new Error(`${internalFile.name} is not an image!`);
+    }
+    return plug.app.vault.getResourcePath(internalFile);
+  }
 
   try {
     const resp = await fetch(src);
