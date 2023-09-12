@@ -185,3 +185,12 @@
   <span slot="name">Show preview images</span>
   <span slot="description">Display a preview image of the suggested banner images</span>
 </ToggleSetting>
+<InputSetting key="localModalSuggestionLimit">
+  <span slot="name">Suggestions limit</span>
+  <span slot="description">
+    Limit how many suggestions to display in this modal.
+    <br />
+    <em>Note:</em> setting a high number while <b>Show preview images</b> setting is toggled on
+    may cause slowdowns
+  </span>
+</InputSetting>

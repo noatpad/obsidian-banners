@@ -29,6 +29,7 @@ export interface BannerSettings {
   iconSize: string;
   useTwemoji: boolean;
   showPreviewInLocalModal: boolean;
+  localModalSuggestionLimit: number;
 }
 
 export const DEFAULT_SETTINGS: BannerSettings = {
@@ -51,7 +52,8 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   headerVerticalTransform: '0px',
   iconSize: '1.2em',
   useTwemoji: true,
-  showPreviewInLocalModal: true
+  showPreviewInLocalModal: true,
+  localModalSuggestionLimit: 15
 };
 
 const TEXT_SETTINGS: Array<keyof BannerSettings> = [

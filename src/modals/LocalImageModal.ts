@@ -27,6 +27,7 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
     this.showPreview = getSetting('showPreviewInLocalModal');
 
     this.setPlaceholder('Pick an image to use as a banner');
+    this.limit = getSetting('localModalSuggestionLimit');
   }
 
   // TODO: Allow only searching files within a specific directory through a setting
