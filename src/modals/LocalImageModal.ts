@@ -1,7 +1,10 @@
-import { App, FuzzySuggestModal, TFile } from 'obsidian';
+import {
+  App, FuzzySuggestModal, Notice, TFile
+} from 'obsidian';
+import { TFolder } from 'obsidian';
 import type { FuzzyMatch } from 'obsidian';
 import { updateBannerData } from 'src/bannerData';
-import { getSetting } from 'src/settings';
+import { DEFAULT_SETTINGS, getSetting } from 'src/settings';
 import LocalImageSuggestion from './LocalImageSuggestion.svelte';
 
 const IMAGE_FORMATS = [
@@ -30,10 +33,36 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
     this.limit = getSetting('localModalSuggestionLimit');
   }
 
-  // TODO: Allow only searching files within a specific directory through a setting
+  private getImagesInFolder(folder: TFolder): TFile[] {
+    return folder.children.reduce((files, abFile) => {
+      if (abFile instanceof TFolder) {
+        files.push(...this.getImagesInFolder(folder));
+      } else if (abFile instanceof TFile && IMAGE_FORMATS.includes(abFile.extension)) {
+        files.push(abFile);
+      }
+      return files;
+    }, [] as TFile[]);
+  }
+
   getItems(): TFile[] {
-    return this.app.vault.getFiles()
-      .filter((file) => IMAGE_FORMATS.includes(file.extension));
+    const path = getSetting('bannersFolder');
+
+    if (path === DEFAULT_SETTINGS.bannersFolder) {
+      return this.app.vault.getFiles()
+        .filter((file) => IMAGE_FORMATS.includes(file.extension));
+    }
+
+    const folder = this.app.vault.getAbstractFileByPath(path);
+    if (!folder || !(folder instanceof TFolder)) {
+      new Notice(
+        'Error: Make sure that you set the "Banners folder" setting to a valid folder',
+        7000
+      );
+      this.close();
+      return [];
+    }
+
+    return this.getImagesInFolder(folder);
   }
 
   getItemText(item: TFile): string {
