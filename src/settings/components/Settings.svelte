@@ -19,7 +19,11 @@
 
 <!-- eslint-disable max-len -->
 <!-- General banner settings -->
-<Header title="Banners" description="A nice, lil' thing to add some flair to your notes :)" big />
+<Header
+  title="Banners"
+  description="A nice, lil' thing to add some flair to your notes :)"
+  big
+/>
 <InputSetting key="height" type="number">
   <span slot="name">Banner height</span>
   <span slot="description">Set how big the banner should be in pixels</span>
@@ -99,7 +103,10 @@
 </Depends>
 
 <!-- Banner Headers -->
-<Header title="Banner Headers" description="Kinda like inline titles, but with a bit of pizazz" />
+<Header
+  title="Banner Headers"
+  description="Kinda like inline titles, but with a bit of pizazz"
+/>
 <InputSetting key="headerSize">
   <span slot="name">Header font size</span>
   <span slot="description">
@@ -147,7 +154,10 @@
 </Depends>
 
 <!-- Banner Icons -->
-<Header title="Banner Icons" description="Give a lil' notion of what your note is about" />
+<Header
+  title="Banner Icons"
+  description="Give a lil' notion of what your note is about"
+/>
 <InputSetting key="iconSize">
   <span slot="name">Icon size</span>
   <span slot="description">
@@ -164,4 +174,14 @@
     Use <a href="https://github.com/jdecked/twemoji" target="_blank" rel="noopener noreferrer">Twemoji</a>
     instead of your device's native emoji set. Makes emojis consistent across devices
   </span>
+</ToggleSetting>
+
+<!-- Local Image Modal -->
+<Header
+  title="Local Image Modal"
+  description={'For the modal that shows when you run the "Add/Change banner with local image" command'}
+/>
+<ToggleSetting key="showPreviewInLocalModal">
+  <span slot="name">Show preview images</span>
+  <span slot="description">Display a preview image of the suggested banner images</span>
 </ToggleSetting>

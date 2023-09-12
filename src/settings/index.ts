@@ -28,6 +28,7 @@ export interface BannerSettings {
   headerVerticalTransform: string;
   iconSize: string;
   useTwemoji: boolean;
+  showPreviewInLocalModal: boolean;
 }
 
 export const DEFAULT_SETTINGS: BannerSettings = {
@@ -49,7 +50,8 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   headerVerticalAlignment: 'edge',
   headerVerticalTransform: '0px',
   iconSize: '1.2em',
-  useTwemoji: true
+  useTwemoji: true,
+  showPreviewInLocalModal: true
 };
 
 const TEXT_SETTINGS: Array<keyof BannerSettings> = [
