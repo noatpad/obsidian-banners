@@ -6,6 +6,7 @@
   import { getIconTransform } from './utils';
 
   export let icon: IconString | undefined;
+  export let isEmbed: boolean;
   export let header: string | undefined;
   $: ({
     headerSize,
@@ -37,7 +38,11 @@
   style:font-size={fontSize}
 >
   {#if icon}
-    <Icon {icon} on:open-icon-modal />
+    <Icon
+      {icon}
+      {isEmbed}
+      on:open-icon-modal
+    />
   {/if}
   {#if header}
     <h1 class="banner-header-title">{header}</h1>

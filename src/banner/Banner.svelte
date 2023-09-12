@@ -61,6 +61,7 @@
   }
   $: bannerX = x ?? 0.5;
   $: bannerY = y ?? 0.5;
+  $: isEmbed = !!embed;
   $: lockValue = lock ?? false;
   $: headerText = (typeof header === 'boolean')
     ? (header ? file.basename : undefined)
@@ -96,6 +97,7 @@
   {#if icon || header}
     <Header
       {icon}
+      {isEmbed}
       header={headerText}
       on:open-icon-modal={openIconModal}
     />

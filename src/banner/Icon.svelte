@@ -10,6 +10,13 @@
   const dispatch = createEventDispatcher();
 
   export let icon: IconString;
+  export let isEmbed: boolean;
+
+  const handleIconClick = () => {
+    if (isEmbed) return;
+    dispatch('open-icon-modal');
+  };
+
   $: ({ headerDecor, iconSize, useTwemoji } = $settings);
   $: ({ type, value } = icon);
   $: decor = getSetting('headerDecor', headerDecor);
@@ -21,6 +28,7 @@
 
 <div
   class="banner-icon"
+  class:embed={isEmbed}
   class:text-icon={type === 'text'}
   class:emoji-icon={type === 'emoji'}
   class:shadow={decor === 'shadow'}
@@ -28,8 +36,8 @@
   style:font-size={fontSize}
   role="button"
   tabindex="-1"
-  on:click={() => dispatch('open-icon-modal')}
-  on:keydown={(e) => e.code === 'Enter' && dispatch('open-icon-modal')}
+  on:click={handleIconClick}
+  on:keydown={(e) => e.code === 'Enter' && handleIconClick()}
 >
   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
   {@html html}
@@ -43,8 +51,12 @@
     height: calc(1em + 8px);
     width: calc(1em + 8px);
     border-radius: 6px;
-    cursor: pointer;
     transition: ease 0.2s background;
+
+    &:not(.embed) {
+      cursor: pointer;
+      &:hover { background: #aaa4; }
+    }
 
     &.emoji-icon {
       &.shadow :global(img.banner-emoji) {
@@ -57,8 +69,6 @@
           drop-shadow(-1px -1px 0 var(--background-primary));
       }
     }
-
-    &:hover { background: #aaa4; }
 
     :global(img.banner-emoji) {
       height: 1em;
