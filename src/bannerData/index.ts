@@ -18,7 +18,7 @@ export interface BannerMetadataWrite {
   x: number;
   y: number;
   icon: string;
-  header: string | number;
+  header: string | boolean;
   lock: boolean;
 }
 

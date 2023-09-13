@@ -1,24 +1,19 @@
 <script lang="ts">
   import type { BannerSettings } from '..';
+  import ObsidianToggle from './ObsidianToggle.svelte';
   import SettingItem from './SettingItem.svelte';
 
   export let key: keyof BannerSettings;
 </script>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
 <SettingItem {key}>
   <slot slot="name" name="name" />
   <slot slot="description" name="description" />
-  <!-- input only covers part of the toggle element. on:click here covers the rest -->
-  <div
+  <ObsidianToggle
     slot="setting"
     let:value={checked}
     let:update
-    class="checkbox-container"
-    class:is-enabled={checked}
-    on:click={() => update(!checked)}
-  >
-    <input type="checkbox" tabindex="0" value={checked} />
-  </div>
+    checked={!!checked}
+    onClick={() => update(!checked)}
+  />
 </SettingItem>

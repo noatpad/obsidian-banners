@@ -3,6 +3,7 @@ import { extractBannerDataFromFile, updateBannerData } from 'src/bannerData';
 import { plug } from 'src/main';
 import IconModal from 'src/modals/IconModal';
 import LocalImageModal from 'src/modals/LocalImageModal';
+import UpsertHeaderModal from 'src/modals/UpsertHeaderModal';
 import { pasteBanner } from './utils';
 
 const commands: Command[] = [
@@ -12,7 +13,7 @@ const commands: Command[] = [
     checkCallback(checking) {
       const file = plug.app.workspace.getActiveFile();
       if (checking) return !!file;
-      new LocalImageModal(plug.app, file!).open();
+      new LocalImageModal(file!).open();
     }
   },
   {
@@ -59,6 +60,15 @@ const commands: Command[] = [
       const file = plug.app.workspace.getActiveFile();
       if (checking) return !!file && !!extractBannerDataFromFile(file)?.icon;
       updateBannerData(file!, { icon: undefined });
+    }
+  },
+  {
+    id: 'banners:upsertHeader',
+    name: 'Add/Change banner header',
+    checkCallback(checking) {
+      const file = plug.app.workspace.getActiveFile();
+      if (checking) return !!file;
+      new UpsertHeaderModal(file!).open();
     }
   }
 ];
