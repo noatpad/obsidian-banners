@@ -20,6 +20,7 @@ export interface BannerSettings {
   frontmatterField: string;
   enableDragInInternalEmbed: boolean;
   enableDragInPopover: boolean;
+  enableLockButton: boolean;
   headerSize: string;
   headerDecor: HeaderTextDecorOption;
   headerHorizontalAlignment: HeaderHorizontalAlignmentOption;
@@ -45,6 +46,7 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   frontmatterField: 'banner',
   enableDragInInternalEmbed: false,
   enableDragInPopover: false,
+  enableLockButton: true,
   headerSize: '3em',
   headerDecor: 'shadow',
   headerHorizontalAlignment: 'left',

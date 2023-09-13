@@ -22,6 +22,7 @@
     bannerDragModifier,
     enableDragInInternalEmbed,
     enableDragInPopover,
+    enableLockButton,
     style
   } = $settings);
   let objectPos = { x, y };
@@ -48,6 +49,7 @@
     modKey: getSetting('bannerDragModifier', bannerDragModifier)
   };
   $: gradient = (getSetting('style', style) === 'gradient');
+  $: showLockButton = getSetting('enableLockButton', enableLockButton);
   $: objectPosStyle = `${objectPos.x * 100}% ${objectPos.y * 100}%`;
 </script>
 
@@ -68,13 +70,15 @@
   on:dragBannerEnd={dragEnd}
   on:toggleDrag={toggleDrag}
 />
-<button
-  class="lock-button"
-  class:show={hovering}
-  on:click={toggleLock}
-  on:mouseenter={hoverOn}
-  use:lockIcon={lock}
-/>
+{#if showLockButton}
+  <button
+    class="lock-button"
+    class:show={hovering}
+    on:click={toggleLock}
+    on:mouseenter={hoverOn}
+    use:lockIcon={lock}
+  />
+{/if}
 
 <style lang="scss">
   img {

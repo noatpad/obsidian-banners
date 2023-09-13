@@ -99,6 +99,14 @@
   </ToggleSetting>
 </Depends>
 
+<ToggleSetting key="enableLockButton">
+  <span slot="name">Enable lock button</span>
+  <span slot="description">
+    Enable and display the lock button on the corner of a banner. When combined with the
+    <b>Banner drag modifier key</b> setting, it might be desirable to disable this.
+  </span>
+</ToggleSetting>
+
 <!-- Banner Headers -->
 <Header
   title="Banner Headers"
