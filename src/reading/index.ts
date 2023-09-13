@@ -54,7 +54,7 @@ const postprocessor: MarkdownPostProcessor = (el, ctx) => {
   ) return;
 
   const file = plug.app.metadataCache.getFirstLinkpathDest(sourcePath, '/')!;
-  const bannerData = extractBannerData(frontmatter);
+  const bannerData = extractBannerData(frontmatter, file);
 
   if (bannerData.source || bannerData.icon) {
     const banner = new BannerRenderChild(el, ctx, bannerData, file, embed);
@@ -73,6 +73,7 @@ export const loadPostProcessor = () => {
 
 export const registerReadingBannerEvents = () => {
   registerSettingChangeEvent(['frontmatterField', 'showInInternalEmbed'], rerender);
+  plug.registerEvent(plug.app.vault.on('rename', rerender));
 };
 
 export const unloadReadingViewBanners = () => {

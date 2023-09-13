@@ -80,7 +80,7 @@ declare global {
     x: number;
     y: number;
     icon: IconString;
-    header: string | boolean;
+    header: string;
     lock: boolean;
   }
 }

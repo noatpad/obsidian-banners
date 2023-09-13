@@ -3,9 +3,12 @@ import { editorInfoField, parseYaml } from 'obsidian';
 import type { TFile } from 'obsidian';
 import { plug } from '../main';
 import { getSetting } from '../settings';
-import { extractIconFromYaml } from './transformers';
+import { extractHeaderFromYaml, extractIconFromYaml } from './transformers';
 
-interface ReadProperty { key: keyof BannerMetadata; transform?: CallableFunction }
+interface ReadProperty {
+  key: keyof BannerMetadata;
+  transform?: (value: any, file: TFile) => any;
+}
 
 export interface IconString {
   type: 'text' | 'emoji';
@@ -46,7 +49,10 @@ const READ_MAP: Record<string, ReadProperty> = {
     key: 'icon',
     transform: extractIconFromYaml
   },
-  header: { key: 'header' },
+  header: {
+    key: 'header',
+    transform: extractHeaderFromYaml
+  },
   lock: { key: 'lock' }
 } as const;
 
@@ -69,14 +75,16 @@ const getYamlKey = (suffix: string) => {
 };
 
 // Extract banner data from a given frontmatter-like object (key:value form)
-// eslint-disable-next-line max-len
-export const extractBannerData = (frontmatter: Record<string, unknown> = {}): Partial<BannerMetadata> => {
+export const extractBannerData = (
+  frontmatter: Record<string, unknown> = {},
+  file: TFile
+): Partial<BannerMetadata> => {
   return Object.entries(READ_MAP).reduce((data, [suffix, item]) => {
     const { key, transform } = item;
     const yamlKey = getYamlKey(suffix);
     if (Object.hasOwn(frontmatter, yamlKey)) {
       const rawValue = frontmatter[yamlKey] as any;
-      data[key] = transform ? transform(rawValue) : rawValue;
+      data[key] = transform ? transform(rawValue, file) : rawValue;
     }
     return data;
   }, {} as Partial<BannerMetadata>);
@@ -85,18 +93,18 @@ export const extractBannerData = (frontmatter: Record<string, unknown> = {}): Pa
 // Helper to extract banner data from a given file
 export const extractBannerDataFromFile = (file: TFile): Partial<BannerMetadata> => {
   const { frontmatter } = plug.app.metadataCache.getFileCache(file) ?? {};
-  return extractBannerData(frontmatter);
+  return extractBannerData(frontmatter, file);
 };
 
-// Parse raw frontmatter to get banner metadata
+// Helper to parse raw frontmatter to get banner metadata
 /* BUG: Undos and redos do not have the latest frontmatter in the editing view,
 causing desynced banner data to pass through until an extra change is done */
 export const extractBannerDataFromState = (state: EditorState): Partial<BannerMetadata> => {
-  const { data } = state.field(editorInfoField);
+  const { data, file } = state.field(editorInfoField);
   const match = data?.match(YAML_REGEX);
   const yaml = match?.groups?.yaml ?? '';
   const frontmatter = (parseYaml(yaml) ?? {}) as Record<string, unknown>;
-  return extractBannerData(frontmatter);
+  return extractBannerData(frontmatter, file!);
 };
 
 // Upsert banner data into the frontmatter with its associated field

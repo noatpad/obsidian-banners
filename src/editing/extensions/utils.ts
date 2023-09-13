@@ -15,12 +15,17 @@ const bannerEffects = [
   assignBannerEffect
 ];
 
-export const hasEffect = (effects: readonly StateEffect<any>[], target: StateEffectType<any>) => (
-  effects.some((e) => e.is(target))
+export const hasEffect = (
+  effects: readonly StateEffect<any>[],
+  target: StateEffectType<any> | StateEffectType<any>[]
+): boolean => (
+  Array.isArray(target)
+    ? target.some((t) => hasEffect(effects, t))
+    : effects.some((e) => e.is(target))
 );
 
 export const isBannerEffect = (effects: readonly StateEffect<any>[]) => (
-  bannerEffects.some((b) => hasEffect(effects, b))
+  hasEffect(effects, bannerEffects)
 );
 
 export const setBannerInMap = (state: EditorState, banner?: Banner) => {
