@@ -64,7 +64,7 @@ const commands: Command[] = [
   },
   {
     id: 'banners:upsertHeader',
-    name: 'Add/Change banner header',
+    name: 'Add/Change header',
     checkCallback(checking) {
       const file = plug.app.workspace.getActiveFile();
       if (checking) return !!file;
@@ -73,7 +73,7 @@ const commands: Command[] = [
   },
   {
     id: 'banners:removeHeader',
-    name: 'Remove banner header',
+    name: 'Remove header',
     checkCallback(checking) {
       const file = plug.app.workspace.getActiveFile();
       if (checking) return !!file && !!extractBannerDataFromFile(file)?.header;
