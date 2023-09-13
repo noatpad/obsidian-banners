@@ -4,6 +4,7 @@
   import SelectSetting from './components/SelectSetting.svelte';
   import Header from './components/SettingHeader.svelte';
   import ToggleSetting from './components/ToggleSetting.svelte';
+  import CssLengthFragment from './CSSLengthFragment.svelte';
   import settings from './store';
   import { getSetting } from '.';
 
@@ -24,13 +25,19 @@
   description="A nice, lil' thing to add some flair to your notes :)"
   big
 />
-<InputSetting key="height" type="number">
+<InputSetting key="height" numOrStr>
   <span slot="name">Banner height</span>
-  <span slot="description">Set how big the banner should be in pixels</span>
+  <span slot="description">
+    Set how big the banner should be in pixels.
+    <CssLengthFragment examples />
+  </span>
 </InputSetting>
-<InputSetting key="mobileHeight" type="number">
+<InputSetting key="mobileHeight" numOrStr>
   <span slot="name">Mobile banner height</span>
-  <span slot="description">Set how big the banner should be on mobile devices</span>
+  <span slot="description">
+    Set how big the banner should be on mobile devices.
+    <CssLengthFragment />
+  </span>
 </InputSetting>
 <SelectSetting key="style">
   <span slot="name">Banner style</span>
@@ -67,9 +74,12 @@
   </span>
 </ToggleSetting>
 <Depends on="showInInternalEmbed">
-  <InputSetting key="internalEmbedHeight" type="number">
+  <InputSetting key="internalEmbedHeight" numOrStr>
     <span slot="name">Internal embed banner height</span>
-    <span slot="description">Set how big the banner should be within an internal embed</span>
+    <span slot="description">
+      Set how big the banner should be within an internal embed.
+      <CssLengthFragment />
+    </span>
   </InputSetting>
   <ToggleSetting key="enableDragInInternalEmbed">
     <span slot="name">Enable drag in internal embed</span>
@@ -86,9 +96,12 @@
   </span>
 </ToggleSetting>
 <Depends on="showInPopover">
-  <InputSetting key="popoverHeight" type="number">
+  <InputSetting key="popoverHeight" numOrStr>
     <span slot="name">Preview popover banner height</span>
-    <span slot="description">Set how big the banner should be within the preview popover</span>
+    <span slot="description">
+      Set how big the banner should be within the preview popover.
+      <CssLengthFragment />
+    </span>
   </InputSetting>
   <ToggleSetting key="enableDragInPopover">
     <span slot="name">Enable drag in preview popover</span>
@@ -112,11 +125,11 @@
   title="Banner Headers"
   description="Kinda like inline titles, but with a bit of pizazz"
 />
-<InputSetting key="headerSize">
+<InputSetting key="headerSize" numOrStr>
   <span slot="name">Header font size</span>
   <span slot="description">
-    Set the font size of the banner header. This can be any valid
-    <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units#lengths" target="_blank" rel="noopener noreferrer">CSS length value</a>.
+    Set the font size of the banner header.
+    <CssLengthFragment period />
     If left blank, it will use Obsidian's built-in font size for inline titles.
     <em>Though personally, I like setting it to <code>2.5em</code></em>
   </span>
@@ -132,12 +145,11 @@
   <span slot="description">Align the header horizontally.</span>
 </SelectSetting>
 <Depends on={headerHorizontalAlignment === 'custom'}>
-  <InputSetting key="headerHorizontalTransform">
+  <InputSetting key="headerHorizontalTransform" numOrStr>
     <span slot="name">Custom horizontal alignment</span>
     <span slot="description">
-      Set an offset relative to the left side of the note. This can be any valid
-      <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units#lengths" target="_blank" rel="noopener noreferrer">CSS length value</a>,
-      such as <code>10px</code>, <code>-30%</code>, <code>calc(1em + 10px)</code>, and so on...
+      Set an offset relative to the left side of the note.
+      <CssLengthFragment />
     </span>
   </InputSetting>
 </Depends>
@@ -149,12 +161,11 @@
   </span>
 </SelectSetting>
 <Depends on={headerVerticalAlignment === 'custom'}>
-  <InputSetting key="headerVerticalTransform">
+  <InputSetting key="headerVerticalTransform" numOrStr>
     <span slot="name">Custom horizontal alignment</span>
     <span slot="description">
-      Set an offset relative to the bottom edge of the banner, if any. This can be any valid
-      <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units#lengths" target="_blank" rel="noopener noreferrer">CSS length value</a>,
-      such as <code>10px</code>, <code>-30%</code>, <code>calc(1em + 10px)</code>, and so on...
+      Set an offset relative to the bottom edge of the banner, if any.
+      <CssLengthFragment />
     </span>
   </InputSetting>
 </Depends>
@@ -164,12 +175,11 @@
   title="Banner Icons"
   description="Give a lil' notion of what your note is about"
 />
-<InputSetting key="iconSize">
+<InputSetting key="iconSize" numOrStr>
   <span slot="name">Icon size</span>
   <span slot="description">
-    Set the size of the banner icon. This can be any valid
-    <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units#lengths" target="_blank" rel="noopener noreferrer">CSS length value</a>,
-    such as <code>10px</code>, <code>-30%</code>, <code>calc(1em + 10px)</code>, and so on...
+    Set the size of the banner icon.
+    <CssLengthFragment period />
     <br />
     <span><em>Note:</em> this setting stacks with the <b>Header font size</b> setting above</span>
   </span>
@@ -177,7 +187,7 @@
 <ToggleSetting key="useTwemoji">
   <span slot="name">Use Twemoji</span>
   <span slot="description">
-    Use <a href="https://github.com/jdecked/twemoji" target="_blank" rel="noopener noreferrer">Twemoji</a>
+    Use <a href="https://github.com/jdecked/twemoji" rel="noopener noreferrer">Twemoji</a>
     instead of your device's native emoji set. Makes emojis consistent across devices
   </span>
 </ToggleSetting>

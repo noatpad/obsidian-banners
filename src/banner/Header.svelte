@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { IconString } from 'src/bannerData';
-  import { getSetting } from 'src/settings';
+  import { getSetting, parseCssSetting } from 'src/settings';
   import settings from 'src/settings/store';
   import Icon from './Icon.svelte';
   import { getHeaderTransform } from './utils';
@@ -24,7 +24,7 @@
   $: vertical = getSetting('headerVerticalAlignment', headerVerticalAlignment);
   $: vTransform = getSetting('headerVerticalTransform', headerVerticalTransform);
   $: transform = withBanner ? getHeaderTransform(horizontal, hTransform, vertical, vTransform) : '';
-  $: fontSize = getSetting('headerSize', headerSize);
+  $: fontSize = parseCssSetting(getSetting('headerSize', headerSize));
 </script>
 
 <div

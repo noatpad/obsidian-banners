@@ -2,6 +2,7 @@ import { plug } from 'src/main';
 import { SettingsTab } from './SettingsTab';
 import store from './store';
 
+type LengthValue = string | number;
 type StyleOption = 'solid' | 'gradient';
 export type BannerDragModOption = 'None' | 'Shift' | 'Ctrl' | 'Alt' | 'Meta';
 type HeaderTextDecorOption = 'none' | 'shadow' | 'border';
@@ -9,25 +10,25 @@ export type HeaderHorizontalAlignmentOption = 'left' | 'center' | 'right' | 'cus
 export type HeaderVerticalAlignmentOption = 'center' | 'above' | 'edge' | 'below' | 'custom';
 
 export interface BannerSettings {
-  height: number;
-  mobileHeight: number;
+  height: LengthValue;
+  mobileHeight: LengthValue;
   style: StyleOption;
   showInInternalEmbed: boolean;
-  internalEmbedHeight: number;
+  internalEmbedHeight: LengthValue;
   showInPopover: boolean;
-  popoverHeight: number;
+  popoverHeight: LengthValue;
   bannerDragModifier: BannerDragModOption;
   frontmatterField: string;
   enableDragInInternalEmbed: boolean;
   enableDragInPopover: boolean;
   enableLockButton: boolean;
-  headerSize: string;
+  headerSize: LengthValue;
   headerDecor: HeaderTextDecorOption;
   headerHorizontalAlignment: HeaderHorizontalAlignmentOption;
   headerHorizontalTransform: string;
   headerVerticalAlignment: HeaderVerticalAlignmentOption;
   headerVerticalTransform: string;
-  iconSize: string;
+  iconSize: LengthValue;
   useTwemoji: boolean;
   showPreviewInLocalModal: boolean;
   localModalSuggestionLimit: number;
@@ -110,6 +111,10 @@ export const SELECT_OPTIONS_MAP = {
   headerHorizontalAlignment: HEADER_HORIZONTAL_ALIGN_OPTION_LABELS,
   headerVerticalAlignment: HEADER_VERTICAL_ALIGN_OPTION_LABELS
 };
+
+export const parseCssSetting = (value: LengthValue): string => (
+  typeof value === 'number' ? `${value}px` : value
+);
 
 /* NOTE: The `value` parameter is redundant, but is implemented for Svelte store values.
  * Perhaps think of something cleaner */

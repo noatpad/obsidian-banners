@@ -4,7 +4,7 @@ import { IMAGE_FORMATS } from 'src/bannerData';
 import type { IconString } from 'src/bannerData';
 import { plug } from 'src/main';
 import type { Embedded } from 'src/reading/BannerRenderChild';
-import { getSetting } from 'src/settings';
+import { getSetting, parseCssSetting } from 'src/settings';
 import type { HeaderHorizontalAlignmentOption, HeaderVerticalAlignmentOption } from 'src/settings';
 
 export type ViewType = 'editing' | 'reading';
@@ -49,8 +49,8 @@ export const getHeights = (embedded: Embedded, _deps?: any[]): Heights => {
   if (embedded === 'internal') bannerHeight = getSetting('internalEmbedHeight');
   else if (embedded === 'popover') bannerHeight = getSetting('popoverHeight');
 
-  const banner = `${bannerHeight}px`;
-  const icon = getSetting('headerSize');
+  const banner = parseCssSetting(bannerHeight);
+  const icon = parseCssSetting(getSetting('headerSize'));
   return { banner, icon };
 };
 

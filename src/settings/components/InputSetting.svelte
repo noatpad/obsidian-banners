@@ -4,8 +4,24 @@
   import type { BannerSettings } from '..';
   import SettingItem from './SettingItem.svelte';
 
+  type ChangeEvent = Event & { currentTarget: EventTarget & HTMLInputElement };
+
   export let key: keyof BannerSettings;
   export let type: HTMLInputTypeAttribute = 'text';
+  export let numOrStr = false;
+
+  const updateSetting = (update: (value: any) => void, e: ChangeEvent) => {
+    const str = e.currentTarget.value || undefined;
+    if (str === undefined) {
+      update(undefined);
+    } else if (numOrStr) {
+      const number = +str;
+      update(isNaN(number) ? str : number);
+    } else {
+      update(str);
+    }
+  };
+
   $: placeholder = (DEFAULT_SETTINGS[key] as number).toString();
 </script>
 
@@ -19,6 +35,6 @@
     {type}
     {value}
     {placeholder}
-    on:change={(e) => update(e.currentTarget.value || undefined)}
+    on:change={(e) => updateSetting(update, e)}
   />
 </SettingItem>
