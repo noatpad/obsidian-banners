@@ -24,10 +24,8 @@
 {/if}
 
 <style lang="scss">
-  .suggestion-text {
-    white-space: normal;
-
-    &.with-preview { padding: 0.2em 0 0.4em; }
+  .suggestion-text.with-preview {
+    padding: 0.2em 0 0.4em;
   }
 
   .filepath {

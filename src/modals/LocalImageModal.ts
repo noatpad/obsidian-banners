@@ -15,8 +15,8 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
     this.activeFile = file;
     this.showPreview = getSetting('showPreviewInLocalModal');
 
-    this.setPlaceholder('Pick an image to use as a banner');
     this.limit = getSetting('localModalSuggestionLimit');
+    this.setPlaceholder('Pick an image to use as a banner');
   }
 
   private getImagesInFolder(folder: TFolder): TFile[] {
@@ -56,6 +56,7 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
   }
 
   renderSuggestion({ item, match }: FuzzyMatch<TFile>, el: HTMLElement): void {
+    el.setCssStyles({ whiteSpace: 'normal' });
     new LocalImageSuggestion({
       target: el,
       props: {
