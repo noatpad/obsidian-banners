@@ -6,8 +6,9 @@
   import { getHeaderTransform } from './utils';
 
   export let icon: IconString | undefined;
-  export let isEmbed: boolean;
   export let header: string | undefined;
+  export let withBanner: boolean;
+  export let isEmbed: boolean;
   $: ({
     headerSize,
     headerDecor,
@@ -22,12 +23,13 @@
   $: hTransform = getSetting('headerHorizontalTransform', headerHorizontalTransform);
   $: vertical = getSetting('headerVerticalAlignment', headerVerticalAlignment);
   $: vTransform = getSetting('headerVerticalTransform', headerVerticalTransform);
-  $: transform = getHeaderTransform(horizontal, hTransform, vertical, vTransform);
+  $: transform = withBanner ? getHeaderTransform(horizontal, hTransform, vertical, vTransform) : '';
   $: fontSize = getSetting('headerSize', headerSize);
 </script>
 
 <div
   class="banner-header"
+  class:with-banner={withBanner}
   class:shadow={decor === 'shadow'}
   class:border={decor === 'border'}
   class:align-left={horizontal === 'left'}
@@ -57,7 +59,7 @@
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 0;
+    top: 0;
     padding: 4px var(--file-margins);
     margin: 0 auto;
 
@@ -68,10 +70,15 @@
     &.shadow { text-shadow: var(--background-primary) 0 0 6px; }
     &.border { -webkit-text-stroke: 2px var(--background-primary); }
 
-    &.align-left { justify-content: start; }
-    &.align-center { justify-content: center; }
-    &.align-right { justify-content: end; }
-    &.center-of-banner { bottom: 50%; }
+    &.with-banner {
+      top: initial;
+      bottom: 0;
+
+      &.align-left { justify-content: start; }
+      &.align-center { justify-content: center; }
+      &.align-right { justify-content: end; }
+      &.center-of-banner { bottom: 50%; }
+    }
   }
 
   .banner-header-title {

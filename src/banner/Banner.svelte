@@ -61,6 +61,7 @@
   }
   $: bannerX = x ?? 0.5;
   $: bannerY = y ?? 0.5;
+  $: withBanner = !!source;
   $: isEmbed = !!embed;
   $: lockValue = lock ?? false;
 </script>
@@ -95,6 +96,7 @@
     <Header
       {icon}
       {header}
+      {withBanner}
       {isEmbed}
       on:open-icon-modal={openIconModal}
     />

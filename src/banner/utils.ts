@@ -89,7 +89,7 @@ export const getSizerHeight = (
     }
     else return heights.banner;
   } else if (icon || header) {
-    return `calc(${heights.icon} * 1.5)`;
+    return heights.icon;
   }
   return '';
 };
