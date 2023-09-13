@@ -1,6 +1,6 @@
 import { EditorState, StateEffect } from '@codemirror/state';
 import { editorInfoField } from 'obsidian';
-import { extractBannerDataFromState } from 'src/bannerData';
+import { extractBannerDataFromState, shouldDisplayBanner } from 'src/bannerData';
 import {
   assignBannerEffect,
   hasEffect,
@@ -20,7 +20,7 @@ const bannerExtender = EditorState.transactionExtender.of((transaction) => {
 
   const bannerData = extractBannerDataFromState(state);
   const newEffects: StateEffect<any>[] = [];
-  const effectFromData = (bannerData.source || bannerData.icon)
+  const effectFromData = shouldDisplayBanner(bannerData)
     ? upsertBannerEffect.of(bannerData)
     : removeBannerEffect.of(null);
   if (hasEffect(effects, openNoteEffect)) {

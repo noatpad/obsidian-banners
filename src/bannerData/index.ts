@@ -117,3 +117,9 @@ export const updateBannerData = async (file: TFile, bannerData: Partial<BannerMe
     }
   });
 };
+
+// Helper on whether a banner element should be displayed or not
+export const shouldDisplayBanner = (bannerData: Partial<BannerMetadata>): boolean => {
+  const { source, icon, header } = bannerData;
+  return !!source || !!icon || !!header;
+};

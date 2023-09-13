@@ -3,7 +3,7 @@
   import { getSetting } from 'src/settings';
   import settings from 'src/settings/store';
   import Icon from './Icon.svelte';
-  import { getIconTransform } from './utils';
+  import { getHeaderTransform } from './utils';
 
   export let icon: IconString | undefined;
   export let isEmbed: boolean;
@@ -22,7 +22,7 @@
   $: hTransform = getSetting('headerHorizontalTransform', headerHorizontalTransform);
   $: vertical = getSetting('headerVerticalAlignment', headerVerticalAlignment);
   $: vTransform = getSetting('headerVerticalTransform', headerVerticalTransform);
-  $: transform = getIconTransform(horizontal, hTransform, vertical, vTransform);
+  $: transform = getHeaderTransform(horizontal, hTransform, vertical, vTransform);
   $: fontSize = getSetting('headerSize', headerSize);
 </script>
 

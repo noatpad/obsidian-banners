@@ -57,14 +57,15 @@ export const getHeights = (embedded: Embedded, _deps?: any[]): Heights => {
 export const getBannerHeight = (
   heights: Heights,
   source: string | undefined,
-  icon: IconString | undefined
+  icon: IconString | undefined,
+  header: string | undefined
 ): string => {
   if (source) return heights.banner;
-  else if (icon) return heights.icon;
+  else if (icon || header) return heights.icon;
   return '';
 };
 
-const getIconExtraOffset = (offset: string, alignment: HeaderVerticalAlignmentOption): string => {
+const getHeaderExtraOffset = (offset: string, alignment: HeaderVerticalAlignmentOption): string => {
   switch (alignment) {
     case 'center':
     case 'above': return '0px';
@@ -83,7 +84,7 @@ export const getSizerHeight = (
 ): string => {
   if (source) {
     if (icon || header) {
-      const extraOffset = getIconExtraOffset(heights.icon, iconAlignment);
+      const extraOffset = getHeaderExtraOffset(heights.icon, iconAlignment);
       return `calc(${heights.banner} + ${extraOffset})`;
     }
     else return heights.banner;
@@ -93,7 +94,7 @@ export const getSizerHeight = (
   return '';
 };
 
-export const getIconTransform = (
+export const getHeaderTransform = (
   horizontal: HeaderHorizontalAlignmentOption,
   hTransform: string,
   vertical: HeaderVerticalAlignmentOption,

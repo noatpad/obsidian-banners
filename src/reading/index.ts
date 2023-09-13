@@ -1,5 +1,5 @@
 import type { MarkdownPostProcessor } from 'obsidian';
-import { extractBannerData } from 'src/bannerData';
+import { extractBannerData, shouldDisplayBanner } from 'src/bannerData';
 import { plug } from 'src/main';
 import { getSetting } from 'src/settings';
 import { registerSettingChangeEvent } from 'src/utils';
@@ -56,7 +56,7 @@ const postprocessor: MarkdownPostProcessor = (el, ctx) => {
   const file = plug.app.metadataCache.getFirstLinkpathDest(sourcePath, '/')!;
   const bannerData = extractBannerData(frontmatter, file);
 
-  if (bannerData.source || bannerData.icon) {
+  if (shouldDisplayBanner(bannerData)) {
     const banner = new BannerRenderChild(el, ctx, bannerData, file, embed);
     if (currentBanners[docId]) currentBanners[docId].prepareSwap();
     ctx.addChild(banner);

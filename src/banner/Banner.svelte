@@ -23,7 +23,7 @@
   export let x = 0.5;
   export let y = 0.5;
   export let icon: IconString | undefined = undefined;
-  export let header: string | boolean | undefined = undefined;
+  export let header: string | undefined = undefined;
   export let lock = false;
 
   export let viewType: 'editing' | 'reading';
@@ -54,7 +54,7 @@
   const toggleLock = () => updateBannerData(file, { lock: !lock || undefined });
   const openIconModal = () => new IconModal(file).open();
 
-  $: height = getBannerHeight(heights, source, icon);
+  $: height = getBannerHeight(heights, source, icon, header);
   $: if (sizerEl) {
     const marginTop = getSizerHeight(heights, source, header, icon, headerVerticalAlignment);
     sizerEl.setCssStyles({ marginTop });
@@ -63,9 +63,6 @@
   $: bannerY = y ?? 0.5;
   $: isEmbed = !!embed;
   $: lockValue = lock ?? false;
-  $: headerText = (typeof header === 'boolean')
-    ? (header ? file.basename : undefined)
-    : header;
 </script>
 
 <header
@@ -97,8 +94,8 @@
   {#if icon || header}
     <Header
       {icon}
+      {header}
       {isEmbed}
-      header={headerText}
       on:open-icon-modal={openIconModal}
     />
   {/if}
