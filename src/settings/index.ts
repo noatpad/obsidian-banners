@@ -47,7 +47,7 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   enableDragInInternalEmbed: false,
   enableDragInPopover: false,
   enableLockButton: true,
-  headerSize: '3em',
+  headerSize: 'var(--inline-title-size)',
   headerDecor: 'shadow',
   headerHorizontalAlignment: 'left',
   headerHorizontalTransform: '0px',

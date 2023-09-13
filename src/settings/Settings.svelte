@@ -116,8 +116,9 @@
   <span slot="name">Header font size</span>
   <span slot="description">
     Set the font size of the banner header. This can be any valid
-    <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units#lengths" target="_blank" rel="noopener noreferrer">CSS length value</a>,
-    such as <code>10px</code>, <code>-30%</code>, <code>calc(1em + 10px)</code>, and so on...
+    <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units#lengths" target="_blank" rel="noopener noreferrer">CSS length value</a>.
+    If left blank, it will use Obsidian's built-in font size for inline titles.
+    <em>Though personally, I like setting it to <code>2.5em</code></em>
   </span>
 </InputSetting>
 <SelectSetting key="headerDecor">
