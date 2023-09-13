@@ -70,6 +70,15 @@ const commands: Command[] = [
       if (checking) return !!file;
       new UpsertHeaderModal(file!).open();
     }
+  },
+  {
+    id: 'banners:removeHeader',
+    name: 'Remove banner header',
+    checkCallback(checking) {
+      const file = plug.app.workspace.getActiveFile();
+      if (checking) return !!file && !!extractBannerDataFromFile(file)?.header;
+      updateBannerData(file!, { header: undefined });
+    }
   }
 ];
 
