@@ -3,15 +3,28 @@ import { SettingsTab } from './SettingsTab';
 import store from './store';
 import { DEFAULT_SETTINGS, TEXT_SETTINGS } from './structure';
 import type { BannerSettings, LengthValue } from './structure';
+import { areSettingsOutdated, updateSettings } from './updater';
 
 export const loadSettings = async () => {
-  const settings = Object.assign({}, DEFAULT_SETTINGS, await plug.loadData()) as BannerSettings;
+  // Update settings from an older version if needed
+  const data = await plug.loadData();
+  if (areSettingsOutdated(data)) updateSettings(data);
+
+  // Apply default settings where needed
+  const settings = Object.assign(
+    {},
+    DEFAULT_SETTINGS,
+    data,
+    { version: plug.manifest.version }
+  ) as BannerSettings;
   for (const [key, val] of Object.entries(settings) as [keyof BannerSettings, unknown][]) {
     if (
       DEFAULT_SETTINGS[key] === val &&
       (typeof val === 'number' || TEXT_SETTINGS.includes(key))
     ) delete settings[key];
   }
+
+  // Load up settings and settings tab
   plug.settings = settings;
   await saveSettings();
   plug.addSettingTab(new SettingsTab());
