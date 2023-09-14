@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { HTMLInputTypeAttribute } from 'svelte/elements';
-  import { DEFAULT_SETTINGS } from '..';
-  import type { BannerSettings } from '..';
+  import { DEFAULT_SETTINGS } from '../structure';
+  import type { BannerSettings } from '../structure';
   import SettingItem from './SettingItem.svelte';
 
   type ChangeEvent = Event & { currentTarget: EventTarget & HTMLInputElement };

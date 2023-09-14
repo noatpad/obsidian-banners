@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SELECT_OPTIONS_MAP } from '..';
+  import { SELECT_OPTIONS_MAP } from '../structure';
   import SettingItem from './SettingItem.svelte';
 
   export let key: keyof typeof SELECT_OPTIONS_MAP;

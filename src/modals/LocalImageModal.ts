@@ -3,7 +3,8 @@ import { TFolder } from 'obsidian';
 import type { FuzzyMatch } from 'obsidian';
 import { IMAGE_FORMATS, updateBannerData } from 'src/bannerData';
 import { plug } from 'src/main';
-import { DEFAULT_SETTINGS, getSetting } from 'src/settings';
+import { getSetting } from 'src/settings';
+import { DEFAULT_SETTINGS } from 'src/settings/structure';
 import LocalImageSuggestion from './LocalImageSuggestion.svelte';
 
 export default class LocalImageModal extends FuzzySuggestModal<TFile> {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { BannerSettings } from '..';
+  import type { BannerSettings } from '../structure';
   import ObsidianToggle from './ObsidianToggle.svelte';
   import SettingItem from './SettingItem.svelte';
 

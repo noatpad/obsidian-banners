@@ -1,6 +1,6 @@
 import type { EventRef, WorkspaceLeaf } from 'obsidian';
 import { plug } from './main';
-import type { BannerSettings } from './settings';
+import type { BannerSettings } from './settings/structure';
 import type { MarkdownViewState } from './types';
 
 type Settings = keyof BannerSettings | Array<keyof BannerSettings>;

@@ -5,7 +5,7 @@ import loadCommands from './commands';
 import { loadExtensions, unloadEditingViewBanners } from './editing';
 import { loadPostProcessor, unloadReadingViewBanners } from './reading';
 import { loadSettings } from './settings';
-import type { BannerSettings } from './settings';
+import type { BannerSettings } from './settings/structure';
 
 export let plug: BannersPlugin;
 

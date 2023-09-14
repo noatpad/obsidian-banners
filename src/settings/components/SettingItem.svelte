@@ -1,8 +1,8 @@
 <script lang="ts">
   import { getContext } from 'svelte';
   import { slide } from 'svelte/transition';
-  import type { BannerSettings } from '..';
   import settings from '../store';
+  import type { BannerSettings } from '../structure';
 
   export let key: keyof BannerSettings;
   const indent = getContext<number>('level') ?? 0;
