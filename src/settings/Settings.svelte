@@ -1,10 +1,10 @@
 <script lang="ts">
+  import CssLengthFragment from './components/CSSLengthFragment.svelte';
   import Depends from './components/Depends.svelte';
   import InputSetting from './components/InputSetting.svelte';
   import SelectSetting from './components/SelectSetting.svelte';
   import Header from './components/SettingHeader.svelte';
   import ToggleSetting from './components/ToggleSetting.svelte';
-  import CssLengthFragment from './CSSLengthFragment.svelte';
   import settings from './store';
   import { getSetting } from '.';
 
