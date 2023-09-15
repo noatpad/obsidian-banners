@@ -1,10 +1,10 @@
 {
-  "id": "obsidian-banners-2",
-  "name": "Banners 2",
-  "description": "Add banner images to your notes!",
-  "version": "2.0.0-beta",
-  "minAppVersion": "0.14.0",
-  "author": "Noatpad",
-  "authorUrl": "https://github.com/noatpad",
-  "isDesktopOnly": false
+	"id": "obsidian-banners",
+	"name": "Banners",
+	"description": "Add banner images to your notes!",
+	"version": "1.3.3",
+	"minAppVersion": "0.13.21",
+	"author": "Noatpad",
+	"authorUrl": "https://github.com/noatpad/obsidian-banners",
+	"isDesktopOnly": false
 }
