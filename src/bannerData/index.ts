@@ -97,14 +97,18 @@ export const extractBannerDataFromFile = (file: TFile): Partial<BannerMetadata> 
 };
 
 // Helper to parse raw frontmatter to get banner metadata
-/* BUG: Undos and redos do not have the latest frontmatter in the editing view,
-causing desynced banner data to pass through until an extra change is done */
+/* BUG: Undos, redos, and source frontmatter edits do not have the latest frontmatter in the
+editing view, causing desynced banner data to pass through until an extra change is done */
 export const extractBannerDataFromState = (state: EditorState): Partial<BannerMetadata> => {
   const { data, file } = state.field(editorInfoField);
   const match = data?.match(YAML_REGEX);
   const yaml = match ? match[1] : '';
-  const frontmatter = (parseYaml(yaml) ?? {}) as Record<string, unknown>;
-  return extractBannerData(frontmatter, file!);
+  try {
+    const frontmatter = (parseYaml(yaml) ?? {}) as Record<string, unknown>;
+    return extractBannerData(frontmatter, file!);
+  } catch (error) {
+    return {};
+  }
 };
 
 // Upsert banner data into the frontmatter with its associated field
