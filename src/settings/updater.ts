@@ -8,6 +8,7 @@ type SettingsData = Record<string, unknown> & {
 type KeyChanges = Record<string, string>;
 type ValueChanges = Record<string, Record<string, string>>;
 type Removals = string[];
+
 interface BreakingChanges {
   version: string;
   changes: {
@@ -16,6 +17,8 @@ interface BreakingChanges {
     remove?: Removals;
   };
 }
+
+const SEMVER_REGEX = /^(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)/;
 
 const breakingChanges: BreakingChanges[] = [
   {
@@ -47,9 +50,9 @@ const breakingChanges: BreakingChanges[] = [
 
 const isVersionBelow = (a: string | null, b: string): boolean => {
   if (!a) return true;  // Edge case for 1.X versions
-  const [aMax, aMin, aPatch] = a.split('.');
-  const [bMax, bMin, bPatch] = b.split('.');
-  return (+aMax < +bMax) || (+aMin < +bMin) || (+aPatch < +bPatch);
+  const { major: aMajor, minor: aMinor, patch: aPatch } = a.match(SEMVER_REGEX)!.groups!;
+  const { major: bMajor, minor: bMinor, patch: bPatch } = b.match(SEMVER_REGEX)!.groups!;
+  return (+aMajor < +bMajor) || (+aMinor < +bMinor) || (+aPatch < +bPatch);
 };
 
 const updateKeys = (data: SettingsData, keys: KeyChanges) => {
