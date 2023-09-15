@@ -67,7 +67,7 @@ const WRITE_MAP: Record<keyof BannerMetadata, string> = {
 } as const;
 
 export const BANNER_WRITE_KEYS = Object.keys(WRITE_MAP) as Array<keyof BannerMetadata>;
-const YAML_REGEX = /^---(?<yaml>.*)---/s;
+const YAML_REGEX = /^---\n(.*?)\n---/s;
 
 const getYamlKey = (suffix: string) => {
   const prefix = getSetting('frontmatterField');
@@ -102,7 +102,7 @@ causing desynced banner data to pass through until an extra change is done */
 export const extractBannerDataFromState = (state: EditorState): Partial<BannerMetadata> => {
   const { data, file } = state.field(editorInfoField);
   const match = data?.match(YAML_REGEX);
-  const yaml = match?.groups?.yaml ?? '';
+  const yaml = match ? match[1] : '';
   const frontmatter = (parseYaml(yaml) ?? {}) as Record<string, unknown>;
   return extractBannerData(frontmatter, file!);
 };
