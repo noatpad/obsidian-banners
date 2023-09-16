@@ -5,7 +5,10 @@ import type { IconString } from 'src/bannerData';
 import { plug } from 'src/main';
 import type { Embedded } from 'src/reading/BannerRenderChild';
 import { getSetting, parseCssSetting } from 'src/settings';
-import type { HeaderHorizontalAlignmentOption, HeaderVerticalAlignmentOption } from 'src/settings';
+import type {
+  HeaderHorizontalAlignmentOption,
+  HeaderVerticalAlignmentOption
+} from 'src/settings/structure';
 
 export type ViewType = 'editing' | 'reading';
 interface Heights { banner: string; icon: string }
