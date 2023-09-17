@@ -48,7 +48,7 @@
 
 <style lang="scss">
   .upsert-header-modal {
-    padding: 0.5em 0.7em;
+    padding-top: 0.25em;
   }
 
   .row {
@@ -56,8 +56,9 @@
     align-items: center;
     justify-content: center;
     gap: 0.5em;
-    padding: 0.75em 0;
     text-align: center;
+
+    & + & { margin-top: 1em; }
   }
 
   .header-input {
