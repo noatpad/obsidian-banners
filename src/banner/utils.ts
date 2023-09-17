@@ -1,4 +1,4 @@
-import { Platform } from 'obsidian';
+import { Platform, requestUrl } from 'obsidian';
 import type { TFile } from 'obsidian';
 import { IMAGE_FORMATS } from 'src/bannerData';
 import type { IconString } from 'src/bannerData';
@@ -31,8 +31,8 @@ export const fetchImage = async (src: string, file: TFile): Promise<string | nul
   }
 
   try {
-    const resp = await fetch(src);
-    const blob = await resp.blob();
+    const resp = await requestUrl(src);
+    const blob = new Blob([resp.arrayBuffer], { type: resp.headers['content-type'] });
     return new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(blob);
