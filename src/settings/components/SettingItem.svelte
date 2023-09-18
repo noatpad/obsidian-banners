@@ -4,12 +4,14 @@
   import settings from '../store';
   import type { BannerSettings } from '../structure';
 
-  export let key: keyof BannerSettings;
+  export let key: keyof BannerSettings | undefined = undefined;
   const indent = getContext<number>('level') ?? 0;
 
-  const update = (value: any) => settings.updateSetting(key, value);
+  const update = (value: unknown) => {
+    if (key) settings.updateSetting(key, value);
+  };
 
-  $: value = $settings[key] ?? '';
+  $: value = key ? ($settings[key] ?? '') : null;
   $: margin = indent ? `${indent * 1.5}em` : '';
 </script>
 

@@ -68,6 +68,7 @@ const WRITE_MAP: Record<keyof BannerMetadata, string> = {
 
 export const BANNER_WRITE_KEYS = Object.keys(WRITE_MAP) as Array<keyof BannerMetadata>;
 const YAML_REGEX = /^---\n(.*?)\n---/s;
+const LEGACY_REGEX = /^!\[\[.+\]\]$/;
 
 const getYamlKey = (suffix: string) => {
   const prefix = getSetting('frontmatterField');
@@ -120,6 +121,20 @@ export const updateBannerData = async (file: TFile, bannerData: Partial<BannerMe
       frontmatter[yamlKey] = val;
     }
   });
+};
+
+// Helper to update a banner's source legacy syntax to the current syntax
+export const updateLegacyBannerSource = async (file: TFile): Promise<boolean> => {
+  let changed = false;
+  await plug.app.fileManager.processFrontMatter(file, (frontmatter) => {
+    const { source } = extractBannerData(frontmatter, file);
+    if (source && LEGACY_REGEX.test(source)) {
+      const key = getYamlKey(WRITE_MAP.source);
+      frontmatter[key] = source.slice(1);
+      changed = true;
+    }
+  });
+  return changed;
 };
 
 // Helper on whether a banner element should be displayed or not

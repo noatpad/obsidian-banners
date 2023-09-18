@@ -15,6 +15,7 @@ interface BreakingChanges {
     keys?: KeyChanges;
     values?: ValueChanges;
     remove?: Removals;
+    callbacks?: Array<() => void>;
   };
 }
 
@@ -43,7 +44,18 @@ const breakingChanges: BreakingChanges[] = [
         },
         headerVerticalAlignment: { center: 'edge' }
       },
-      remove: ['allowMobileDrag']
+      remove: ['allowMobileDrag'],
+      callbacks: [
+        () => new Notice(createFragment((el) => {
+          el.createEl('b', { text: 'Hey! Looks like you\'ve used Banners in the past. ' });
+          el.createEl('br');
+          el.createSpan({
+            text: 'Banners created in 1.x use an outdated syntax for internal files that ' +
+            'no longer work in 2.0. To update this throughout your vault, go to the bottom ' +
+            'of the Banners settings tab'
+          });
+        }), 0)
+      ]
     }
   }
 ];
@@ -87,6 +99,7 @@ export const updateSettings = (data: SettingsData) => {
       if (changes.keys) updateKeys(data, changes.keys);
       if (changes.values) updateValue(data, changes.values);
       if (changes.remove) removeSetting(data, changes.remove);
+      if (changes.callbacks) changes.callbacks.forEach((cb) => cb());
     }
   }
 

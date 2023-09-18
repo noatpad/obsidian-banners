@@ -1,4 +1,6 @@
 <script lang="ts">
+  import UpdateLegacySourceModal from 'src/modals/UpdateLegacySourceModal';
+  import ButtonSetting from './components/ButtonSetting.svelte';
   import CssLengthFragment from './components/CSSLengthFragment.svelte';
   import Depends from './components/Depends.svelte';
   import InputSetting from './components/InputSetting.svelte';
@@ -7,6 +9,8 @@
   import ToggleSetting from './components/ToggleSetting.svelte';
   import settings from './store';
   import { getSetting } from '.';
+
+  const openLegacySourceModal = () => new UpdateLegacySourceModal().open();
 
   $: ({
     frontmatterField: ff,
@@ -18,7 +22,6 @@
   $: headerVerticalAlignment = getSetting('headerVerticalAlignment', hva);
 </script>
 
-<!-- eslint-disable max-len -->
 <!-- General banner settings -->
 <Header
   title="Banners"
@@ -195,7 +198,9 @@
 <!-- Local Image Modal -->
 <Header
   title="Local Image Modal"
-  description={'For the modal that shows when you run the "Add/Change banner with local image" command'}
+  description={
+    'For the modal that shows when you run the "Add/Change banner with local image" command'
+  }
 />
 <ToggleSetting key="showPreviewInLocalModal">
   <span slot="name">Show preview images</span>
@@ -217,3 +222,16 @@
     the entire vault for image files
   </span>
 </InputSetting>
+
+<!-- Extras -->
+<Header
+  title="Extras"
+  description="'Cause I do not where else to put these..."
+/>
+<ButtonSetting text="Update banner sources" onClick={openLegacySourceModal}>
+  <span slot="name">Update legacy source syntax</span>
+  <span slot="description">
+    If you used Banners 1.x in the past, you may need to update the syntax for your banners'
+    sources across your notes. This will help you do that automatically in one go.
+  </span>
+</ButtonSetting>

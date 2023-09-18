@@ -6,7 +6,7 @@ import { saveSettings } from '.';
 
 interface SettingsStore extends Readable<BannerSettings> {
   set: (value: BannerSettings) => void;
-  updateSetting: (key: keyof BannerSettings, value: any) => void;
+  updateSetting: (key: keyof BannerSettings, value: unknown) => void;
 }
 
 const { subscribe, set } = writable<BannerSettings>();
