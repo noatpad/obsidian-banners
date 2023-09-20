@@ -6,7 +6,7 @@ export const leafBannerMap: Record<string, Banner> = {};
 
 export const refreshEffect = StateEffect.define();
 export const openNoteEffect = StateEffect.define<Banner | null>();
-export const upsertBannerEffect = StateEffect.define<BannerMetadata>();
+export const upsertBannerEffect = StateEffect.define<BannerData>();
 export const removeBannerEffect = StateEffect.define();
 export const assignBannerEffect = StateEffect.define<Banner>();
 

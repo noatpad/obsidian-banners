@@ -11,7 +11,7 @@ import {
   upsertBannerEffect
 } from './utils';
 
-const addBanner = (state: EditorState, bannerData: BannerMetadata) => {
+const addBanner = (state: EditorState, bannerData: BannerData) => {
   console.log('add!');
   const { file } = state.field(editorInfoField);
   const { dom } = state.field(editorEditorField);
@@ -32,7 +32,7 @@ const addBanner = (state: EditorState, bannerData: BannerMetadata) => {
   registerBanner(state, banner);
 };
 
-const updateBanner = (banner: Banner, bannerData: BannerMetadata) => {
+const updateBanner = (banner: Banner, bannerData: BannerData) => {
   console.log('update!');
   banner.$set(bannerData);
 };
@@ -50,7 +50,7 @@ const assignBanner = (state: EditorState) => {
 
 /* State field that keeps track of the banner associated with a given editor, as well as
 adding, modifying, and removing banners based on CM6 effects */
-const bannerField = StateField.define<BannerMetadata | null>({
+const bannerField = StateField.define<BannerData | null>({
   create() {
     console.log('create!');
     return null;

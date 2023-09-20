@@ -6,7 +6,7 @@ import { getSetting } from '../settings';
 import { extractIconFromYaml } from './transformers';
 
 interface ReadProperty {
-  key: keyof BannerMetadata;
+  key: keyof BannerData;
   transform?: (value: any, file: TFile) => any;
 }
 
@@ -15,8 +15,8 @@ export interface IconString {
   value: string;
 }
 
-// NOTE: This must have every key in `BannerMetadata` and its corresponding type
-export interface BannerMetadataWrite {
+// NOTE: This must have every key in `BannerData` and its corresponding type
+export interface BannerDataWrite {
   source: string;
   x: number;
   y: number;
@@ -38,9 +38,9 @@ export const IMAGE_FORMATS = [
   'webp'
 ];
 
-/* NOTE: These are bi-directional maps between YAML banner keys and `BannerMetadata` keys,
+/* NOTE: These are bi-directional maps between YAML banner keys and `BannerData` keys,
 to help read, write, & transform banner data between them */
-// Read: YAML -> BannerMetadata key/transform
+// Read: YAML -> BannerData key/transform
 const READ_MAP: Record<string, ReadProperty> = {
   '': { key: 'source' },
   x: { key: 'x' },
@@ -53,8 +53,8 @@ const READ_MAP: Record<string, ReadProperty> = {
   lock: { key: 'lock' }
 } as const;
 
-// Write: BannerMetadata -> YAML suffix
-const WRITE_MAP: Record<keyof BannerMetadata, string> = {
+// Write: BannerData -> YAML suffix
+const WRITE_MAP: Record<keyof BannerData, string> = {
   source: '',
   x: 'x',
   y: 'y',
@@ -75,18 +75,18 @@ const getYamlKey = (suffix: string) => {
 export const extractBannerData = (
   frontmatter: Record<string, unknown> = {},
   file: TFile
-): BannerMetadata => {
+): BannerData => {
   return Object.entries(READ_MAP).reduce((data, [suffix, item]) => {
     const { key, transform } = item;
     const yamlKey = getYamlKey(suffix);
     const rawValue = frontmatter[yamlKey];
     data[key] = (rawValue && transform) ? transform(rawValue, file) : rawValue;
     return data;
-  }, {} as Record<keyof BannerMetadata, unknown>) as BannerMetadata;
+  }, {} as Record<keyof BannerData, unknown>) as BannerData;
 };
 
 // Helper to extract banner data from a given file
-export const extractBannerDataFromFile = (file: TFile): Partial<BannerMetadata> => {
+export const extractBannerDataFromFile = (file: TFile): BannerData => {
   const { frontmatter } = plug.app.metadataCache.getFileCache(file) ?? {};
   return extractBannerData(frontmatter, file);
 };
@@ -94,7 +94,7 @@ export const extractBannerDataFromFile = (file: TFile): Partial<BannerMetadata> 
 // Helper to parse raw frontmatter to get banner metadata
 /* BUG: Undos, redos, and source frontmatter edits do not have the latest frontmatter in the
 editing view, causing desynced banner data to pass through until an extra change is done */
-export const extractBannerDataFromState = (state: EditorState): BannerMetadata => {
+export const extractBannerDataFromState = (state: EditorState): BannerData => {
   const { data, file } = state.field(editorInfoField);
   const match = data?.match(YAML_REGEX);
   const yaml = match ? match[1] : '';
@@ -107,9 +107,9 @@ export const extractBannerDataFromState = (state: EditorState): BannerMetadata =
 };
 
 // Upsert banner data into the frontmatter with its associated field
-export const updateBannerData = async (file: TFile, bannerData: Partial<BannerMetadataWrite>) => {
+export const updateBannerData = async (file: TFile, bannerData: Partial<BannerDataWrite>) => {
   await plug.app.fileManager.processFrontMatter(file, async (frontmatter) => {
-    for (const [dataKey, val] of Object.entries(bannerData) as [keyof BannerMetadata, any][]) {
+    for (const [dataKey, val] of Object.entries(bannerData) as [keyof BannerData, any][]) {
       const suffix = WRITE_MAP[dataKey];
       const yamlKey = getYamlKey(suffix);
       frontmatter[yamlKey] = val;
@@ -132,7 +132,7 @@ export const updateLegacyBannerSource = async (file: TFile): Promise<boolean> =>
 };
 
 // Helper on whether a banner element should be displayed or not
-export const shouldDisplayBanner = (bannerData: BannerMetadata): boolean => {
+export const shouldDisplayBanner = (bannerData: BannerData): boolean => {
   const { source, icon, header } = bannerData;
   return !!(source || icon || header);
 };

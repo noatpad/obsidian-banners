@@ -8,7 +8,7 @@ const PUSHER_CLASS = 'markdown-preview-pusher';
 
 export default class BannerRenderChild extends MarkdownRenderChild {
   banner!: Banner;
-  bannerData: Partial<BannerMetadata>;
+  bannerData: Partial<BannerData>;
   contentEl: HTMLElement;
   file: TFile;
   embedded: Embedded;
@@ -16,7 +16,7 @@ export default class BannerRenderChild extends MarkdownRenderChild {
   constructor(
     el: HTMLElement,
     ctx: MarkdownPostProcessorContext,
-    bannerData: Partial<BannerMetadata>,
+    bannerData: Partial<BannerData>,
     file: TFile,
     embedded: Embedded
   ) {

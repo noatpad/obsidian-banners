@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
-  import type { BannerMetadataWrite } from 'src/bannerData';
+  import type { BannerDataWrite } from 'src/bannerData';
   import type { Embedded } from 'src/reading/BannerRenderChild';
   import { getSetting } from 'src/settings';
   import settings from 'src/settings/store';
@@ -8,7 +8,7 @@
   import type { DragParams, XY } from './actions';
 
   interface BannerImageDispatch {
-    'drag-banner': Partial<BannerMetadataWrite>;
+    'drag-banner': Partial<BannerDataWrite>;
     'toggle-lock': null;
   }
   const dispatch = createEventDispatcher<BannerImageDispatch>();
@@ -34,7 +34,7 @@
   const hoverOff = () => { hovering = false; };
   const dragStart = () => { dragging = true; };
   const dragMove = ({ detail }: CustomEvent<XY>) => { objectPos = detail; };
-  const dragEnd = ({ detail }: CustomEvent<Partial<BannerMetadataWrite>>) => {
+  const dragEnd = ({ detail }: CustomEvent<Partial<BannerDataWrite>>) => {
     dispatch('drag-banner', detail);
     dragging = false;
   };

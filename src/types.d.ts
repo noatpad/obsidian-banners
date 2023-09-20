@@ -77,7 +77,7 @@ declare module '@twemoji/api' {
 }
 
 declare global {
-  interface BannerMetadata {
+  interface BannerData {
     source: string;
     x: number;
     y: number;
