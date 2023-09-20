@@ -1,5 +1,6 @@
 import { EditorState, StateEffect, Transaction } from '@codemirror/state';
 import isEqual from 'lodash/isEqual';
+import { editorInfoField } from 'obsidian';
 import { extractBannerDataFromState, shouldDisplayBanner } from 'src/bannerData';
 import bannerField from './bannerField';
 import {
@@ -12,6 +13,7 @@ import {
   upsertBannerEffect
 } from './utils';
 
+// Get an upsert/remove effect depending if banner data should be displayed
 const getEffectFromData = (state: EditorState): StateEffect<BannerMetadata> => {
   const bannerData = extractBannerDataFromState(state);
   return shouldDisplayBanner(bannerData)
@@ -19,6 +21,7 @@ const getEffectFromData = (state: EditorState): StateEffect<BannerMetadata> => {
     : removeBannerEffect.of(null);
 };
 
+// Helper to check if banner data change between transactions
 const didBannerDataChange = (transaction: Transaction): boolean => {
   const { docChanged, state } = transaction;
   if (!docChanged) return false;
@@ -32,6 +35,9 @@ const didBannerDataChange = (transaction: Transaction): boolean => {
 effects to `bannerField` */
 const bannerExtender = EditorState.transactionExtender.of((transaction) => {
   const { effects, state } = transaction;
+
+  // Only run on Markdown panes (skips Canvas views)
+  if (state.field(editorInfoField).leaf === undefined) return null;
 
   if (hasEffect(effects, openNoteEffect)) {
     console.log('open note!');
