@@ -6,14 +6,9 @@ export const leafBannerMap: Record<string, Banner> = {};
 
 export const refreshEffect = StateEffect.define();
 export const openNoteEffect = StateEffect.define<Banner | null>();
-export const upsertBannerEffect = StateEffect.define<Partial<BannerMetadata>>();
+export const upsertBannerEffect = StateEffect.define<BannerMetadata>();
 export const removeBannerEffect = StateEffect.define();
 export const assignBannerEffect = StateEffect.define<Banner>();
-const bannerEffects = [
-  upsertBannerEffect,
-  removeBannerEffect,
-  assignBannerEffect
-];
 
 export const hasEffect = (
   effects: readonly StateEffect<any>[],
@@ -24,15 +19,19 @@ export const hasEffect = (
     : effects.some((e) => e.is(target))
 );
 
-export const isBannerEffect = (effects: readonly StateEffect<any>[]) => (
-  hasEffect(effects, bannerEffects)
-);
-
-export const setBannerInMap = (state: EditorState, banner?: Banner) => {
+export const registerBanner = (state: EditorState, banner: Banner) => {
   const { leaf } = state.field(editorInfoField);
-  if (banner) {
-    leafBannerMap[leaf.id] = banner;
-  } else {
-    delete leafBannerMap[leaf.id];
-  }
+  leafBannerMap[leaf.id] = banner;
+};
+
+export const getBanner = (state: EditorState) => {
+  const { id } = state.field(editorInfoField).leaf;
+  return leafBannerMap[id];
+};
+
+export const destroyBanner = (state: EditorState) => {
+  const { id } = state.field(editorInfoField).leaf;
+  const banner = getBanner(state);
+  banner.$destroy();
+  delete leafBannerMap[id];
 };

@@ -66,7 +66,6 @@ const WRITE_MAP: Record<keyof BannerMetadata, string> = {
   lock: 'lock'
 } as const;
 
-export const BANNER_WRITE_KEYS = Object.keys(WRITE_MAP) as Array<keyof BannerMetadata>;
 const YAML_REGEX = /^---\n(.*?)\n---/s;
 const LEGACY_REGEX = /^!\[\[.+\]\]$/;
 
@@ -79,16 +78,14 @@ const getYamlKey = (suffix: string) => {
 export const extractBannerData = (
   frontmatter: Record<string, unknown> = {},
   file: TFile
-): Partial<BannerMetadata> => {
+): BannerMetadata => {
   return Object.entries(READ_MAP).reduce((data, [suffix, item]) => {
     const { key, transform } = item;
     const yamlKey = getYamlKey(suffix);
-    if (Object.hasOwn(frontmatter, yamlKey)) {
-      const rawValue = frontmatter[yamlKey] as any;
-      data[key] = transform ? transform(rawValue, file) : rawValue;
-    }
+    const rawValue = frontmatter[yamlKey];
+    data[key] = (rawValue && transform) ? transform(rawValue, file) : rawValue;
     return data;
-  }, {} as Partial<BannerMetadata>);
+  }, {} as Record<keyof BannerMetadata, unknown>) as BannerMetadata;
 };
 
 // Helper to extract banner data from a given file
@@ -100,7 +97,7 @@ export const extractBannerDataFromFile = (file: TFile): Partial<BannerMetadata> 
 // Helper to parse raw frontmatter to get banner metadata
 /* BUG: Undos, redos, and source frontmatter edits do not have the latest frontmatter in the
 editing view, causing desynced banner data to pass through until an extra change is done */
-export const extractBannerDataFromState = (state: EditorState): Partial<BannerMetadata> => {
+export const extractBannerDataFromState = (state: EditorState): BannerMetadata => {
   const { data, file } = state.field(editorInfoField);
   const match = data?.match(YAML_REGEX);
   const yaml = match ? match[1] : '';
@@ -108,7 +105,7 @@ export const extractBannerDataFromState = (state: EditorState): Partial<BannerMe
     const frontmatter = (parseYaml(yaml) ?? {}) as Record<string, unknown>;
     return extractBannerData(frontmatter, file!);
   } catch (error) {
-    return {};
+    return extractBannerData({}, file!);
   }
 };
 
@@ -138,7 +135,7 @@ export const updateLegacyBannerSource = async (file: TFile): Promise<boolean> =>
 };
 
 // Helper on whether a banner element should be displayed or not
-export const shouldDisplayBanner = (bannerData: Partial<BannerMetadata>): boolean => {
+export const shouldDisplayBanner = (bannerData: BannerMetadata): boolean => {
   const { source, icon, header } = bannerData;
-  return !!source || !!icon || !!header;
+  return !!(source || icon || header);
 };

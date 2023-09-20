@@ -16,11 +16,13 @@
     "@codemirror/state": "^6.2.1",
     "@codemirror/view": "^6.17.0",
     "@twemoji/api": "^14.1.2",
+    "lodash": "^4.17.21",
     "node-emoji": "^2.1.0",
     "obsidian": "^1.4.4"
   },
   "devDependencies": {
     "@tsconfig/svelte": "^5.0.2",
+    "@types/lodash": "^4.14.198",
     "@types/node": "^20.5.9",
     "@types/twemoji-parser": "^13.1.1",
     "@typescript-eslint/eslint-plugin": "^6.6.0",
