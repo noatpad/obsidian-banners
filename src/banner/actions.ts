@@ -4,7 +4,7 @@ import type { Action } from 'svelte/action';
 import type { BannerMetadataWrite } from 'src/bannerData';
 import type { Embedded } from 'src/reading/BannerRenderChild';
 import { getSetting } from 'src/settings';
-import type { BannerDragModOption } from 'src/settings';
+import type { BannerDragModOption } from 'src/settings/structure';
 
 type MTEvent = MouseEvent | TouchEvent;
 
@@ -165,7 +165,7 @@ export const dragBanner: DragBannerAction = (img, params) => {
         modKey: newModKey
       } = params;
       if (draggable !== newDraggable) toggleDragListeners(newDraggable);
-      if (modKey !== modKey) toggleToggleListeners(newModKey);
+      if (modKey !== newModKey) toggleToggleListeners(newModKey);
 
       objectPos = { x, y };
       img.dispatchEvent(new CustomEvent<XY>('dragBannerMove', { detail: objectPos }));
