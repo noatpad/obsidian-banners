@@ -76,7 +76,7 @@ const commands: Command[] = [
     name: 'Remove header',
     checkCallback(checking) {
       const file = plug.app.workspace.getActiveFile();
-      if (checking) return !!file && !!extractBannerDataFromFile(file).header !== undefined;
+      if (checking) return !!file && extractBannerDataFromFile(file).header !== undefined;
       updateBannerData(file!, { header: null });
     }
   }
