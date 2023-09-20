@@ -112,9 +112,8 @@ export const getHeaderText = (header: string[] | null | undefined, file: TFile):
     for (const h of header) {
       if (h === '{{alias}}' && frontmatter?.aliases) {
         return frontmatter.aliases[0];
-      } else if (h.match(/\{{(.*)\}}/)) {
-        const key = h.match(/\{{(.*)\}}/)![1];
-        if (frontmatter?.[key]) return frontmatter[key]; //note : The key must exists!
+      } else if (h.match(/\{{(.*)\}}/)&& frontmatter && frontmatter?.[h.match(/\{{(.*)\}}/)![1]]) {
+        return frontmatter[h.match(/\{{(.*)\}}/)![1]]; //note : The key must exists!
       } else if (h === '{{file}}') {
         return file.basename;
       }
