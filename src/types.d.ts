@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import type { EditorView } from '@codemirror/view';
 import type { Editor } from 'obsidian';
 import type { IconString } from './bannerData';
@@ -68,9 +69,10 @@ declare module 'obsidian' {
   }
 }
 
-// Fix tyings with twemoji package
+// Fix typings with twemoji package
 declare module '@twemoji/api' {
   const twemoji: Twemoji;
+  // @ts-ignore
   export default twemoji;
 }
 

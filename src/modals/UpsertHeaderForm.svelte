@@ -13,7 +13,7 @@
 
   const closeModal = () => dispatch('close');
   const upsertHeader = () => {
-    const header = useFilename || text || undefined;
+    const header = useFilename ? null : (text || undefined);
     updateBannerData(file, { header });
     closeModal();
   };

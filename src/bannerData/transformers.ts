@@ -1,4 +1,3 @@
-import type { TFile } from 'obsidian';
 import type { IconString } from '.';
 
 /* NOTE: There is a new regex known as /\p{RGI_Emoji}/v that can do emojis that are made of more
@@ -11,13 +10,4 @@ export const extractIconFromYaml = (value: string | undefined): IconString | nul
   return match?.length
     ? { type: 'emoji', value: match.join('\u200d') }
     : { type: 'text', value: value.slice(0, 1) };
-};
-
-export const extractHeaderFromYaml = (
-  value: string | boolean | undefined,
-  file: TFile
-): string | null => {
-  if (value === undefined) return null;
-  if (typeof value === 'boolean') return value ? file.basename : null;
-  return value || null;
 };

@@ -3,7 +3,7 @@ import { editorInfoField, parseYaml } from 'obsidian';
 import type { TFile } from 'obsidian';
 import { plug } from '../main';
 import { getSetting } from '../settings';
-import { extractHeaderFromYaml, extractIconFromYaml } from './transformers';
+import { extractIconFromYaml } from './transformers';
 
 interface ReadProperty {
   key: keyof BannerMetadata;
@@ -21,7 +21,7 @@ export interface BannerMetadataWrite {
   x: number;
   y: number;
   icon: string;
-  header: string | boolean;
+  header: string | null;
   lock: boolean;
 }
 
@@ -49,10 +49,7 @@ const READ_MAP: Record<string, ReadProperty> = {
     key: 'icon',
     transform: extractIconFromYaml
   },
-  header: {
-    key: 'header',
-    transform: extractHeaderFromYaml
-  },
+  header: { key: 'header' },
   lock: { key: 'lock' }
 } as const;
 

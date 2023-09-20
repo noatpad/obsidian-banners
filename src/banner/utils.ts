@@ -57,14 +57,19 @@ export const getHeights = (embedded: Embedded, _deps?: any[]): Heights => {
   return { banner, icon };
 };
 
+const hasHeaderElement = (
+  icon: IconString | undefined,
+  header: string | null | undefined
+): boolean => !!(icon || header !== undefined);
+
 export const getBannerHeight = (
   heights: Heights,
   source: string | undefined,
   icon: IconString | undefined,
-  header: string | undefined
+  header: string | null | undefined
 ): string => {
   if (source) return heights.banner;
-  else if (icon || header) return heights.icon;
+  else if (hasHeaderElement(icon, header)) return heights.icon;
   return '';
 };
 
@@ -81,20 +86,27 @@ const getHeaderExtraOffset = (offset: string, alignment: HeaderVerticalAlignment
 export const getSizerHeight = (
   heights: Heights,
   source: string | undefined,
-  header: string | boolean | undefined,
+  header: string | null | undefined,
   icon: IconString | undefined,
   iconAlignment: HeaderVerticalAlignmentOption
 ): string => {
   if (source) {
-    if (icon || header) {
+    if (hasHeaderElement(icon, header)) {
       const extraOffset = getHeaderExtraOffset(heights.icon, iconAlignment);
       return `calc(${heights.banner} + ${extraOffset})`;
+    } else {
+      return heights.banner;
     }
-    else return heights.banner;
-  } else if (icon || header) {
+  } else if (hasHeaderElement(icon, header)) {
     return heights.icon;
   }
   return '';
+};
+
+export const getHeaderText = (header: string | null | undefined, file: TFile): string => {
+  if (header === undefined) return undefined;
+  if (header === null) return file.basename;
+  return header;
 };
 
 export const getHeaderTransform = (
