@@ -1,5 +1,5 @@
 import { Platform, requestUrl } from 'obsidian';
-import type { TFile } from 'obsidian';
+import type { FrontMatterCache, TFile } from 'obsidian';
 import { IMAGE_FORMATS } from 'src/bannerData';
 import type { IconString } from 'src/bannerData';
 import { plug } from 'src/main';
@@ -59,14 +59,14 @@ export const getHeights = (embedded: Embedded, _deps?: any[]): Heights => {
 
 const hasHeaderElement = (
   icon: IconString | undefined,
-  header: string | null | undefined
+  header: string[] | null | undefined
 ): boolean => !!(icon || header !== undefined);
 
 export const getBannerHeight = (
   heights: Heights,
   source: string | undefined,
   icon: IconString | undefined,
-  header: string | null | undefined
+  header: string[] | null | undefined
 ): string => {
   if (source) return heights.banner;
   else if (hasHeaderElement(icon, header)) return heights.icon;
@@ -86,7 +86,7 @@ const getHeaderExtraOffset = (offset: string, alignment: HeaderVerticalAlignment
 export const getSizerHeight = (
   heights: Heights,
   source: string | undefined,
-  header: string | null | undefined,
+  header: string[] | null | undefined,
   icon: IconString | undefined,
   iconAlignment: HeaderVerticalAlignmentOption
 ): string => {
@@ -103,9 +103,25 @@ export const getSizerHeight = (
   return '';
 };
 
-export const getHeaderText = (header: string | null | undefined, file: TFile): string => {
+export const getHeaderText = (header: string[] | null | undefined, file: TFile):
+  string | undefined => {
   if (header === undefined) return undefined;
   if (header === null) return file.basename;
+  if (Array.isArray(header)) {
+    const frontmatter = plug.app.metadataCache.getFileCache(file)?.frontmatter as FrontMatterCache;
+    for (const h of header) {
+      if (h === '{{alias}}' && frontmatter?.aliases) {
+        return frontmatter.aliases[0];
+      } else if (h.match(/\{{(.*)\}}/)) {
+        const key = h.match(/\{{(.*)\}}/)![1];
+        if (frontmatter?.[key]) return frontmatter[key]; //note : The key must exists!
+      } else if (h === '{{file}}') {
+        return file.basename;
+      }
+    }
+    return header.join(' ');
+  }
+
   return header;
 };
 
