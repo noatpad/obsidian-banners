@@ -24,7 +24,7 @@
   export let x = 0.5;
   export let y = 0.5;
   export let icon: IconString | undefined = undefined;
-  export let header: string[] | null | undefined = undefined;
+  export let header: string | string[] | null | undefined = undefined;
   export let lock = false;
 
   export let viewType: 'editing' | 'reading';

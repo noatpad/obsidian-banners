@@ -1,5 +1,5 @@
 import { Platform, requestUrl } from 'obsidian';
-import type { FrontMatterCache, TFile } from 'obsidian';
+import type { TFile } from 'obsidian';
 import { IMAGE_FORMATS } from 'src/bannerData';
 import type { IconString } from 'src/bannerData';
 import { plug } from 'src/main';
@@ -59,14 +59,14 @@ export const getHeights = (embedded: Embedded, _deps?: any[]): Heights => {
 
 const hasHeaderElement = (
   icon: IconString | undefined,
-  header: string[] | null | undefined
+  header: string[] | string | null | undefined
 ): boolean => !!(icon || header !== undefined);
 
 export const getBannerHeight = (
   heights: Heights,
   source: string | undefined,
   icon: IconString | undefined,
-  header: string[] | null | undefined
+  header: string[] | string | null | undefined
 ): string => {
   if (source) return heights.banner;
   else if (hasHeaderElement(icon, header)) return heights.icon;
@@ -86,7 +86,7 @@ const getHeaderExtraOffset = (offset: string, alignment: HeaderVerticalAlignment
 export const getSizerHeight = (
   heights: Heights,
   source: string | undefined,
-  header: string[] | null | undefined,
+  header: string[] | string | null | undefined,
   icon: IconString | undefined,
   iconAlignment: HeaderVerticalAlignmentOption
 ): string => {
@@ -103,25 +103,47 @@ export const getSizerHeight = (
   return '';
 };
 
-export const getHeaderText = (header: string[] | null | undefined, file: TFile):
+export const getHeaderText = (header: string[] | string | null | undefined, file: TFile):
   string | undefined => {
   if (header === undefined) return undefined;
   if (header === null) return file.basename;
   if (Array.isArray(header)) {
-    const frontmatter = plug.app.metadataCache.getFileCache(file)?.frontmatter as FrontMatterCache;
+    const frontmatter = plug.app.metadataCache.getFileCache(file)?.frontmatter;
+    if (!frontmatter) return header.join(' ');
     for (const h of header) {
-      if (h === '{{alias}}' && frontmatter?.aliases) {
-        return frontmatter.aliases[0];
-      } else if (h.match(/\{{(.*)\}}/)&& frontmatter && frontmatter?.[h.match(/\{{(.*)\}}/)![1]]) {
-        return frontmatter[h.match(/\{{(.*)\}}/)![1]]; //note : The key must exists!
-      } else if (h === '{{file}}') {
+      const propertyKey = h.match(/\{{(.*)\}}/)?.[1];
+      if (propertyKey === 'file') {
         return file.basename;
+      } else if (propertyKey && frontmatter[propertyKey]) {
+        if (Array.isArray(frontmatter[propertyKey])) {
+          return frontmatter[propertyKey][0];
+        }
+        return frontmatter[propertyKey];
       }
     }
     return header.join(' ');
   }
-
+  /** Allow to use also a string to allow a "fusion" of value from the frontmatter */
+  const properties = header.match(/{{(.*?)}}/g);
+  if (properties) {
+    for (const property of properties) {
+      let keyName = property.slice(2, -2);
+      const frontmatter = plug.app.metadataCache.getFileCache(file)?.frontmatter;
+      if (!frontmatter) return header;
+      if (frontmatter[keyName]) {
+        if (keyName === 'alias')
+          keyName = 'aliases';
+        const keyValue = frontmatter[keyName];
+        header = Array.isArray(keyValue) ?
+          header.replace(property, keyValue[0]) :
+          header.replace(property, keyValue);
+      } else if (keyName === 'file') {
+        header = header.replace(property, file.basename);
+      }
+    }
+  }
   return header;
+
 };
 
 export const getHeaderTransform = (
