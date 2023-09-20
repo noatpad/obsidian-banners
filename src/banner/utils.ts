@@ -107,6 +107,9 @@ export const getHeaderText = (header: string[] | string | null | undefined, file
   string | undefined => {
   if (header === undefined) return undefined;
   if (header === null) return file.basename;
+  /** In list it is useful to have fallback. ie if a key don't exist, use the second, etc.
+   * If no key exist, it returns the header join by space
+   */
   if (Array.isArray(header)) {
     const frontmatter = plug.app.metadataCache.getFileCache(file)?.frontmatter;
     if (!frontmatter) return header.join(' ');
@@ -123,7 +126,10 @@ export const getHeaderText = (header: string[] | string | null | undefined, file
     }
     return header.join(' ');
   }
-  /** Allow to use also a string to allow a "fusion" of value from the frontmatter */
+  /** Allow to use also a string to allow a "fusion" of value from the frontmatter
+   * ie: header: "{{title}} - {{author}}" ⇒ "My title - My author"
+   * useful for templating and the frontmatter title plugin
+  */
   const properties = header.match(/{{(.*?)}}/g);
   if (properties) {
     for (const property of properties) {
