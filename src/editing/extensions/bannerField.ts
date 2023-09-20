@@ -32,9 +32,8 @@ const addBanner = (state: EditorState, bannerData: BannerMetadata) => {
   registerBanner(state, banner);
 };
 
-const updateBanner = (state: EditorState, bannerData: BannerMetadata) => {
+const updateBanner = (banner: Banner, bannerData: BannerMetadata) => {
   console.log('update!');
-  const banner = getBanner(state);
   banner.$set(bannerData);
 };
 
@@ -62,8 +61,12 @@ const bannerField = StateField.define<BannerMetadata | null>({
 
     for (const effect of effects) {
       if (effect.is(upsertBannerEffect)) {
-        const effectCallback = now ? updateBanner : addBanner;
-        effectCallback(state, effect.value);
+        const banner = getBanner(state);
+        if (banner) {
+          updateBanner(banner, effect.value);
+        } else {
+          addBanner(state, effect.value);
+        }
         now = effect.value;
       } else if (effect.is(removeBannerEffect)) {
         removeBanner(state);
