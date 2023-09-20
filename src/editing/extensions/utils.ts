@@ -32,6 +32,6 @@ export const getBanner = (state: EditorState) => {
 export const destroyBanner = (state: EditorState) => {
   const { id } = state.field(editorInfoField).leaf;
   const banner = leafBannerMap[id];
-  banner.$destroy();
+  banner?.$destroy();
   delete leafBannerMap[id];
 };
