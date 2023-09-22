@@ -123,18 +123,21 @@ export const getHeaderText = (header: string[] | string | null | undefined,
   settings: BannerSettings):
   string | undefined => {
   const frontmatter = plug.app.metadataCache.getFileCache(file)?.frontmatter;
-  if (settings.headerPropertyKey && settings.headerByDefault && frontmatter) {
-    const key = settings.headerPropertyKey;
-    return getFrontMatterKey(key, frontmatter, file.basename);
+  const defautValue = settings.headerByDefault ? file.basename : undefined;
+  if (header === undefined) {
+    if (settings.headerPropertyKey) {
+      const key = settings.headerPropertyKey;
+      const defautValue = settings.headerByDefault ? file.basename : undefined;
+      return getFrontMatterKey(key, frontmatter, defautValue);
+    } if (settings.headerByDefault) return file.basename;
+    return undefined;
   }
-  if (settings.headerByDefault && header === undefined) return file.basename;
-  if (header === undefined) return undefined;
   if (header === null) return file.basename;
   /** In list it is useful to have fallback. ie if a key don't exist, use the second, etc.
    * If no key exist, it returns the header join by space
    */
   if (Array.isArray(header)) {
-    if (!frontmatter) return header.join(' ');
+    if (!frontmatter) return defautValue;
     for (const h of header) {
       const propertyKey = h.match(/\{{(.*)\}}/)?.[1];
       const frontmatterKey = getFrontMatterKey(propertyKey, frontmatter);
@@ -160,7 +163,6 @@ export const getHeaderText = (header: string[] | string | null | undefined,
       else if (keyName === 'file') header = header.replace(property, file.basename);
     }
   }
-  console.log('HEADER', header);
   return header;
 
 };

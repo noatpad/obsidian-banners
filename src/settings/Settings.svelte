@@ -178,15 +178,14 @@
     If a banner has no header, display the filename as the header instead.
   </span>
 </ToggleSetting>
-<Depends on="headerByDefault">
-  <InputSetting key="headerPropertyKey" numOrStr>
-    <span slot="name">Property as header</span>
-    <span slot="description">
-      Allow to use the value of a Property as the header instead of the filename.
-      Leave it empty to disable this feature.
-    </span>
-  </InputSetting>
-</Depends>
+<InputSetting key="headerPropertyKey" numOrStr>
+  <span slot="name">Property as header</span>
+  <span slot="description">
+    Allow to use the value of a Property as the header instead of the filename.
+    Leave it empty to disable this feature.
+    Note that you will need to reload the file to see the changes.
+  </span>
+</InputSetting>
 
 <!-- Banner Icons -->
 <Header
