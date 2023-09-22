@@ -4,6 +4,7 @@ export type BannerDragModOption = 'None' | 'Shift' | 'Ctrl' | 'Alt' | 'Meta';
 type HeaderTextDecorOption = 'none' | 'shadow' | 'border';
 export type HeaderHorizontalAlignmentOption = 'left' | 'center' | 'right' | 'custom';
 export type HeaderVerticalAlignmentOption = 'center' | 'above' | 'edge' | 'below' | 'custom';
+export type PropertyKey = string | undefined;
 
 export interface BannerSettings {
   height: LengthValue;
@@ -24,6 +25,8 @@ export interface BannerSettings {
   headerHorizontalTransform: string;
   headerVerticalAlignment: HeaderVerticalAlignmentOption;
   headerVerticalTransform: string;
+  headerByDefault: boolean;
+  headerPropertyKey: PropertyKey;
   iconSize: LengthValue;
   useTwemoji: boolean;
   showPreviewInLocalModal: boolean;
@@ -50,6 +53,8 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   headerHorizontalTransform: '0px',
   headerVerticalAlignment: 'edge',
   headerVerticalTransform: '0px',
+  headerByDefault: true,
+  headerPropertyKey: 'title',
   iconSize: '1.2em',
   useTwemoji: true,
   showPreviewInLocalModal: true,

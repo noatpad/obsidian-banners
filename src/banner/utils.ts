@@ -1,5 +1,5 @@
 import { Platform, requestUrl } from 'obsidian';
-import type { TFile } from 'obsidian';
+import type { FrontMatterCache, TFile } from 'obsidian';
 import { IMAGE_FORMATS } from 'src/bannerData';
 import type { IconString } from 'src/bannerData';
 import { plug } from 'src/main';
@@ -7,7 +7,8 @@ import type { Embedded } from 'src/reading/BannerRenderChild';
 import { getSetting, parseCssSetting } from 'src/settings';
 import type {
   HeaderHorizontalAlignmentOption,
-  HeaderVerticalAlignmentOption
+  HeaderVerticalAlignmentOption,
+  BannerSettings
 } from 'src/settings/structure';
 
 export type ViewType = 'editing' | 'reading';
@@ -103,25 +104,45 @@ export const getSizerHeight = (
   return '';
 };
 
-export const getHeaderText = (header: string[] | string | null | undefined, file: TFile):
+const getFrontMatterKey = (key: string | undefined,
+  frontmatter: FrontMatterCache | undefined, header?: string): string | undefined => {
+  if (!frontmatter || !key) return header;
+  if (frontmatter[key]) {
+    /** Obsidian automatically convert "alias" to "aliases" */
+    const keyName = key === 'alias' ? 'aliases' : key;
+    if (Array.isArray(frontmatter[keyName])) {
+      return frontmatter[keyName][0];
+    }
+    return frontmatter[keyName];
+  }
+  return header;
+};
+
+export const getHeaderText = (header: string[] | string | null | undefined,
+  file: TFile,
+  settings: BannerSettings):
   string | undefined => {
+  const frontmatter = plug.app.metadataCache.getFileCache(file)?.frontmatter;
+  if (settings.headerPropertyKey && settings.headerByDefault && frontmatter) {
+    const key = settings.headerPropertyKey;
+    return getFrontMatterKey(key, frontmatter, file.basename);
+  }
+  if (settings.headerByDefault && header === undefined) return file.basename;
   if (header === undefined) return undefined;
   if (header === null) return file.basename;
   /** In list it is useful to have fallback. ie if a key don't exist, use the second, etc.
    * If no key exist, it returns the header join by space
    */
   if (Array.isArray(header)) {
-    const frontmatter = plug.app.metadataCache.getFileCache(file)?.frontmatter;
     if (!frontmatter) return header.join(' ');
     for (const h of header) {
       const propertyKey = h.match(/\{{(.*)\}}/)?.[1];
+      const frontmatterKey = getFrontMatterKey(propertyKey, frontmatter);
+      console.log(frontmatterKey);
       if (propertyKey === 'file') {
         return file.basename;
-      } else if (propertyKey && frontmatter[propertyKey]) {
-        if (Array.isArray(frontmatter[propertyKey])) {
-          return frontmatter[propertyKey][0];
-        }
-        return frontmatter[propertyKey];
+      } else if (frontmatterKey) {
+        return frontmatterKey;
       }
     }
     return header.join(' ');
@@ -133,21 +154,13 @@ export const getHeaderText = (header: string[] | string | null | undefined, file
   const properties = header.match(/{{(.*?)}}/g);
   if (properties) {
     for (const property of properties) {
-      let keyName = property.slice(2, -2);
-      const frontmatter = plug.app.metadataCache.getFileCache(file)?.frontmatter;
-      if (!frontmatter) return header;
-      if (frontmatter[keyName]) {
-        if (keyName === 'alias')
-          keyName = 'aliases';
-        const keyValue = frontmatter[keyName];
-        header = Array.isArray(keyValue) ?
-          header.replace(property, keyValue[0]) :
-          header.replace(property, keyValue);
-      } else if (keyName === 'file') {
-        header = header.replace(property, file.basename);
-      }
+      const keyName = property.slice(2, -2);
+      const keyValue = getFrontMatterKey(keyName, frontmatter);
+      if (keyValue) header = header.replace(property, keyValue);
+      else if (keyName === 'file') header = header.replace(property, file.basename);
     }
   }
+  console.log('HEADER', header);
   return header;
 
 };

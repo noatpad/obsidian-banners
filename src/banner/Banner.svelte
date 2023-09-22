@@ -63,7 +63,7 @@
   $: bannerX = x ?? 0.5;
   $: bannerY = y ?? 0.5;
   $: lockValue = lock ?? false;
-  $: headerText = getHeaderText(header, file);
+  $: headerText = getHeaderText(header, file, $settings);
   $: withBanner = !!source;
   $: isEmbed = !!embed;
 </script>

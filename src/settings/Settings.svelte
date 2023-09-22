@@ -172,6 +172,21 @@
     </span>
   </InputSetting>
 </Depends>
+<ToggleSetting key="headerByDefault">
+  <span slot="name">Display filename as default header</span>
+  <span slot="description">
+    If a banner has no header, display the filename as the header instead.
+  </span>
+</ToggleSetting>
+<Depends on="headerByDefault">
+  <InputSetting key="headerPropertyKey" numOrStr>
+    <span slot="name">Property as header</span>
+    <span slot="description">
+      Allow to use the value of a Property as the header instead of the filename.
+      Leave it empty to disable this feature.
+    </span>
+  </InputSetting>
+</Depends>
 
 <!-- Banner Icons -->
 <Header
