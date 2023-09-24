@@ -76,13 +76,24 @@ export const extractBannerData = (
   frontmatter: Record<string, unknown> = {},
   file: TFile
 ): BannerData => {
-  return Object.entries(READ_MAP).reduce((data, [suffix, item]) => {
+  const bannerData = Object.entries(READ_MAP).reduce((data, [suffix, item]) => {
     const { key, transform } = item;
     const yamlKey = getYamlKey(suffix);
     const rawValue = frontmatter[yamlKey];
     data[key] = (rawValue && transform) ? transform(rawValue, file) : rawValue;
     return data;
   }, {} as Record<keyof BannerData, unknown>) as BannerData;
+  if (bannerData.header === null) {
+    bannerData.header = file.basename;
+  } else if (bannerData.header === undefined) {
+    const defaultValue = getSetting('headerByDefault') ? file.basename : undefined;
+    const propertyKey = getSetting('headerPropertyKey');
+    if (propertyKey) {
+      const propertyValue = frontmatter[propertyKey] ?? defaultValue;
+      bannerData.header = Array.isArray(propertyValue) ? propertyValue[0] : propertyValue;
+    }
+  }
+  return bannerData;
 };
 
 // Helper to extract banner data from a given file
