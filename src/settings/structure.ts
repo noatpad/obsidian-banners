@@ -54,7 +54,7 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   headerVerticalAlignment: 'edge',
   headerVerticalTransform: '0px',
   headerByDefault: true,
-  headerPropertyKey: 'title',
+  headerPropertyKey: '',
   iconSize: '1.2em',
   useTwemoji: true,
   showPreviewInLocalModal: true,
