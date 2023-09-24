@@ -178,7 +178,7 @@
     If a banner has no header, display the filename as the header instead.
   </span>
 </ToggleSetting>
-<InputSetting key="headerPropertyKey" numOrStr>
+<InputSetting key="headerPropertyKey">
   <span slot="name">Property as header</span>
   <span slot="description">
     Allow to use the value of a Property as the header instead of the filename.
