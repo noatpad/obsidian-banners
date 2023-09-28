@@ -29,12 +29,18 @@
 
     for (let i = 0; i < count; i++) {
       const file = files[i];
-      const changed = await updateLegacyBannerSource(file);
-      if (changed) {
-        addToLog(`Updated ${file.name}!`);
-        changeCount++;
+      try {
+        const changed = await updateLegacyBannerSource(file);
+        if (changed) {
+          addToLog(`Updated ${file.name}!`);
+          changeCount++;
+        }
+      } catch (error) {
+        addToLog(`⚠ ERROR with ${file.name}`);
+        addToLog(`${error}`);
+      } finally {
+        progress.set((i + 1) / count);
       }
-      progress.set((i + 1) / count);
     }
 
     stage = Stage.Done;
