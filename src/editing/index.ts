@@ -44,7 +44,7 @@ export const registerEditorBannerEvents = () => {
         if (doesLeafHaveMarkdownMode(leaf)) {
           const { mode } = (leaf.getViewState() as MarkdownViewState).state;
           const effects = mode === 'source'
-            ? openNoteEffect.of(leafBannerMap[id])
+            ? openNoteEffect.of(null)
             : removeBannerEffect.of(null);
           view.editor.cm.dispatch({ effects });
         } else if (leafBannerMap[id]) {

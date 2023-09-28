@@ -5,10 +5,10 @@ import type Banner from 'src/banner/Banner.svelte';
 export const leafBannerMap: Record<string, Banner> = {};
 
 export const refreshEffect = StateEffect.define();
-export const openNoteEffect = StateEffect.define<Banner | null>();
+export const openNoteEffect = StateEffect.define();
 export const upsertBannerEffect = StateEffect.define<BannerData>();
 export const removeBannerEffect = StateEffect.define();
-export const assignBannerEffect = StateEffect.define<Banner>();
+export const assignBannerEffect = StateEffect.define();
 
 export const hasEffect = (
   effects: readonly StateEffect<any>[],

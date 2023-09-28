@@ -14,7 +14,7 @@ import {
 } from './utils';
 
 // Get an upsert/remove effect depending if banner data should be displayed
-const getEffectFromData = (state: EditorState): StateEffect<BannerData> => {
+const getEffectFromData = (state: EditorState): StateEffect<unknown> => {
   const bannerData = extractBannerDataFromState(state);
   return shouldDisplayBanner(bannerData)
     ? upsertBannerEffect.of(bannerData)
