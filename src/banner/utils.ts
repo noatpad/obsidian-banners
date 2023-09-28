@@ -1,5 +1,5 @@
 import { Platform, requestUrl } from 'obsidian';
-import type { FrontMatterCache, TFile } from 'obsidian';
+import type { TFile } from 'obsidian';
 import { IMAGE_FORMATS } from 'src/bannerData';
 import type { IconString } from 'src/bannerData';
 import { plug } from 'src/main';
@@ -7,8 +7,7 @@ import type { Embedded } from 'src/reading/BannerRenderChild';
 import { getSetting, parseCssSetting } from 'src/settings';
 import type {
   HeaderHorizontalAlignmentOption,
-  HeaderVerticalAlignmentOption,
-  BannerSettings
+  HeaderVerticalAlignmentOption
 } from 'src/settings/structure';
 
 export type ViewType = 'editing' | 'reading';
@@ -102,69 +101,6 @@ export const getSizerHeight = (
     return heights.icon;
   }
   return '';
-};
-
-const getFrontMatterKey = (key: string | undefined,
-  frontmatter: FrontMatterCache | undefined, header?: string): string | undefined => {
-  if (!frontmatter || !key) return header;
-  if (frontmatter[key]) {
-    /** Obsidian automatically convert "alias" to "aliases" */
-    const keyName = key === 'alias' ? 'aliases' : key;
-    if (Array.isArray(frontmatter[keyName])) {
-      return frontmatter[keyName][0];
-    }
-    return frontmatter[keyName];
-  }
-  return header;
-};
-
-export const getHeaderText = (header: string[] | string | null | undefined,
-  file: TFile,
-  settings: BannerSettings):
-  string | undefined => {
-  const frontmatter = plug.app.metadataCache.getFileCache(file)?.frontmatter;
-  const defautValue = settings.headerByDefault ? file.basename : undefined;
-  if (header === undefined) {
-    if (settings.headerPropertyKey) {
-      const key = settings.headerPropertyKey;
-      const defautValue = settings.headerByDefault ? file.basename : undefined;
-      return getFrontMatterKey(key, frontmatter, defautValue);
-    } if (settings.headerByDefault) return file.basename;
-    return undefined;
-  }
-  if (header === null) return file.basename;
-  /** In list it is useful to have fallback. ie if a key don't exist, use the second, etc.
-   * If no key exist, it returns the header join by space
-   */
-  if (Array.isArray(header)) {
-    if (!frontmatter) return defautValue;
-    for (const h of header) {
-      const propertyKey = h.match(/\{{(.*)\}}/)?.[1];
-      const frontmatterKey = getFrontMatterKey(propertyKey, frontmatter);
-      console.log(frontmatterKey);
-      if (propertyKey === 'file') {
-        return file.basename;
-      } else if (frontmatterKey) {
-        return frontmatterKey;
-      }
-    }
-    return header.join(' ');
-  }
-  /** Allow to use also a string to allow a "fusion" of value from the frontmatter
-   * ie: header: "{{title}} - {{author}}" ⇒ "My title - My author"
-   * useful for templating and the frontmatter title plugin
-  */
-  const properties = header.match(/{{(.*?)}}/g);
-  if (properties) {
-    for (const property of properties) {
-      const keyName = property.slice(2, -2);
-      const keyValue = getFrontMatterKey(keyName, frontmatter);
-      if (keyValue) header = header.replace(property, keyValue);
-      else if (keyName === 'file') header = header.replace(property, file.basename);
-    }
-  }
-  return header;
-
 };
 
 export const getHeaderTransform = (

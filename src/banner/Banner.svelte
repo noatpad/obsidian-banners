@@ -15,7 +15,6 @@
   import {
     fetchImage,
     getBannerHeight,
-    getHeaderText,
     getHeights,
     getSizerHeight
   } from './utils';
@@ -24,7 +23,7 @@
   export let x = 0.5;
   export let y = 0.5;
   export let icon: IconString | undefined = undefined;
-  export let header: string | string[] | null | undefined = undefined;
+  export let header: string | undefined = undefined;
   export let lock = false;
 
   export let viewType: 'editing' | 'reading';
@@ -63,7 +62,6 @@
   $: bannerX = x ?? 0.5;
   $: bannerY = y ?? 0.5;
   $: lockValue = lock ?? false;
-  $: headerText = getHeaderText(header, file, $settings);
   $: withBanner = !!source;
   $: isEmbed = !!embed;
 </script>
@@ -94,10 +92,10 @@
       <Error {error} />
     {/await}
   {/if}
-  {#if icon || headerText}
+  {#if icon || header}
     <Header
       {icon}
-      header={headerText}
+      {header}
       {withBanner}
       {isEmbed}
       on:open-icon-modal={openIconModal}

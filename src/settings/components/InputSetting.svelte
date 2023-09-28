@@ -22,10 +22,7 @@
     }
   };
 
-  $: placeholder = (
-    key === 'headerPropertyKey' ?
-      'title' : (DEFAULT_SETTINGS[key] as number)
-  ).toString();
+  $: placeholder = (DEFAULT_SETTINGS[key] as number | string).toString();
 </script>
 
 <SettingItem {key}>

@@ -4,7 +4,6 @@ export type BannerDragModOption = 'None' | 'Shift' | 'Ctrl' | 'Alt' | 'Meta';
 type HeaderTextDecorOption = 'none' | 'shadow' | 'border';
 export type HeaderHorizontalAlignmentOption = 'left' | 'center' | 'right' | 'custom';
 export type HeaderVerticalAlignmentOption = 'center' | 'above' | 'edge' | 'below' | 'custom';
-export type PropertyKey = string | undefined;
 
 export interface BannerSettings {
   height: LengthValue;
@@ -25,14 +24,16 @@ export interface BannerSettings {
   headerHorizontalTransform: string;
   headerVerticalAlignment: HeaderVerticalAlignmentOption;
   headerVerticalTransform: string;
-  headerByDefault: boolean;
-  headerPropertyKey: PropertyKey;
+  useHeaderByDefault: boolean;
+  defaultHeaderValue: string;
   iconSize: LengthValue;
   useTwemoji: boolean;
   showPreviewInLocalModal: boolean;
   localModalSuggestionLimit: number;
   bannersFolder: string;
 }
+
+export const FILENAME_KEY = 'filename';
 
 export const DEFAULT_SETTINGS: BannerSettings = {
   height: 300,
@@ -53,8 +54,8 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   headerHorizontalTransform: '0px',
   headerVerticalAlignment: 'edge',
   headerVerticalTransform: '0px',
-  headerByDefault: true,
-  headerPropertyKey: '',
+  useHeaderByDefault: true,
+  defaultHeaderValue: `{{${FILENAME_KEY}}}`,
   iconSize: '1.2em',
   useTwemoji: true,
   showPreviewInLocalModal: true,
@@ -67,6 +68,7 @@ export const TEXT_SETTINGS: Array<keyof BannerSettings> = [
   'headerSize',
   'headerHorizontalTransform',
   'headerVerticalTransform',
+  'defaultHeaderValue',
   'iconSize',
   'bannersFolder'
 ];
