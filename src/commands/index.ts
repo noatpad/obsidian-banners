@@ -21,7 +21,7 @@ const commands: Command[] = [
     name: 'Remove banner',
     checkCallback(checking) {
       const file = plug.app.workspace.getActiveFile();
-      if (checking) return !!file && !!extractBannerDataFromFile(file).source;
+      if (checking) return !!(file && extractBannerDataFromFile(file).source);
       updateBannerData(file!, { source: undefined, x: undefined, y: undefined });
     }
   },
@@ -39,7 +39,7 @@ const commands: Command[] = [
     name: 'Lock/Unlock banner position',
     checkCallback(checking) {
       const file = plug.app.workspace.getActiveFile();
-      if (checking) return !!file && !!extractBannerDataFromFile(file).source;
+      if (checking) return !!(file && extractBannerDataFromFile(file).source);
       const lock = extractBannerDataFromFile(file!).lock;
       updateBannerData(file!, { lock: !lock || undefined });
     }
@@ -58,7 +58,7 @@ const commands: Command[] = [
     name: 'Remove icon',
     checkCallback(checking) {
       const file = plug.app.workspace.getActiveFile();
-      if (checking) return !!file && !!extractBannerDataFromFile(file).icon;
+      if (checking) return !!(file && extractBannerDataFromFile(file).icon);
       updateBannerData(file!, { icon: undefined });
     }
   },
@@ -76,7 +76,7 @@ const commands: Command[] = [
     name: 'Remove header',
     checkCallback(checking) {
       const file = plug.app.workspace.getActiveFile();
-      if (checking) return !!file && extractBannerDataFromFile(file).header !== undefined;
+      if (checking) return !!(file && extractBannerDataFromFile(file).header !== undefined);
       updateBannerData(file!, { header: null });
     }
   }
