@@ -46,6 +46,14 @@
     <CssLengthFragment />
   </span>
 </InputSetting>
+<ToggleSetting key="adjustWidthToReadableLineWidth">
+  <span slot="name">Adjust width to readable line length</span>
+  <span slot="description">
+    Adjust the banner width to only be as wide as the <em>readable line length</em>, which is used
+    by Obsidian's <b>Readable line length</b> setting. It is recommended to toggle this together
+    with that setting.
+  </span>
+</ToggleSetting>
 <SelectSetting key="bannerDragModifier">
   <span slot="name">Banner drag modifier key</span>
   <span slot="description">

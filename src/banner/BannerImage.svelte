@@ -19,6 +19,7 @@
   export let lock: boolean;
   export let embed: Embedded;
   $: ({
+    adjustWidthToReadableLineWidth,
     bannerDragModifier,
     enableDragInInternalEmbed,
     enableDragInPopover,
@@ -49,6 +50,7 @@
     modKey: getSetting('bannerDragModifier', bannerDragModifier)
   };
   $: gradient = (getSetting('style', style) === 'gradient');
+  $: readableWidth = getSetting('adjustWidthToReadableLineWidth', adjustWidthToReadableLineWidth);
   $: showLockButton = getSetting('enableLockButton', enableLockButton);
   $: objectPosStyle = `${objectPos.x * 100}% ${objectPos.y * 100}%`;
 </script>
@@ -57,6 +59,7 @@
   {src}
   alt="Banner"
   class:gradient
+  class:readable-width={readableWidth}
   class:draggable
   class:dragging
   style:object-position={objectPosStyle}
@@ -82,6 +85,7 @@
 
 <style lang="scss">
   img {
+    display: block;
     position: relative;
     height: 100%;
     width: 100%;
@@ -92,6 +96,11 @@
     &.gradient {
       mask-image: linear-gradient(to bottom, black 50%, transparent);
       -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent);
+    }
+
+    &.readable-width {
+      max-width: var(--file-line-width);
+      margin: 0 auto;
     }
 
     &.draggable { cursor: grab; }

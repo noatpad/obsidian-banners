@@ -9,6 +9,7 @@ export interface BannerSettings {
   style: StyleOption;
   height: LengthValue;
   mobileHeight: LengthValue;
+  adjustWidthToReadableLineWidth: boolean;
   showInInternalEmbed: boolean;
   internalEmbedHeight: LengthValue;
   showInPopover: boolean;
@@ -39,6 +40,7 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   style: 'solid',
   height: 300,
   mobileHeight: 180,
+  adjustWidthToReadableLineWidth: false,
   showInInternalEmbed: true,
   internalEmbedHeight: 200,
   showInPopover: true,
