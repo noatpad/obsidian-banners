@@ -21,8 +21,8 @@ dependencies:
     specifier: ^2.1.0
     version: 2.1.0
   obsidian:
-    specifier: ^1.4.4
-    version: 1.4.4(@codemirror/state@6.2.1)(@codemirror/view@6.17.0)
+    specifier: ^1.4.11
+    version: 1.4.11(@codemirror/state@6.2.1)(@codemirror/view@6.17.0)
 
 devDependencies:
   '@tsconfig/svelte':
@@ -2431,8 +2431,8 @@ packages:
       es-abstract: 1.22.1
     dev: true
 
-  /obsidian@1.4.4(@codemirror/state@6.2.1)(@codemirror/view@6.17.0):
-    resolution: {integrity: sha512-q2V5GNT/M40uYOENdVw5kovPSoaO6vppiiyBCkIqWgKp4oN654jA/GQ0OaNBA7p5NdfS245QCeRgCFQ42wOZiw==}
+  /obsidian@1.4.11(@codemirror/state@6.2.1)(@codemirror/view@6.17.0):
+    resolution: {integrity: sha512-BCVYTvaXxElJMl6MMbDdY/CGK+aq18SdtDY/7vH8v6BxCBQ6KF4kKxL0vG9UZ0o5qh139KpUoJHNm+6O5dllKA==}
     peerDependencies:
       '@codemirror/state': ^6.0.0
       '@codemirror/view': ^6.0.0
