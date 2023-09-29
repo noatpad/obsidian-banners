@@ -29,4 +29,8 @@ if (semver.gt(obsVer, manifest.minAppVersion)) {
 
 await writeFile(manifestFile, JSON.stringify(manifest, null, '\t'));
 await writeFile('versions.json', JSON.stringify(versions, null, '\t'));
-execSync(`npm version ${newVer} --git-tag-version=false`);
+execSync(
+  `npm version ${newVer} --git-tag-version=false &&
+  git commit -a -m "Prepare release" &&
+  git tag ${newVer}`
+);
