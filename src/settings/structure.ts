@@ -54,7 +54,7 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   headerHorizontalTransform: '0px',
   headerVerticalAlignment: 'edge',
   headerVerticalTransform: '0px',
-  useHeaderByDefault: true,
+  useHeaderByDefault: false,
   defaultHeaderValue: `{{${FILENAME_KEY}}}`,
   iconSize: '1.2em',
   useTwemoji: true,
