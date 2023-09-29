@@ -4,16 +4,17 @@
   import { slide } from 'svelte/transition';
   import { updateBannerData } from 'src/bannerData';
   import ObsidianToggle from 'src/settings/components/ObsidianToggle.svelte';
+  import { FILENAME_KEY } from 'src/settings/structure';
 
   const dispatch = createEventDispatcher();
 
   export let file: TFile;
-  let text = '';
+  let value = '';
   let useFilename = false;
 
   const closeModal = () => dispatch('close');
   const upsertHeader = () => {
-    const header = useFilename ? null : (text || undefined);
+    const header = useFilename ? `{{${FILENAME_KEY}}}` : (value || undefined);
     updateBannerData(file, { header });
     closeModal();
   };
@@ -27,7 +28,7 @@
         class="header-input"
         placeholder="Your header text"
         disabled={useFilename}
-        bind:value={text}
+        bind:value
         on:keydown={(e) => e.key === 'Enter' && upsertHeader()}
       />
     </div>

@@ -77,7 +77,7 @@ const commands: Command[] = [
     checkCallback(checking) {
       const file = plug.app.workspace.getActiveFile();
       if (checking) return !!(file && extractBannerDataFromFile(file).header !== undefined);
-      updateBannerData(file!, { header: null });
+      updateBannerData(file!, { header: undefined });
     }
   }
 ];
