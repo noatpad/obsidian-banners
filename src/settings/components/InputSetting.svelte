@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang='ts'>
   import type { HTMLInputTypeAttribute } from 'svelte/elements';
   import { DEFAULT_SETTINGS } from '../structure';
   import type { BannerSettings } from '../structure';
@@ -22,14 +22,14 @@
     }
   };
 
-  $: placeholder = (DEFAULT_SETTINGS[key] as number).toString();
+  $: placeholder = (DEFAULT_SETTINGS[key] as number | string).toString();
 </script>
 
 <SettingItem {key}>
-  <slot slot="name" name="name" />
-  <slot slot="description" name="description" />
+  <slot slot='name' name='name' />
+  <slot slot='description' name='description' />
   <input
-    slot="setting"
+    slot='setting'
     let:value
     let:update
     {type}

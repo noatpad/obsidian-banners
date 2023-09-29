@@ -172,6 +172,28 @@
     </span>
   </InputSetting>
 </Depends>
+<ToggleSetting key="useHeaderByDefault">
+  <span slot="name">Display header by default</span>
+  <span slot="description">
+    Display a banner header without having to define a <code>{frontmatterField}_header</code>
+    property. This will essentially make it behave like Obsidian's native inline title feature.
+    <br />
+    You can override this setting at an individual note level by having an empty
+    <code>{frontmatterField}_header</code> property too.
+  </span>
+</ToggleSetting>
+<Depends on="useHeaderByDefault">
+  <InputSetting key="defaultHeaderValue">
+    <span slot="name">Default header value</span>
+    <span slot="description">
+      The default header text when the setting above is in effect for a given note. Any text is
+      allowed, but you can also combine it <code>{'{{property}}'}</code> to reference a property in
+      your note, as well as <code>{'{{filename}}'}</code> to use the file's name.
+      You can set multiple key as fallback with the
+      <code>{'{{property1, property2, filename}}'} syntax.</code>
+    </span>
+  </InputSetting>
+</Depends>
 
 <!-- Banner Icons -->
 <Header

@@ -72,7 +72,12 @@ export const loadPostProcessor = () => {
 };
 
 export const registerReadingBannerEvents = () => {
-  registerSettingChangeEvent(['frontmatterField', 'showInInternalEmbed'], rerender);
+  registerSettingChangeEvent([
+    'frontmatterField',
+    'showInInternalEmbed',
+    'useHeaderByDefault',
+    'defaultHeaderValue'
+  ], rerender);
   plug.registerEvent(plug.app.vault.on('rename', rerender));
 };
 

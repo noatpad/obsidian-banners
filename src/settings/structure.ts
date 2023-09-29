@@ -24,12 +24,16 @@ export interface BannerSettings {
   headerHorizontalTransform: string;
   headerVerticalAlignment: HeaderVerticalAlignmentOption;
   headerVerticalTransform: string;
+  useHeaderByDefault: boolean;
+  defaultHeaderValue: string;
   iconSize: LengthValue;
   useTwemoji: boolean;
   showPreviewInLocalModal: boolean;
   localModalSuggestionLimit: number;
   bannersFolder: string;
 }
+
+export const FILENAME_KEY = 'filename';
 
 export const DEFAULT_SETTINGS: BannerSettings = {
   height: 300,
@@ -50,6 +54,8 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   headerHorizontalTransform: '0px',
   headerVerticalAlignment: 'edge',
   headerVerticalTransform: '0px',
+  useHeaderByDefault: true,
+  defaultHeaderValue: `{{${FILENAME_KEY}}}`,
   iconSize: '1.2em',
   useTwemoji: true,
   showPreviewInLocalModal: true,
@@ -62,6 +68,7 @@ export const TEXT_SETTINGS: Array<keyof BannerSettings> = [
   'headerSize',
   'headerHorizontalTransform',
   'headerVerticalTransform',
+  'defaultHeaderValue',
   'iconSize',
   'bannersFolder'
 ];

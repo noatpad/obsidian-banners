@@ -25,7 +25,11 @@ export const loadExtensions = () => {
 
 export const registerEditorBannerEvents = () => {
   // Refresh banner for specific setting changes
-  registerSettingChangeEvent('frontmatterField', () => {
+  registerSettingChangeEvent([
+    'frontmatterField',
+    'useHeaderByDefault',
+    'defaultHeaderValue'
+  ], () => {
     iterateMarkdownLeaves((leaf) => {
       leaf.view.editor.cm.dispatch({ effects: refreshEffect.of(null) });
     }, 'editing');
