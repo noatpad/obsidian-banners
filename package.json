@@ -7,7 +7,8 @@
     "start": "tsx esbuild.config.ts",
     "build": "tsx esbuild.config.ts prod",
     "prepare": "husky install",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "bump": "tsx bump.ts"
   },
   "keywords": [],
   "author": "",

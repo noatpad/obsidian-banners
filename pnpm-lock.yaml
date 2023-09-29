@@ -34,6 +34,9 @@ devDependencies:
   '@types/node':
     specifier: ^20.5.9
     version: 20.5.9
+  '@types/semver':
+    specifier: ^7.5.3
+    version: 7.5.3
   '@types/twemoji-parser':
     specifier: ^13.1.1
     version: 13.1.1
@@ -79,6 +82,9 @@ devDependencies:
   sass:
     specifier: ^1.66.1
     version: 1.66.1
+  semver:
+    specifier: ^7.5.4
+    version: 7.5.4
   svelte:
     specifier: ^4.2.0
     version: 4.2.0
@@ -691,8 +697,8 @@ packages:
     resolution: {integrity: sha512-SnHmG9wN1UVmagJOnyo/qkk0Z7gejYxOYYmaAwr5u2yFYfsupN3sg10kyzN8Hep/2zbHxCnsumxOoRIRMBwKCg==}
     dev: true
 
-  /@types/semver@7.5.1:
-    resolution: {integrity: sha512-cJRQXpObxfNKkFAZbJl2yjWtJCqELQIdShsogr1d2MilP8dKD9TE/nEKHkJgUNHdGKCQaf9HbIynuV2csLGVLg==}
+  /@types/semver@7.5.3:
+    resolution: {integrity: sha512-OxepLK9EuNEIPxWNME+C6WwbRAOOI2o2BaQEGzz5Lu2e4Z5eDnEo+/aVEDMIXywoJitJ7xWd641wrGLZdtwRyw==}
     dev: true
 
   /@types/tern@0.23.4:
@@ -817,7 +823,7 @@ packages:
     dependencies:
       '@eslint-community/eslint-utils': 4.4.0(eslint@8.48.0)
       '@types/json-schema': 7.0.12
-      '@types/semver': 7.5.1
+      '@types/semver': 7.5.3
       '@typescript-eslint/scope-manager': 6.6.0
       '@typescript-eslint/types': 6.6.0
       '@typescript-eslint/typescript-estree': 6.6.0(typescript@5.2.2)
