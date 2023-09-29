@@ -1,14 +1,14 @@
-export type LengthValue = string | number;
 type StyleOption = 'solid' | 'gradient';
+export type LengthValue = string | number;
 export type BannerDragModOption = 'None' | 'Shift' | 'Ctrl' | 'Alt' | 'Meta';
 type HeaderTextDecorOption = 'none' | 'shadow' | 'border';
 export type HeaderHorizontalAlignmentOption = 'left' | 'center' | 'right' | 'custom';
 export type HeaderVerticalAlignmentOption = 'center' | 'above' | 'edge' | 'below' | 'custom';
 
 export interface BannerSettings {
+  style: StyleOption;
   height: LengthValue;
   mobileHeight: LengthValue;
-  style: StyleOption;
   showInInternalEmbed: boolean;
   internalEmbedHeight: LengthValue;
   showInPopover: boolean;
@@ -36,9 +36,9 @@ export interface BannerSettings {
 export const FILENAME_KEY = 'filename';
 
 export const DEFAULT_SETTINGS: BannerSettings = {
+  style: 'solid',
   height: 300,
   mobileHeight: 180,
-  style: 'solid',
   showInInternalEmbed: true,
   internalEmbedHeight: 200,
   showInPopover: true,

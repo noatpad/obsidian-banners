@@ -28,6 +28,10 @@
   description="A nice, lil' thing to add some flair to your notes :)"
   big
 />
+<SelectSetting key="style">
+  <span slot="name">Banner style</span>
+  <span slot="description">Set a style for all of your banners</span>
+</SelectSetting>
 <InputSetting key="height" numOrStr>
   <span slot="name">Banner height</span>
   <span slot="description">
@@ -42,10 +46,6 @@
     <CssLengthFragment />
   </span>
 </InputSetting>
-<SelectSetting key="style">
-  <span slot="name">Banner style</span>
-  <span slot="description">Set a style for all of your banners</span>
-</SelectSetting>
 <SelectSetting key="bannerDragModifier">
   <span slot="name">Banner drag modifier key</span>
   <span slot="description">
