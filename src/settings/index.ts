@@ -17,6 +17,7 @@ export const loadSettings = async () => {
     data,
     { version: plug.manifest.version }
   ) as BannerSettings;
+
   for (const [key, val] of Object.entries(settings) as [keyof BannerSettings, unknown][]) {
     if (
       DEFAULT_SETTINGS[key] === val &&

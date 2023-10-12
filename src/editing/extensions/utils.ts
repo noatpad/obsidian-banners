@@ -1,6 +1,9 @@
 import { EditorState, StateEffect, StateEffectType } from '@codemirror/state';
-import { editorInfoField } from 'obsidian';
-import type Banner from 'src/banner/Banner.svelte';
+import { Notice, editorEditorField, editorInfoField } from 'obsidian';
+import Banner from 'src/banner/Banner.svelte';
+import { WRAPPER_CLASS } from 'src/banner/utils';
+
+const SCROLLER_CLASS = 'cm-scroller';
 
 export const leafBannerMap: Record<string, Banner> = {};
 
@@ -19,9 +22,27 @@ export const hasEffect = (
     : effects.some((e) => e.is(target))
 );
 
-export const registerBanner = (state: EditorState, banner: Banner) => {
-  const { leaf } = state.field(editorInfoField);
-  leafBannerMap[leaf.id] = banner;
+export const registerBanner = (state: EditorState, bannerData: BannerData) => {
+  const { file, leaf } = state.field(editorInfoField);
+  const { dom } = state.field(editorEditorField);
+
+  const wrapper = createDiv({ cls: WRAPPER_CLASS });
+  const banner = new Banner({
+    target: wrapper,
+    props: {
+      ...bannerData,
+      viewType: 'editing',
+      file: file!
+    }
+  });
+
+  try {
+    dom.querySelector(`.${SCROLLER_CLASS}`)!.prepend(wrapper);
+    leafBannerMap[leaf.id] = banner;
+  } catch (err) {
+    new Notice('Unable to add a banner to the leaflet!');
+    console.error(err);
+  }
 };
 
 export const getBanner = (state: EditorState) => {
@@ -31,7 +52,10 @@ export const getBanner = (state: EditorState) => {
 
 export const destroyBanner = (state: EditorState) => {
   const { id } = state.field(editorInfoField).leaf;
+  const { dom } = state.field(editorEditorField);
+
   const banner = leafBannerMap[id];
   banner?.$destroy();
+  dom.querySelector(`.${WRAPPER_CLASS}`)?.remove();
   delete leafBannerMap[id];
 };

@@ -6,6 +6,7 @@
   import settings from 'src/settings/store';
   import { dragBanner, isDraggable, lockIcon } from './actions';
   import type { DragParams, XY } from './actions';
+    import { getBannerHeight } from './utils';
 
   interface BannerImageDispatch {
     'drag-banner': Partial<BannerDataWrite>;
@@ -24,6 +25,10 @@
     enableDragInInternalEmbed,
     enableDragInPopover,
     enableLockButton,
+    height: desktopHeight,
+    mobileHeight,
+    popoverHeight,
+    internalEmbedHeight,
     style
   } = $settings);
   let objectPos = { x, y };
@@ -49,6 +54,12 @@
     draggable: isDraggable(lock, embed, [enableDragInInternalEmbed, enableDragInPopover]),
     modKey: getSetting('bannerDragModifier', bannerDragModifier)
   };
+  $: height = getBannerHeight(embed, [
+    desktopHeight,
+    mobileHeight,
+    popoverHeight,
+    internalEmbedHeight
+  ]);
   $: gradient = (getSetting('style', style) === 'gradient');
   $: readableWidth = getSetting('adjustWidthToReadableLineWidth', adjustWidthToReadableLineWidth);
   $: showLockButton = getSetting('enableLockButton', enableLockButton);
@@ -63,6 +74,7 @@
   class:draggable
   class:dragging
   style:object-position={objectPosStyle}
+  style:height
   draggable={false}
   aria-hidden={true}
   on:mouseenter={hoverOn}
@@ -87,7 +99,7 @@
   img {
     display: block;
     position: relative;
-    height: 100%;
+    // height: 100%;
     width: 100%;
     max-width: none;
     object-fit: cover;

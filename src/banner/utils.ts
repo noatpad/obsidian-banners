@@ -1,17 +1,11 @@
 import { Platform, requestUrl } from 'obsidian';
 import type { TFile } from 'obsidian';
 import { IMAGE_FORMATS } from 'src/bannerData';
-import type { IconString } from 'src/bannerData';
 import { plug } from 'src/main';
 import type { Embedded } from 'src/reading/BannerRenderChild';
 import { getSetting, parseCssSetting } from 'src/settings';
-import type {
-  HeaderHorizontalAlignmentOption,
-  HeaderVerticalAlignmentOption
-} from 'src/settings/structure';
 
 export type ViewType = 'editing' | 'reading';
-interface Heights { banner: string; icon: string }
 
 export const WRAPPER_CLASS = 'obsidian-banner-wrapper';
 
@@ -47,76 +41,9 @@ export const fetchImage = async (src: string, file: TFile): Promise<string | nul
   }
 };
 
-export const getHeights = (embedded: Embedded, _deps?: any[]): Heights => {
+export const getBannerHeight = (embedded: Embedded, _deps?: any[]): string => {
   let bannerHeight = getSetting(Platform.isMobile ? 'mobileHeight' : 'height');
   if (embedded === 'internal') bannerHeight = getSetting('internalEmbedHeight');
   else if (embedded === 'popover') bannerHeight = getSetting('popoverHeight');
-
-  const banner = parseCssSetting(bannerHeight);
-  const icon = parseCssSetting(getSetting('headerSize'));
-  return { banner, icon };
-};
-
-const hasHeaderElement = (
-  icon: IconString | undefined,
-  header: string[] | string | null | undefined
-): boolean => !!(icon || header !== undefined);
-
-export const getBannerHeight = (
-  heights: Heights,
-  source: string | undefined,
-  icon: IconString | undefined,
-  header: string[] | string | null | undefined
-): string => {
-  if (source) return heights.banner;
-  else if (hasHeaderElement(icon, header)) return heights.icon;
-  return '';
-};
-
-const getHeaderExtraOffset = (offset: string, alignment: HeaderVerticalAlignmentOption): string => {
-  switch (alignment) {
-    case 'center':
-    case 'above': return '0px';
-    case 'edge':
-    case 'custom': return `(${offset} / 2)`;
-    case 'below': return offset;
-  }
-};
-
-export const getSizerHeight = (
-  heights: Heights,
-  source: string | undefined,
-  header: string[] | string | null | undefined,
-  icon: IconString | undefined,
-  iconAlignment: HeaderVerticalAlignmentOption
-): string => {
-  if (source) {
-    if (hasHeaderElement(icon, header)) {
-      const extraOffset = getHeaderExtraOffset(heights.icon, iconAlignment);
-      return `calc(${heights.banner} + ${extraOffset})`;
-    } else {
-      return heights.banner;
-    }
-  } else if (hasHeaderElement(icon, header)) {
-    return heights.icon;
-  }
-  return '';
-};
-
-export const getHeaderTransform = (
-  horizontal: HeaderHorizontalAlignmentOption,
-  hTransform: string,
-  vertical: HeaderVerticalAlignmentOption,
-  vTransform: string
-): string => {
-  const h = (horizontal === 'custom') ? hTransform : '0px';
-  let v: string;
-  switch (vertical) {
-    case 'above': v = '0%'; break;
-    case 'center':
-    case 'edge': v = '50%'; break;
-    case 'below': v = '100%'; break;
-    case 'custom': v = vTransform; break;
-  }
-  return `translate(${h}, ${v})`;
+  return parseCssSetting(bannerHeight);
 };

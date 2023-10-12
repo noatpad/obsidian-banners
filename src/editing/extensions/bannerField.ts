@@ -1,7 +1,6 @@
 import { EditorState, StateField } from '@codemirror/state';
-import { editorEditorField, editorInfoField } from 'obsidian';
+import { editorInfoField } from 'obsidian';
 import Banner from 'src/banner/Banner.svelte';
-import { WRAPPER_CLASS } from 'src/banner/utils';
 import {
   assignBannerEffect,
   destroyBanner,
@@ -13,23 +12,7 @@ import {
 
 const addBanner = (state: EditorState, bannerData: BannerData) => {
   console.log('add!');
-  const { file } = state.field(editorInfoField);
-  const { dom } = state.field(editorEditorField);
-  const wrapper = document.createElement('div');
-
-  wrapper.addClass(WRAPPER_CLASS);
-  const banner = new Banner({
-    target: wrapper,
-    props: {
-      ...bannerData,
-      viewType: 'editing',
-      file: file!,
-      sizerEl: wrapper
-    }
-  });
-  dom.querySelector('.cm-sizer')?.prepend(wrapper);
-
-  registerBanner(state, banner);
+  registerBanner(state, bannerData);
 };
 
 const updateBanner = (banner: Banner, bannerData: BannerData) => {

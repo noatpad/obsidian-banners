@@ -2,8 +2,8 @@
   import type { IconString } from 'src/bannerData';
   import { getSetting, parseCssSetting } from 'src/settings';
   import settings from 'src/settings/store';
+  import { placeHeader } from './actions';
   import Icon from './Icon.svelte';
-  import { getHeaderTransform } from './utils';
 
   export let icon: IconString | undefined;
   export let header: string | undefined;
@@ -13,18 +13,20 @@
     headerSize,
     headerDecor,
     headerHorizontalAlignment,
-    headerHorizontalTransform,
-    headerVerticalAlignment,
-    headerVerticalTransform
+    headerVerticalAlignment
   } = $settings);
+
+  let textHeight = 0;
 
   $: decor = getSetting('headerDecor', headerDecor);
   $: horizontal = getSetting('headerHorizontalAlignment', headerHorizontalAlignment);
-  $: hTransform = getSetting('headerHorizontalTransform', headerHorizontalTransform);
   $: vertical = getSetting('headerVerticalAlignment', headerVerticalAlignment);
-  $: vTransform = getSetting('headerVerticalTransform', headerVerticalTransform);
-  $: transform = withBanner ? getHeaderTransform(horizontal, hTransform, vertical, vTransform) : '';
   $: fontSize = parseCssSetting(getSetting('headerSize', headerSize));
+  $: placeParams = {
+    settings: $settings,
+    height: textHeight,
+    withBanner
+  };
 </script>
 
 <div
@@ -32,12 +34,17 @@
   class:with-banner={withBanner}
   class:shadow={decor === 'shadow'}
   class:border={decor === 'border'}
-  class:align-left={horizontal === 'left'}
-  class:align-center={horizontal === 'center'}
-  class:align-right={horizontal === 'right'}
+  class:h-left={horizontal === 'left'}
+  class:h-center={horizontal === 'center'}
+  class:h-right={horizontal === 'right'}
+  class:v-center-banner={vertical === 'center'}
+  class:v-above={vertical === 'above'}
+  class:v-edge={vertical === 'edge'}
+  class:v-below={vertical === 'below'}
   class:center-of-banner={vertical === 'center'}
-  style:transform
   style:font-size={fontSize}
+  bind:clientHeight={textHeight}
+  use:placeHeader={placeParams}
 >
   {#if icon}
     <Icon
@@ -56,11 +63,7 @@
     display: flex;
     align-items: center;
     gap: 0.2em;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    padding: 4px var(--file-margins);
+    padding: 0 var(--file-margins);
     margin: 0 auto;
 
     :global(.is-readable-line-width) & {
@@ -71,18 +74,35 @@
     &.border { -webkit-text-stroke: 2px var(--background-primary); }
 
     &.with-banner {
-      top: initial;
-      bottom: 0;
+      // TODO: Move this out of the &.with-banner rule
+      &.h-left {
+        justify-content: start;
+        text-align: left;
+      }
+      &.h-center {
+        justify-content: center;
+        text-align: center;
+      }
+      &.h-right {
+        justify-content: end;
+        text-align: right;
+      }
 
-      &.align-left { justify-content: start; }
-      &.align-center { justify-content: center; }
-      &.align-right { justify-content: end; }
-      &.center-of-banner { bottom: 50%; }
+      &.v-above,
+      &.v-edge { position: relative; }
+      &.v-center-banner {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        transform: translateY(-50%);
+      }
     }
   }
 
   .banner-header-title {
     font-size: 1em;
+    padding: 0.25em 0;
     margin: 0;
   }
 </style>

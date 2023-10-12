@@ -173,7 +173,7 @@
 </SelectSetting>
 <Depends on={headerVerticalAlignment === 'custom'}>
   <InputSetting key="headerVerticalTransform" numOrStr>
-    <span slot="name">Custom horizontal alignment</span>
+    <span slot="name">Custom vertical alignment</span>
     <span slot="description">
       Set an offset relative to the bottom edge of the banner, if any.
       <CssLengthFragment />
