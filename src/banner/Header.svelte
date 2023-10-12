@@ -2,7 +2,7 @@
   import type { IconString } from 'src/bannerData';
   import { getSetting, parseCssSetting } from 'src/settings';
   import settings from 'src/settings/store';
-  import { placeHeader } from './actions';
+  import placeHeader from './actions/placeHeader';
   import Icon from './Icon.svelte';
 
   export let icon: IconString | undefined;

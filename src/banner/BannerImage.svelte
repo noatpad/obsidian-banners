@@ -4,9 +4,10 @@
   import type { Embedded } from 'src/reading/BannerRenderChild';
   import { getSetting } from 'src/settings';
   import settings from 'src/settings/store';
-  import { dragBanner, isDraggable, lockIcon } from './actions';
-  import type { DragParams, XY } from './actions';
-    import { getBannerHeight } from './utils';
+  import dragBanner, { isDraggable } from './actions/dragBanner';
+  import type { DragParams, XY } from './actions/dragBanner';
+  import lockIcon from './actions/lockIcon';
+  import { getBannerHeight } from './utils';
 
   interface BannerImageDispatch {
     'drag-banner': Partial<BannerDataWrite>;
