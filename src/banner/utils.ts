@@ -1,7 +1,15 @@
-import { requestUrl } from 'obsidian';
+import { Platform, requestUrl } from 'obsidian';
 import type { TFile } from 'obsidian';
 import { IMAGE_FORMATS } from 'src/bannerData';
 import { plug } from 'src/main';
+import type { Embedded } from '.';
+
+interface Heights {
+  desktopHeight: string;
+  mobileHeight: string;
+  internalEmbedHeight: string;
+  popoverHeight: string;
+}
 
 const getInternalFile = (src: string, file: TFile): TFile | null => {
   const isInternalLink = /^\[\[.+\]\]/.test(src);
@@ -33,4 +41,17 @@ export const fetchImage = async (src: string, file: TFile): Promise<string | nul
   } catch (error: any) {
     throw new Error(error);
   }
+};
+
+export const getBannerHeight = (heights: Heights, embed: Embedded): string => {
+  const {
+    desktopHeight,
+    mobileHeight,
+    internalEmbedHeight,
+    popoverHeight
+  } = heights;
+  let newHeight = Platform.isMobile ? mobileHeight : desktopHeight;
+  if (embed === 'internal') newHeight = internalEmbedHeight;
+  else if (embed === 'popover') newHeight = popoverHeight;
+  return newHeight as string;
 };

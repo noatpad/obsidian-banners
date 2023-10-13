@@ -1,16 +1,14 @@
-@mixin banner-info-box {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  padding: 16px;
-  border: 4px solid var(--background-modifier-border);
-  margin: 16px;
+@mixin info-box {
+  --info-box-spacing: 16px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  height: calc(100% - 2 * var(--info-box-spacing));
+  width: calc(100% - 2 * var(--info-box-spacing));
+  padding: var(--info-box-spacing);
+  border: 4px solid var(--background-modifier-border);
+  margin: var(--info-box-spacing);
   color: var(--text-faint);
   text-align: center;
 }

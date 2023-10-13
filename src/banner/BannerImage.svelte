@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { Platform } from 'obsidian';
   import { createEventDispatcher } from 'svelte';
   import type { BannerDataWrite } from 'src/bannerData';
   import { settings } from 'src/settings/store';
   import dragBanner from './actions/dragBanner';
   import type { DragParams, XY } from './actions/dragBanner';
   import lockIcon from './actions/lockIcon';
+  import { getBannerHeight } from './utils';
   import type { Embedded } from '.';
 
   interface BannerImageDispatch {
@@ -63,13 +63,12 @@
     modKey: bannerDragModifier
   };
 
-  let height: string;
-  $: {
-    let newHeight = Platform.isMobile ? mobileHeight : desktopHeight;
-    if (embed === 'internal') newHeight = internalEmbedHeight;
-    else if (embed === 'popover') newHeight = popoverHeight;
-    height = newHeight as string;
-  }
+  $: height = getBannerHeight({
+    desktopHeight: desktopHeight as string,
+    mobileHeight: mobileHeight as string,
+    internalEmbedHeight: internalEmbedHeight as string,
+    popoverHeight: popoverHeight as string
+  }, embed);
   $: gradient = (style === 'gradient');
   $: objectPosStyle = `${objectPos.x * 100}% ${objectPos.y * 100}%`;
 </script>
@@ -107,7 +106,6 @@
   img {
     display: block;
     position: relative;
-    // height: 100%;
     width: 100%;
     max-width: none;
     object-fit: cover;
