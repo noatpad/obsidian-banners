@@ -21,14 +21,17 @@
   }, embed);
 </script>
 
-<div class="error markdown-rendered" style:height>
-  <p>Couldn't load the banner! Is the <code>{frontmatterField}</code> field correct?</p>
-  <code>{error}</code>
+<div class="wrapper" style:height>
+  <div class="error markdown-rendered">
+    <p>Couldn't load the banner! Is the <code>{frontmatterField}</code> field correct?</p>
+    <code>{error}</code>
+  </div>
 </div>
 
 <style lang="scss">
   @import './mixins.scss';
 
+  .wrapper { @include info-box-wrapper; }
   .error {
     @include info-box;
     border-color: var(--background-modifier-error);

@@ -19,11 +19,12 @@
   }, embed);
 </script>
 
-<div class="loading" style:height>Loading...</div>
-<div class="info-box">
+<div class="wrapper" style:height>
+  <div class="loading">Loading...</div>
 </div>
 
 <style lang="scss">
   @import './mixins.scss';
+  .wrapper { @include info-box-wrapper; }
   .loading { @include info-box; }
 </style>
