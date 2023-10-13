@@ -7,19 +7,15 @@
   import SelectSetting from './components/SelectSetting.svelte';
   import Header from './components/SettingHeader.svelte';
   import ToggleSetting from './components/ToggleSetting.svelte';
-  import settings from './store';
-  import { getSetting } from '.';
+  import { settings } from './store';
 
   const openLegacySourceModal = () => new UpdateLegacySourceModal().open();
 
   $: ({
-    frontmatterField: ff,
-    headerHorizontalAlignment: hha,
-    headerVerticalAlignment: hva
+    frontmatterField,
+    headerHorizontalAlignment,
+    headerVerticalAlignment
   } = $settings);
-  $: frontmatterField = getSetting('frontmatterField', ff);
-  $: headerHorizontalAlignment = getSetting('headerHorizontalAlignment', hha);
-  $: headerVerticalAlignment = getSetting('headerVerticalAlignment', hva);
 </script>
 
 <!-- General banner settings -->

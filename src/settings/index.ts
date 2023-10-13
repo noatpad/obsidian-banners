@@ -1,6 +1,6 @@
 import { plug } from 'src/main';
 import { SettingsTab } from './SettingsTab';
-import store from './store';
+import { rawSettings } from './store';
 import { DEFAULT_SETTINGS, TEXT_SETTINGS } from './structure';
 import type { BannerSettings, LengthValue } from './structure';
 import { areSettingsOutdated, updateSettings } from './updater';
@@ -33,7 +33,7 @@ export const loadSettings = async () => {
 
 export const saveSettings = async (changed: Partial<BannerSettings> = {}) => {
   await plug.saveData(plug.settings);
-  store.set(plug.settings);
+  rawSettings.set(plug.settings);
   plug.events.trigger('setting-change', changed);
   console.log(plug.settings);
 };

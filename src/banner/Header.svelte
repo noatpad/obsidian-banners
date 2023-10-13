@@ -1,30 +1,34 @@
 <script lang="ts">
   import type { IconString } from 'src/bannerData';
-  import { getSetting, parseCssSetting } from 'src/settings';
-  import settings from 'src/settings/store';
+  import { settings } from 'src/settings/store';
   import placeHeader from './actions/placeHeader';
+  import type { PlaceParams } from './actions/placeHeader';
   import Icon from './Icon.svelte';
 
   export let icon: IconString | undefined;
   export let header: string | undefined;
   export let withBanner: boolean;
   export let isEmbed: boolean;
+
+  let clientHeight = 0;
   $: ({
+    headerDecor: decor,
     headerSize,
-    headerDecor,
-    headerHorizontalAlignment,
-    headerVerticalAlignment
+    headerHorizontalAlignment: horizontal,
+    headerHorizontalTransform: hTransform,
+    headerVerticalAlignment: vertical,
+    headerVerticalTransform: vTransform
   } = $settings);
 
-  let textHeight = 0;
-
-  $: decor = getSetting('headerDecor', headerDecor);
-  $: horizontal = getSetting('headerHorizontalAlignment', headerHorizontalAlignment);
-  $: vertical = getSetting('headerVerticalAlignment', headerVerticalAlignment);
-  $: fontSize = parseCssSetting(getSetting('headerSize', headerSize));
+  let placeParams: PlaceParams;
   $: placeParams = {
-    settings: $settings,
-    height: textHeight,
+    placement: {
+      horizontal,
+      hTransform,
+      vertical,
+      vTransform
+    },
+    height: clientHeight,
     withBanner
   };
 </script>
@@ -42,8 +46,8 @@
   class:v-edge={vertical === 'edge'}
   class:v-below={vertical === 'below'}
   class:center-of-banner={vertical === 'center'}
-  style:font-size={fontSize}
-  bind:clientHeight={textHeight}
+  style:font-size={headerSize}
+  bind:clientHeight
   use:placeHeader={placeParams}
 >
   {#if icon}

@@ -1,8 +1,6 @@
 import { Keymap } from 'obsidian';
 import type { Action } from 'svelte/action';
 import type { BannerDataWrite } from 'src/bannerData';
-import type { Embedded } from 'src/reading/BannerRenderChild';
-import { getSetting } from 'src/settings';
 import type { BannerDragModOption } from 'src/settings/structure';
 
 type MTEvent = MouseEvent | TouchEvent;
@@ -22,24 +20,19 @@ interface DragAttributes {
 
 type DragBannerAction = Action<HTMLImageElement, DragParams, DragAttributes>;
 
-export const isDraggable = (lock: boolean, embed: Embedded, _deps: any[]): boolean => {
-  if (lock) return false;
-  if (embed === 'internal') return getSetting('enableDragInInternalEmbed');
-  if (embed === 'popover') return getSetting('enableDragInPopover');
-  return true;
-};
 // Clamp a value if needed, otherwise round it to 3 decimals
 const clampAndRound = (min: number, value: number, max: number) => {
   if (value > max) return max;
   if (value < min) return min;
   return Math.round(value * 1000) / 1000;
 };
+
 const getMousePos = (e: MTEvent): [number, number] => {
   const { clientX, clientY } = (e instanceof MouseEvent) ? e : e.targetTouches[0];
   return [clientX, clientY];
 };
-// Svelte action for banner dragging
 
+// Svelte action for banner dragging
 const dragBanner: DragBannerAction = (img, params) => {
   const {
     x, y, draggable: _draggable, modKey: _modKey

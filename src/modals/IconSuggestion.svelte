@@ -3,14 +3,14 @@
   import/no-named-as-default-member */
   import twemoji from '@twemoji/api';
   import { onMount } from 'svelte';
+  import { settings } from 'src/settings/store';
   import type { EmojiPair } from './IconModal';
 
   export let item: EmojiPair;
-  export let useTwemoji: boolean = false;
   let div: HTMLElement;
 
   onMount(() => {
-    if (useTwemoji) twemoji.parse(div, { className: 'banner-emoji' });
+    if ($settings.useTwemoji) twemoji.parse(div, { className: 'banner-emoji' });
   });
 
   $: text = `${item.emoji} ${item.name}`;

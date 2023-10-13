@@ -9,14 +9,14 @@ import LocalImageSuggestion from './LocalImageSuggestion.svelte';
 
 export default class LocalImageModal extends FuzzySuggestModal<TFile> {
   activeFile: TFile;
-  showPreview: boolean;
+  path: string;
 
   constructor(file: TFile) {
     super(plug.app);
     this.activeFile = file;
-    this.showPreview = getSetting('showPreviewInLocalModal');
 
     this.limit = getSetting('localModalSuggestionLimit');
+    this.path = getSetting('bannersFolder');
     this.setPlaceholder('Pick an image to use as a banner');
   }
 
@@ -32,14 +32,12 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
   }
 
   getItems(): TFile[] {
-    const path = getSetting('bannersFolder');
-
-    if (path === DEFAULT_SETTINGS.bannersFolder) {
+    if (this.path === DEFAULT_SETTINGS.bannersFolder) {
       return this.app.vault.getFiles()
         .filter((file) => IMAGE_FORMATS.includes(file.extension));
     }
 
-    const folder = this.app.vault.getAbstractFileByPath(path);
+    const folder = this.app.vault.getAbstractFileByPath(this.path);
     if (!folder || !(folder instanceof TFolder)) {
       new Notice(
         'Error: Make sure that you set the "Banners folder" setting to a valid folder',
@@ -62,8 +60,7 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
       target: el,
       props: {
         file: item,
-        matches: match.matches,
-        showPreview: this.showPreview
+        matches: match.matches
       }
     });
   }

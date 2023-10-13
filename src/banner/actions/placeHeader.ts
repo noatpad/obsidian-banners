@@ -1,32 +1,32 @@
 import type { Action } from 'svelte/action';
-import { getSetting } from 'src/settings';
 import type {
-  BannerSettings,
   HeaderHorizontalAlignmentOption,
-  HeaderVerticalAlignmentOption
+  HeaderVerticalAlignmentOption,
+  LengthValue
 } from 'src/settings/structure';
 
-interface PlaceParams {
-  settings: BannerSettings;
+export interface PlaceParams {
+  placement: {
+    horizontal: HeaderHorizontalAlignmentOption;
+    hTransform: LengthValue;
+    vertical: HeaderVerticalAlignmentOption;
+    vTransform: LengthValue;
+  };
   height: number;
   withBanner: boolean;
 }
 
 const placeHeader: Action<HTMLElement, PlaceParams> = (el, params) => {
-  let { settings, height, withBanner } = params;
-  let horizontal: HeaderHorizontalAlignmentOption;
-  let hTransform: string;
-  let vertical: HeaderVerticalAlignmentOption;
-  let vTransform: string;
-
-  const setValues = () => {
-    horizontal = getSetting('headerHorizontalAlignment', settings.headerHorizontalAlignment);
-    hTransform = getSetting('headerHorizontalTransform', settings.headerHorizontalTransform);
-    vertical = getSetting('headerVerticalAlignment', settings.headerVerticalAlignment);
-    vTransform = getSetting('headerVerticalTransform', settings.headerVerticalTransform);
-  };
+  let { placement, height, withBanner } = params;
 
   const applyTransform = () => {
+    const {
+      horizontal,
+      hTransform,
+      vertical,
+      vTransform
+    } = placement;
+
     if (horizontal !== 'custom' && vertical !== 'custom') {
       el.setCssStyles({ transform: '' });
     } else {
@@ -37,6 +37,8 @@ const placeHeader: Action<HTMLElement, PlaceParams> = (el, params) => {
   };
 
   const applyMargin = () => {
+    const { vertical } = placement;
+
     if (!withBanner) return el.setCssStyles({ marginTop: '' });
     switch (vertical) {
       case 'edge': return el.setCssStyles({ marginTop: `-${height / 2}px` });
@@ -46,17 +48,15 @@ const placeHeader: Action<HTMLElement, PlaceParams> = (el, params) => {
     }
   };
 
-  setValues();
   applyTransform();
   applyMargin();
 
   return {
     update(params) {
-      settings = params.settings;
+      placement = params.placement;
       height = params.height;
       withBanner = params.withBanner;
 
-      setValues();
       applyTransform();
       applyMargin();
     }

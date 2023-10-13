@@ -22,9 +22,9 @@ export interface BannerSettings {
   headerSize: LengthValue;
   headerDecor: HeaderTextDecorOption;
   headerHorizontalAlignment: HeaderHorizontalAlignmentOption;
-  headerHorizontalTransform: string;
+  headerHorizontalTransform: LengthValue;
   headerVerticalAlignment: HeaderVerticalAlignmentOption;
-  headerVerticalTransform: string;
+  headerVerticalTransform: LengthValue;
   useHeaderByDefault: boolean;
   defaultHeaderValue: string;
   iconSize: LengthValue;
@@ -65,13 +65,21 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   bannersFolder: '/'
 };
 
-export const TEXT_SETTINGS: Array<keyof BannerSettings> = [
-  'frontmatterField',
+export const LENGTH_SETTINGS: Array<keyof BannerSettings> = [
+  'height',
+  'mobileHeight',
+  'internalEmbedHeight',
+  'popoverHeight',
   'headerSize',
   'headerHorizontalTransform',
   'headerVerticalTransform',
+  'iconSize'
+];
+
+export const TEXT_SETTINGS: Array<keyof BannerSettings> = [
+  ...LENGTH_SETTINGS,
+  'frontmatterField',
   'defaultHeaderValue',
-  'iconSize',
   'bannersFolder'
 ];
 

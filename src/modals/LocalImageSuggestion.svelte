@@ -1,11 +1,12 @@
 <script lang="ts">
   import type { SearchMatches, TFile } from 'obsidian';
   import { plug } from 'src/main';
+  import { settings } from 'src/settings/store';
   import { getPathParts } from './utils';
 
   export let file: TFile;
   export let matches: SearchMatches;
-  export let showPreview: boolean;
+  $: ({ showPreviewInLocalModal: showPreview } = $settings);
 
   $: parts = getPathParts(file, matches);
   $: src = plug.app.vault.getResourcePath(file);

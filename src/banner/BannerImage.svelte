@@ -1,13 +1,12 @@
 <script lang="ts">
+  import { Platform } from 'obsidian';
   import { createEventDispatcher } from 'svelte';
   import type { BannerDataWrite } from 'src/bannerData';
   import type { Embedded } from 'src/reading/BannerRenderChild';
-  import { getSetting } from 'src/settings';
-  import settings from 'src/settings/store';
-  import dragBanner, { isDraggable } from './actions/dragBanner';
+  import { settings } from 'src/settings/store';
+  import dragBanner from './actions/dragBanner';
   import type { DragParams, XY } from './actions/dragBanner';
   import lockIcon from './actions/lockIcon';
-  import { getBannerHeight } from './utils';
 
   interface BannerImageDispatch {
     'drag-banner': Partial<BannerDataWrite>;
@@ -21,15 +20,15 @@
   export let lock: boolean;
   export let embed: Embedded;
   $: ({
-    adjustWidthToReadableLineWidth,
+    adjustWidthToReadableLineWidth: readableWidth,
     bannerDragModifier,
     enableDragInInternalEmbed,
     enableDragInPopover,
     enableLockButton,
     height: desktopHeight,
+    internalEmbedHeight,
     mobileHeight,
     popoverHeight,
-    internalEmbedHeight,
     style
   } = $settings);
   let objectPos = { x, y };
@@ -48,22 +47,30 @@
   const toggleDrag = ({ detail }: CustomEvent<boolean>) => { draggable = detail; };
   const toggleLock = () => dispatch('toggle-lock');
 
+  let dragParam: boolean;
+  $: {
+    if (lock) dragParam = false;
+    if (embed === 'internal') dragParam = enableDragInInternalEmbed;
+    if (embed === 'popover') dragParam = enableDragInPopover;
+    dragParam = true;
+  }
+
   let dragBannerParams: DragParams;
   $: dragBannerParams = {
     x,
     y,
-    draggable: isDraggable(lock, embed, [enableDragInInternalEmbed, enableDragInPopover]),
-    modKey: getSetting('bannerDragModifier', bannerDragModifier)
+    draggable: dragParam,
+    modKey: bannerDragModifier
   };
-  $: height = getBannerHeight(embed, [
-    desktopHeight,
-    mobileHeight,
-    popoverHeight,
-    internalEmbedHeight
-  ]);
-  $: gradient = (getSetting('style', style) === 'gradient');
-  $: readableWidth = getSetting('adjustWidthToReadableLineWidth', adjustWidthToReadableLineWidth);
-  $: showLockButton = getSetting('enableLockButton', enableLockButton);
+
+  let height: string;
+  $: {
+    let newHeight = Platform.isMobile ? mobileHeight : desktopHeight;
+    if (embed === 'internal') newHeight = internalEmbedHeight;
+    else if (embed === 'popover') newHeight = popoverHeight;
+    height = newHeight as string;
+  }
+  $: gradient = (style === 'gradient');
   $: objectPosStyle = `${objectPos.x * 100}% ${objectPos.y * 100}%`;
 </script>
 
@@ -86,7 +93,7 @@
   on:dragBannerEnd={dragEnd}
   on:toggleDrag={toggleDrag}
 />
-{#if showLockButton}
+{#if enableLockButton}
   <button
     class="lock-button"
     class:show={hovering}

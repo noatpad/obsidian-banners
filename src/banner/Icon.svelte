@@ -4,8 +4,7 @@
   import twemoji from '@twemoji/api';
   import { createEventDispatcher } from 'svelte';
   import type { IconString } from 'src/bannerData';
-  import { getSetting, parseCssSetting } from 'src/settings';
-  import settings from 'src/settings/store';
+  import { settings } from 'src/settings/store';
 
   const dispatch = createEventDispatcher();
 
@@ -17,10 +16,8 @@
     dispatch('open-icon-modal');
   };
 
-  $: ({ headerDecor, iconSize, useTwemoji } = $settings);
+  $: ({ headerDecor: decor, iconSize: fontSize, useTwemoji } = $settings);
   $: ({ type, value } = icon);
-  $: decor = getSetting('headerDecor', headerDecor);
-  $: fontSize = parseCssSetting(getSetting('iconSize', iconSize));
   $: html = (type === 'emoji' && useTwemoji)
     ? twemoji.parse(value, { className: 'banner-emoji' })
     : value;

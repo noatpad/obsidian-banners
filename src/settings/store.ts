@@ -1,18 +1,16 @@
-import { writable } from 'svelte/store';
-import type { Readable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
+import type { Writable } from 'svelte/store';
 import { plug } from 'src/main';
+import { DEFAULT_SETTINGS, LENGTH_SETTINGS } from './structure';
 import type { BannerSettings } from './structure';
-import { saveSettings } from '.';
+import { parseCssSetting, saveSettings } from '.';
 
-interface SettingsStore extends Readable<BannerSettings> {
-  set: (value: BannerSettings) => void;
+interface Store extends Writable<BannerSettings> {
   updateSetting: (key: keyof BannerSettings, value: unknown) => void;
 }
 
-const { subscribe, set } = writable<BannerSettings>();
-const settingsStore: SettingsStore = {
-  subscribe,
-  set,
+export const rawSettings: Store = {
+  ...writable<BannerSettings>(),
   updateSetting: async (key, value) => {
     const changed = { [key]: value };
     if (value !== undefined) {
@@ -23,4 +21,16 @@ const settingsStore: SettingsStore = {
     await saveSettings(changed);
   }
 };
-export default settingsStore;
+
+export const settings = derived(rawSettings, ($settings) => {
+  const processed = { ...DEFAULT_SETTINGS, ...$settings } as Record<keyof BannerSettings, unknown>;
+  let key: keyof BannerSettings;
+  for (key in processed) {
+    if (LENGTH_SETTINGS.includes(key)) {
+      processed[key] = parseCssSetting(processed[key] as string);
+    }
+  }
+  return processed as BannerSettings;
+});
+
+export default rawSettings;

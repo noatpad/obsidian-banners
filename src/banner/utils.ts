@@ -1,9 +1,7 @@
-import { Platform, requestUrl } from 'obsidian';
+import { requestUrl } from 'obsidian';
 import type { TFile } from 'obsidian';
 import { IMAGE_FORMATS } from 'src/bannerData';
 import { plug } from 'src/main';
-import type { Embedded } from 'src/reading/BannerRenderChild';
-import { getSetting, parseCssSetting } from 'src/settings';
 
 export type ViewType = 'editing' | 'reading';
 
@@ -39,11 +37,4 @@ export const fetchImage = async (src: string, file: TFile): Promise<string | nul
   } catch (error: any) {
     throw new Error(error);
   }
-};
-
-export const getBannerHeight = (embedded: Embedded, _deps?: any[]): string => {
-  let bannerHeight = getSetting(Platform.isMobile ? 'mobileHeight' : 'height');
-  if (embedded === 'internal') bannerHeight = getSetting('internalEmbedHeight');
-  else if (embedded === 'popover') bannerHeight = getSetting('popoverHeight');
-  return parseCssSetting(bannerHeight);
 };
