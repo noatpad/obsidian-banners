@@ -1,5 +1,4 @@
 import { Platform, requestUrl } from 'obsidian';
-import type { TFile } from 'obsidian';
 import { IMAGE_FORMATS } from 'src/bannerData';
 import { plug } from 'src/main';
 import type { Embedded } from '.';
@@ -11,20 +10,17 @@ interface Heights {
   popoverHeight: string;
 }
 
+const FILE_REGEX = /^\[\[.+\]\]/;
 const imageCache: Record<string, string> = {};
 
-const getInternalFile = (src: string, filepath: string): TFile | null => {
-  const isInternalLink = /^\[\[.+\]\]/.test(src);
-  if (!isInternalLink) return null;
-
-  const link = src.slice(2, -2);
-  return plug.app.metadataCache.getFirstLinkpathDest(link, filepath);
-};
-
-const getInternalImage = (file: TFile) => {
-  if (!IMAGE_FORMATS.includes(file.extension)) {
+const getInternalImage = (link: string, currentPath: string) => {
+  const file = plug.app.metadataCache.getFirstLinkpathDest(link.slice(2, -2), currentPath);
+  if (!file) {
+    throw new Error(`${link} file does not exist!`);
+  } else if (!IMAGE_FORMATS.includes(file.extension)) {
     throw new Error(`${file.name} is not an image!`);
   }
+
   const resourcePath = plug.app.vault.getResourcePath(file);
   imageCache[file.path] = resourcePath;
   return resourcePath;
@@ -32,6 +28,9 @@ const getInternalImage = (file: TFile) => {
 
 const getRemoteImage = async (src: string) => {
   try {
+    // Error out if the string isn't a valid URL
+    new URL(src);
+
     const resp = await requestUrl(src);
     const blob = new Blob([resp.arrayBuffer], { type: resp.headers['content-type'] });
     return new Promise<string>((resolve, reject) => {
@@ -44,20 +43,18 @@ const getRemoteImage = async (src: string) => {
       };
       reader.onerror = (error) => reject(error);
     });
-  } catch (error: any) {
-    throw new Error(error);
+  } catch (error) {
+    console.error(error);
+    throw new Error(`Failed to fetch image from "${src}"!`);
   }
 };
 
-export const fetchImage = async (src: string, filepath: string): Promise<string | null> => {
+export const fetchImage = async (src: string, currentPath: string): Promise<string | null> => {
   // Check the image cache first
-  if (imageCache[src]) {
-    return imageCache[src];
-  }
-  // Check if it's an internal link to an image and use that if it is
-  const internalFile = getInternalFile(src, filepath);
-  if (internalFile) {
-    return getInternalImage(internalFile);
+  if (imageCache[src]) return imageCache[src];
+
+  if (FILE_REGEX.test(src)) {
+    return getInternalImage(src, currentPath);
   } else {
     return getRemoteImage(src);
   }
