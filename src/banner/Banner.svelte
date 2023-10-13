@@ -71,15 +71,20 @@
   // NOTE: This styling rule here may cause side effects to the editing view. Let's hope it doesn't
   :global(.cm-scroller) { flex-direction: column; }
 
-  :global(.obsidian-banner-wrapper:not(.in-internal-embed)) {
-    position: relative;
+  // Parent banner wrapper styling
+  :global(.obsidian-banner-wrapper) { position: relative; }
+  :global(.obsidian-banner-wrapper.with-banner:not(.in-internal-embed)) {
     width: calc(100% + 2 * var(--file-margins));
     margin: calc(-1 * var(--file-margins));
     margin-bottom: var(--file-margins);
   }
-
-  :global(.obsidian-banner-wrapper.in-popover) {
+  :global(.obsidian-banner-wrapper.with-banner.in-popover) {
     margin-bottom: 0;
+  }
+  :global(.obsidian-banner-wrapper.without-banner) {
+    width: 100%;
+    max-width: var(--file-line-width);
+    margin: 0 auto;
   }
 
   .obsidian-banner {

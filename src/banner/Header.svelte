@@ -55,7 +55,6 @@
     display: flex;
     align-items: center;
     gap: 0.2em;
-    padding: 0 var(--file-margins);
     margin: 0 auto;
     font-size: var(--banners-header-font-size);
 
@@ -81,6 +80,8 @@
     &.h-custom { transform: var(--banners-header-transform); }
 
     &.with-banner {
+      padding: 0 var(--file-margins);
+
       &.v-above,
       &.v-edge { position: relative; }
       &.v-center-banner {
