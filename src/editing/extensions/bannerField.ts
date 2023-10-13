@@ -1,6 +1,5 @@
-import { EditorState, StateField } from '@codemirror/state';
+import { StateField } from '@codemirror/state';
 import { editorInfoField } from 'obsidian';
-import Banner from 'src/banner/Banner.svelte';
 import {
   assignBannerEffect,
   destroyBanner,
@@ -9,27 +8,6 @@ import {
   removeBannerEffect,
   upsertBannerEffect
 } from './utils';
-
-const addBanner = (state: EditorState, bannerData: BannerData) => {
-  console.log('add!');
-  registerBanner(state, bannerData);
-};
-
-const updateBanner = (banner: Banner, bannerData: BannerData) => {
-  console.log('update!');
-  banner.$set(bannerData);
-};
-
-const removeBanner = (state: EditorState) => {
-  console.log('remove!?');
-  destroyBanner(state);
-};
-
-const assignBanner = (state: EditorState) => {
-  console.log('assign!');
-  const { file } = state.field(editorInfoField);
-  getBanner(state).$set({ file: file! });
-};
 
 /* State field that keeps track of the banner associated with a given editor, as well as
 adding, modifying, and removing banners based on CM6 effects */
@@ -46,16 +24,17 @@ const bannerField = StateField.define<BannerData | null>({
       if (effect.is(upsertBannerEffect)) {
         const banner = getBanner(state);
         if (banner) {
-          updateBanner(banner, effect.value);
+          banner.$set(effect.value);
         } else {
-          addBanner(state, effect.value);
+          registerBanner(state, effect.value);
         }
         now = effect.value;
       } else if (effect.is(removeBannerEffect)) {
-        removeBanner(state);
+        destroyBanner(state);
         now = null;
       } else if (effect.is(assignBannerEffect)) {
-        assignBanner(state);
+        const { file } = state.field(editorInfoField);
+        getBanner(state).$set({ file: file! });
       }
     }
 
