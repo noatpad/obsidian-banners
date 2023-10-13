@@ -9,9 +9,9 @@ export const canRunCommand = (): boolean => {
   return !!(file && URL_REGEX.test(extractBannerDataFromFile(file).source));
 };
 
-const downloadBanner = async () => {
+const downloadBanner = async (source?: string) => {
   const file = plug.app.workspace.getActiveFile()!;
-  const src = extractBannerDataFromFile(file).source;
+  const src = source ?? extractBannerDataFromFile(file).source;
   try {
     const { arrayBuffer, headers } = await requestUrl(src);
     const imgName = new URL(src).pathname.split('/').pop()!;

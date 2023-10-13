@@ -42,6 +42,10 @@ declare module 'obsidian' {
     cm: EditorView;
   }
 
+  interface Keymap {
+    modifiers: string;
+  }
+
   interface MarkdownPostProcessorContext {
     containerEl: HTMLElement;
   }

@@ -32,6 +32,7 @@ export interface BannerSettings {
   showPreviewInLocalModal: boolean;
   localModalSuggestionLimit: number;
   bannersFolder: string;
+  autoDownloadPastedBanners: boolean;
 }
 
 export const FILENAME_KEY = 'filename';
@@ -62,7 +63,8 @@ export const DEFAULT_SETTINGS: BannerSettings = {
   useTwemoji: true,
   showPreviewInLocalModal: true,
   localModalSuggestionLimit: 15,
-  bannersFolder: '/'
+  bannersFolder: '/',
+  autoDownloadPastedBanners: false
 };
 
 export const LENGTH_SETTINGS: Array<keyof BannerSettings> = [

@@ -4,8 +4,12 @@ import { plug } from 'src/main';
 import IconModal from 'src/modals/IconModal';
 import LocalImageModal from 'src/modals/LocalImageModal';
 import UpsertHeaderModal from 'src/modals/UpsertHeaderModal';
+import { getSetting } from 'src/settings';
 import downloadBanner, { canRunCommand as canRunDownloadBannerCmd } from './downloadBanner';
-import pasteBanner, { canRunCommand as canRunPasteBannerCmd } from './pasteBanner';
+import pasteBanner, {
+  canRunCommand as canRunPasteBannerCmd,
+  downloadBannerInstead
+} from './pasteBanner';
 
 const commands: Command[] = [
   {
@@ -31,7 +35,11 @@ const commands: Command[] = [
     name: 'Paste banner from clipboard',
     checkCallback(checking) {
       if (checking) return canRunPasteBannerCmd();
-      pasteBanner();
+      if (getSetting('autoDownloadPastedBanners')) {
+        downloadBannerInstead();
+      } else {
+        pasteBanner();
+      }
     }
   },
   {

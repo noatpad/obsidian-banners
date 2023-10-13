@@ -260,8 +260,19 @@
 <!-- Extras -->
 <Header
   title="Extras"
-  description="'Cause I do not where else to put these..."
+  description="'Cause I do not know where else to put these..."
 />
+<ToggleSetting key="autoDownloadPastedBanners">
+  <span slot="name">Auto-download pasted banners</span>
+  <span slot="description">
+    If enabled, the <b>Paste banner from clipboard</b> command will automatically download the
+    image from the URL into your vault and link it as an internal file. Great if you want to
+    keep some banners you found online!
+    <br />
+    If you want to download them on a case-by-case basis though, you can use the
+    <b>Download banner in note to vault</b> command for a note with a remote banner URL.
+  </span>
+</ToggleSetting>
 <ButtonSetting text="Update banner sources" onClick={openLegacySourceModal}>
   <span slot="name">Update legacy source syntax</span>
   <span slot="description">
