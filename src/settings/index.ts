@@ -38,12 +38,9 @@ export const saveSettings = async (changed: Partial<BannerSettings> = {}) => {
   console.log(plug.settings);
 };
 
-/* NOTE: The `value` parameter is redundant, but is implemented for Svelte store values.
- * Perhaps think of something cleaner */
-export const getSetting = <T extends keyof BannerSettings>(
-  key: T,
-  value?: BannerSettings[T]
-): BannerSettings[T] => (value ?? plug.settings[key] ?? DEFAULT_SETTINGS[key]);
+export const getSetting = <T extends keyof BannerSettings>(key: T): BannerSettings[T] => (
+  plug.settings[key] ?? DEFAULT_SETTINGS[key]
+);
 
 export const parseCssSetting = (value: LengthValue): string => (
   typeof value === 'number' ? `${value}px` : value
