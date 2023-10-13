@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { flushImageCache } from 'src/banner/utils';
   import UpdateLegacySourceModal from 'src/modals/UpdateLegacySourceModal';
   import ButtonSetting from './components/ButtonSetting.svelte';
   import CssLengthFragment from './components/CSSLengthFragment.svelte';
@@ -9,7 +10,13 @@
   import ToggleSetting from './components/ToggleSetting.svelte';
   import { settings } from './store';
 
+  let isImageCacheBtnDisabled = false;
+
   const openLegacySourceModal = () => new UpdateLegacySourceModal().open();
+  const handleImageCacheButton = () => {
+    flushImageCache();
+    isImageCacheBtnDisabled = true;
+  };
 
   $: ({
     frontmatterField,
@@ -260,5 +267,17 @@
   <span slot="description">
     If you used Banners 1.x in the past, you may need to update the syntax for your banners'
     sources across your notes. This will help you do that automatically in one go.
+  </span>
+</ButtonSetting>
+<ButtonSetting
+  text="Flush banner cache"
+  disabled={isImageCacheBtnDisabled}
+  onClick={handleImageCacheButton}
+>
+  <span slot="name">Flush banner image cache</span>
+  <span slot="description">
+    This plugin uses a cache to quickly return banner images, which is especially useful with
+    remote images. While this cache resets whenever you reopen/reload Obsidian, you can flush
+    the cache here if you're running into an issue with it.
   </span>
 </ButtonSetting>

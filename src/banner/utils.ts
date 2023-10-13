@@ -75,3 +75,7 @@ export const getBannerHeight = (heights: Heights, embed: Embedded): string => {
   else if (embed === 'popover') newHeight = popoverHeight;
   return newHeight as string;
 };
+
+export const flushImageCache = () => {
+  for (const key in imageCache) delete imageCache[key];
+};
