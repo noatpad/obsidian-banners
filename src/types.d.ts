@@ -56,6 +56,14 @@ declare module 'obsidian' {
     renderer: PreviewRenderer;
   }
 
+  interface Vault {
+    getAvailablePathForAttachments(
+      base: string,
+      ext: string | null,
+      currentPath: string
+    ): Promise<string>;
+  }
+
   interface View {
     currentMode: EditMode | PreviewMode;
     editor: Editor;

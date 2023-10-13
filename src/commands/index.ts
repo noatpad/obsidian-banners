@@ -4,7 +4,8 @@ import { plug } from 'src/main';
 import IconModal from 'src/modals/IconModal';
 import LocalImageModal from 'src/modals/LocalImageModal';
 import UpsertHeaderModal from 'src/modals/UpsertHeaderModal';
-import { pasteBanner } from './utils';
+import downloadBanner, { canRunCommand as canRunDownloadBannerCmd } from './downloadBanner';
+import pasteBanner, { canRunCommand as canRunPasteBannerCmd } from './pasteBanner';
 
 const commands: Command[] = [
   {
@@ -29,9 +30,16 @@ const commands: Command[] = [
     id: 'banners:pasteBanner',
     name: 'Paste banner from clipboard',
     checkCallback(checking) {
-      const file = plug.app.workspace.getActiveFile();
-      if (checking) return !!file;
-      pasteBanner(file!);
+      if (checking) return canRunPasteBannerCmd();
+      pasteBanner();
+    }
+  },
+  {
+    id: 'banners:downloadBanner',
+    name: 'Download banner in note to vault',
+    checkCallback(checking) {
+      if (checking) return canRunDownloadBannerCmd();
+      downloadBanner();
     }
   },
   {
