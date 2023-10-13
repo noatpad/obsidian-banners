@@ -1,11 +1,11 @@
 import { EditorState, StateEffect, Transaction } from '@codemirror/state';
 import isEqual from 'lodash/isEqual';
 import { editorInfoField } from 'obsidian';
+import { hasBanner } from 'src/banner';
 import { extractBannerDataFromState, shouldDisplayBanner } from 'src/bannerData';
 import bannerField from './bannerField';
 import {
   assignBannerEffect,
-  getBanner,
   hasEffect,
   openNoteEffect,
   refreshEffect,
@@ -35,14 +35,15 @@ const didBannerDataChange = (transaction: Transaction): boolean => {
 effects to `bannerField` */
 const bannerExtender = EditorState.transactionExtender.of((transaction) => {
   const { effects, state } = transaction;
+  const { leaf } = state.field(editorInfoField);
 
   // Only run on Markdown panes (skips Canvas views)
-  if (state.field(editorInfoField).leaf === undefined) return null;
+  if (leaf === undefined) return null;
 
   if (hasEffect(effects, openNoteEffect)) {
     console.log('open note!');
     const newEffects = [];
-    if (getBanner(state)) newEffects.push(assignBannerEffect.of(null));
+    if (hasBanner(leaf.id)) newEffects.push(assignBannerEffect.of(null));
     newEffects.push(getEffectFromData(state));
     return { effects: newEffects };
   } else if (hasEffect(effects, refreshEffect) || didBannerDataChange(transaction)) {

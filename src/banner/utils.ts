@@ -3,10 +3,6 @@ import type { TFile } from 'obsidian';
 import { IMAGE_FORMATS } from 'src/bannerData';
 import { plug } from 'src/main';
 
-export type ViewType = 'editing' | 'reading';
-
-export const WRAPPER_CLASS = 'obsidian-banner-wrapper';
-
 const getInternalFile = (src: string, file: TFile): TFile | null => {
   const isInternalLink = /^\[\[.+\]\]/.test(src);
   if (!isInternalLink) return null;

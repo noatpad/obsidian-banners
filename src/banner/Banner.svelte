@@ -22,8 +22,6 @@
   export let viewType: 'editing' | 'reading';
   export let file: TFile;
   export let embed: Embedded = false;
-  // export let sizerEl: HTMLElement | null;
-  // export let isSwapping = false;
 
   const toggleLock = () => updateBannerData(file, { lock: !lock || undefined });
   const openIconModal = () => new IconModal(file).open();
@@ -39,8 +37,6 @@
   class="obsidian-banner"
   class:editing={viewType === 'editing'}
   class:reading={viewType === 'reading'}
-  class:in-internal-embed={embed === 'internal'}
-  class:in-popover={embed === 'popover'}
 >
   <!-- IDEA: Add fade-in transition? -->
   {#if source}
@@ -72,8 +68,10 @@
 </header>
 
 <style lang="scss">
+  // NOTE: This styling rule here may cause side effects to the editing view. Let's hope it doesn't
   :global(.cm-scroller) { flex-direction: column; }
-  :global(.obsidian-banner-wrapper) {
+
+  :global(.obsidian-banner-wrapper:not(.in-internal-embed)) {
     position: relative;
     width: calc(100% + 2 * var(--file-margins));
     margin-top: calc(-1 * var(--file-margins));

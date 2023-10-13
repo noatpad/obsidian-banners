@@ -1,4 +1,11 @@
 import type { MarkdownPostProcessor } from 'obsidian';
+import {
+  createBanner,
+  hasBanner,
+  updateBanner,
+  destroyBanner
+} from 'src/banner';
+import type { BannerProps } from 'src/banner';
 import { extractBannerData, shouldDisplayBanner } from 'src/bannerData';
 import { plug } from 'src/main';
 import { getSetting } from 'src/settings';
@@ -36,9 +43,6 @@ const isEmbedded = (containerEl: HTMLElement): Embedded => {
 };
 
 const postprocessor: MarkdownPostProcessor = (el, ctx) => {
-  // Only process the frontmatter
-  if (!el.querySelector(':scope > pre.frontmatter')) return;
-
   const {
     docId,
     containerEl,
@@ -57,12 +61,19 @@ const postprocessor: MarkdownPostProcessor = (el, ctx) => {
   const bannerData = extractBannerData(frontmatter, file);
 
   if (shouldDisplayBanner(bannerData)) {
-    const banner = new BannerRenderChild(el, ctx, bannerData, file, embed);
-    if (currentBanners[docId]) currentBanners[docId].prepareSwap();
-    ctx.addChild(banner);
-    currentBanners[docId] = banner;
+    const props: BannerProps = {
+      ...bannerData,
+      file,
+      embed,
+      viewType: 'reading'
+    };
+    if (hasBanner(docId)) {
+      updateBanner(props, docId);
+    } else {
+      createBanner(props, containerEl.parentElement!, docId);
+    }
   } else {
-    delete currentBanners[docId];
+    destroyBanner(docId);
   }
 };
 
