@@ -40,7 +40,7 @@
 >
   <!-- IDEA: Add fade-in transition? -->
   {#if source}
-    {#await fetchImage(source, file)}
+    {#await fetchImage(source, file.path)}
       <Loading {embed} />
     {:then src}
       <BannerImage

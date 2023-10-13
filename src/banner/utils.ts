@@ -11,35 +11,55 @@ interface Heights {
   popoverHeight: string;
 }
 
-const getInternalFile = (src: string, file: TFile): TFile | null => {
+const imageCache: Record<string, string> = {};
+
+const getInternalFile = (src: string, filepath: string): TFile | null => {
   const isInternalLink = /^\[\[.+\]\]/.test(src);
   if (!isInternalLink) return null;
 
   const link = src.slice(2, -2);
-  return plug.app.metadataCache.getFirstLinkpathDest(link, file.path);
+  return plug.app.metadataCache.getFirstLinkpathDest(link, filepath);
 };
 
-export const fetchImage = async (src: string, file: TFile): Promise<string | null> => {
-  // Check if it's an internal link to an image and use that if it is
-  const internalFile = getInternalFile(src, file);
-  if (internalFile) {
-    if (!IMAGE_FORMATS.includes(internalFile.extension)) {
-      throw new Error(`${internalFile.name} is not an image!`);
-    }
-    return plug.app.vault.getResourcePath(internalFile);
+const getInternalImage = (file: TFile) => {
+  if (!IMAGE_FORMATS.includes(file.extension)) {
+    throw new Error(`${file.name} is not an image!`);
   }
+  const resourcePath = plug.app.vault.getResourcePath(file);
+  imageCache[file.path] = resourcePath;
+  return resourcePath;
+};
 
+const getRemoteImage = async (src: string) => {
   try {
     const resp = await requestUrl(src);
     const blob = new Blob([resp.arrayBuffer], { type: resp.headers['content-type'] });
     return new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(blob);
-      reader.onload = () => resolve(reader.result as string);
+      reader.onload = () => {
+        const result = reader.result as string;
+        imageCache[src] = result;
+        resolve(result);
+      };
       reader.onerror = (error) => reject(error);
     });
   } catch (error: any) {
     throw new Error(error);
+  }
+};
+
+export const fetchImage = async (src: string, filepath: string): Promise<string | null> => {
+  // Check the image cache first
+  if (imageCache[src]) {
+    return imageCache[src];
+  }
+  // Check if it's an internal link to an image and use that if it is
+  const internalFile = getInternalFile(src, filepath);
+  if (internalFile) {
+    return getInternalImage(internalFile);
+  } else {
+    return getRemoteImage(src);
   }
 };
 
