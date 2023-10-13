@@ -56,10 +56,3 @@ export const registerEditorBannerEvents = () => {
     })
   );
 };
-
-export const unloadEditingViewBanners = () => {
-  for (const banner of Object.values(leafBannerMap)) {
-    banner?.$destroy();
-  }
-  document.querySelectorAll('.obsidian-banner-wrapper').forEach((el) => el.remove());
-};

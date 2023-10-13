@@ -5,24 +5,15 @@ import {
   updateBanner,
   destroyBanner
 } from 'src/banner';
-import type { BannerProps } from 'src/banner';
+import type { BannerProps, Embedded } from 'src/banner';
 import { extractBannerData, shouldDisplayBanner } from 'src/bannerData';
 import { plug } from 'src/main';
 import { getSetting } from 'src/settings';
 import { registerSettingChangeEvent } from 'src/utils';
-import BannerRenderChild from './BannerRenderChild';
-import type { Embedded } from './BannerRenderChild';
-
-// Helper to associate a banner to a specific view/document
-const currentBanners: Record<string, BannerRenderChild> = {};
 
 /* BUG: This doesn't rerender banners in internal embeds properly.
 Reload app or manually edit the view/contents to fix */
 const rerender = () => {
-  for (const banner of Object.values(currentBanners)) {
-    banner.unload();
-  }
-
   for (const leaf of plug.app.workspace.getLeavesOfType('markdown')) {
     const { previewMode } = leaf.view;
     const sections = previewMode.renderer.sections.filter((s) => (
@@ -90,8 +81,4 @@ export const registerReadingBannerEvents = () => {
     'defaultHeaderValue'
   ], rerender);
   plug.registerEvent(plug.app.vault.on('rename', rerender));
-};
-
-export const unloadReadingViewBanners = () => {
-  rerender();
 };

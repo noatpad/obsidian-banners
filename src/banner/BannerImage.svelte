@@ -2,11 +2,11 @@
   import { Platform } from 'obsidian';
   import { createEventDispatcher } from 'svelte';
   import type { BannerDataWrite } from 'src/bannerData';
-  import type { Embedded } from 'src/reading/BannerRenderChild';
   import { settings } from 'src/settings/store';
   import dragBanner from './actions/dragBanner';
   import type { DragParams, XY } from './actions/dragBanner';
   import lockIcon from './actions/lockIcon';
+  import type { Embedded } from '.';
 
   interface BannerImageDispatch {
     'drag-banner': Partial<BannerDataWrite>;

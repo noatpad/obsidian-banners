@@ -5,12 +5,12 @@
   import { updateBannerData } from 'src/bannerData';
   import type { IconString } from 'src/bannerData';
   import IconModal from 'src/modals/IconModal';
-  import type { Embedded } from 'src/reading/BannerRenderChild';
   import BannerImage from './BannerImage.svelte';
   import Error from './Error.svelte';
   import Header from './Header.svelte';
   import Loading from './Loading.svelte';
   import { fetchImage } from './utils';
+  import type { Embedded } from '.';
 
   export let source: string | undefined = undefined;
   export let x = 0.5;
@@ -74,9 +74,12 @@
   :global(.obsidian-banner-wrapper:not(.in-internal-embed)) {
     position: relative;
     width: calc(100% + 2 * var(--file-margins));
-    margin-top: calc(-1 * var(--file-margins));
-    margin-left: calc(-1 * var(--file-margins));
-    margin-right: calc(-1 * var(--file-margins));
+    margin: calc(-1 * var(--file-margins));
+    margin-bottom: var(--file-margins);
+  }
+
+  :global(.obsidian-banner-wrapper.in-popover) {
+    margin-bottom: 0;
   }
 
   .obsidian-banner {

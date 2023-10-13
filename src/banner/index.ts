@@ -1,7 +1,8 @@
 import { Notice } from 'obsidian';
 import type { TFile } from 'obsidian';
-import type { Embedded } from 'src/reading/BannerRenderChild';
 import Banner from './Banner.svelte';
+
+export type Embedded = 'internal' | 'popover' | false;
 
 export interface BannerProps extends BannerData {
   file: TFile;
@@ -58,3 +59,9 @@ export const destroyBanner = (id: string) => {
 };
 
 export const hasBanner = (id: string): boolean => !!leafBannerMap[id];
+
+export const unloadAllBanners = () => {
+  for (const id of Object.keys(leafBannerMap)) {
+    destroyBanner(id);
+  }
+};

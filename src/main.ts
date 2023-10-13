@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { Plugin } from 'obsidian';
+import { unloadAllBanners } from './banner';
 import BannerEvents from './BannerEvents';
 import loadCommands from './commands';
-import { loadExtensions, unloadEditingViewBanners } from './editing';
-import { loadPostProcessor, unloadReadingViewBanners } from './reading';
+import { loadExtensions } from './editing';
+import { loadPostProcessor } from './reading';
 import { loadSettings } from './settings';
 import type { BannerSettings } from './settings/structure';
 
@@ -28,7 +29,6 @@ export default class BannersPlugin extends Plugin {
   async onunload() {
     console.log('Unloading Banners 2...');
 
-    unloadEditingViewBanners();
-    unloadReadingViewBanners();
+    unloadAllBanners();
   }
 }
