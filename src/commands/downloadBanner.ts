@@ -14,12 +14,13 @@ const downloadBanner = async () => {
   const src = extractBannerDataFromFile(file).source;
   try {
     const { arrayBuffer, headers } = await requestUrl(src);
-    const imgName = new URL(src).pathname.slice(1);
-    const ext = mime.extension(headers['content-type']) || null;
+    const imgName = new URL(src).pathname.split('/').pop()!;
+    const ext = mime.lookup(imgName) ? null : (mime.extension(headers['content-type']) || null);
     const path = await plug.app.vault.getAvailablePathForAttachments(imgName, ext, file.path);
     const image = await plug.app.vault.createBinary(path, arrayBuffer);
     const link = plug.app.fileManager.generateMarkdownLink(image, file.path).slice(1);
     await updateBannerData(file, { source: link });
+    new Notice(`Downloaded the banner to ${image.path} and linked the note to it!`);
   } catch (error) {
     new Notice('Couldn\'t download the image into the vault!');
     console.error(error);
