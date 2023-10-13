@@ -133,9 +133,3 @@ export const updateLegacyBannerSource = async (file: TFile): Promise<boolean> =>
   });
   return changed;
 };
-
-// Helper on whether a banner element should be displayed or not
-export const shouldDisplayBanner = (bannerData: BannerData): boolean => {
-  const { source, icon, header } = bannerData;
-  return !!(source || icon || header);
-};

@@ -1,8 +1,8 @@
 import { EditorState, StateEffect, Transaction } from '@codemirror/state';
 import isEqual from 'lodash/isEqual';
 import { editorInfoField } from 'obsidian';
-import { hasBanner } from 'src/banner';
-import { extractBannerDataFromState, shouldDisplayBanner } from 'src/bannerData';
+import { hasBanner, shouldDisplayBanner } from 'src/banner';
+import { extractBannerDataFromState } from 'src/bannerData';
 import bannerField from './bannerField';
 import {
   assignBannerEffect,

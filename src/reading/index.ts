@@ -3,10 +3,11 @@ import {
   createBanner,
   hasBanner,
   updateBanner,
-  destroyBanner
+  destroyBanner,
+  shouldDisplayBanner
 } from 'src/banner';
 import type { BannerProps, Embedded } from 'src/banner';
-import { extractBannerData, shouldDisplayBanner } from 'src/bannerData';
+import { extractBannerData } from 'src/bannerData';
 import { plug } from 'src/main';
 import { getSetting } from 'src/settings';
 import { registerSettingChangeEvent } from 'src/utils';
