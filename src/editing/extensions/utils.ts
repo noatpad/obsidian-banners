@@ -1,7 +1,4 @@
 import { StateEffect, StateEffectType } from '@codemirror/state';
-import Banner from 'src/banner/Banner.svelte';
-
-export const leafBannerMap: Record<string, Banner> = {};
 
 export const refreshEffect = StateEffect.define();
 export const openNoteEffect = StateEffect.define();

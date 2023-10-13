@@ -1,3 +1,4 @@
+import { destroyBanner, leafBannerMap } from 'src/banner';
 import { plug } from 'src/main';
 import type { MarkdownViewState } from 'src/types';
 import {
@@ -7,12 +8,7 @@ import {
 } from 'src/utils';
 import bannerExtender from './extensions/bannerExtender';
 import bannerField from './extensions/bannerField';
-import {
-  leafBannerMap,
-  openNoteEffect,
-  refreshEffect,
-  removeBannerEffect
-} from './extensions/utils';
+import { openNoteEffect, refreshEffect, removeBannerEffect } from './extensions/utils';
 
 export const loadExtensions = () => {
   plug.registerEditorExtension([bannerExtender, bannerField]);
@@ -49,8 +45,7 @@ export const registerEditorBannerEvents = () => {
           view.editor.cm.dispatch({ effects });
         } else if (leafBannerMap[id]) {
           // When switching to a view where the editor isn't available, remove the banner manually
-          leafBannerMap[id].$destroy();
-          delete leafBannerMap[id];
+          destroyBanner(id);
         }
       });
     })
