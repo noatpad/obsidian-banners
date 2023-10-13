@@ -77,21 +77,20 @@
     &.shadow { text-shadow: var(--background-primary) 0 0 6px; }
     &.border { -webkit-text-stroke: 2px var(--background-primary); }
 
-    &.with-banner {
-      // TODO: Move this out of the &.with-banner rule
-      &.h-left {
-        justify-content: start;
-        text-align: left;
-      }
-      &.h-center {
-        justify-content: center;
-        text-align: center;
-      }
-      &.h-right {
-        justify-content: end;
-        text-align: right;
-      }
+    &.h-left {
+      justify-content: start;
+      text-align: left;
+    }
+    &.h-center {
+      justify-content: center;
+      text-align: center;
+    }
+    &.h-right {
+      justify-content: end;
+      text-align: right;
+    }
 
+    &.with-banner {
       &.v-above,
       &.v-edge { position: relative; }
       &.v-center-banner {
