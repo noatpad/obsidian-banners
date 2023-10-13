@@ -5,7 +5,6 @@
   import dragBanner from './actions/dragBanner';
   import type { DragParams, XY } from './actions/dragBanner';
   import lockIcon from './actions/lockIcon';
-  import { getBannerHeight } from './utils';
   import type { Embedded } from '.';
 
   interface BannerImageDispatch {
@@ -25,10 +24,6 @@
     enableDragInInternalEmbed,
     enableDragInPopover,
     enableLockButton,
-    height: desktopHeight,
-    internalEmbedHeight,
-    mobileHeight,
-    popoverHeight,
     style
   } = $settings);
   let objectPos = { x, y };
@@ -62,13 +57,6 @@
     draggable: dragParam,
     modKey: bannerDragModifier
   };
-
-  $: height = getBannerHeight({
-    desktopHeight: desktopHeight as string,
-    mobileHeight: mobileHeight as string,
-    internalEmbedHeight: internalEmbedHeight as string,
-    popoverHeight: popoverHeight as string
-  }, embed);
   $: gradient = (style === 'gradient');
   $: objectPosStyle = `${objectPos.x * 100}% ${objectPos.y * 100}%`;
 </script>
@@ -81,7 +69,6 @@
   class:draggable
   class:dragging
   style:object-position={objectPosStyle}
-  style:height
   draggable={false}
   aria-hidden={true}
   on:mouseenter={hoverOn}
@@ -110,6 +97,13 @@
     max-width: none;
     object-fit: cover;
     user-select: none;
+
+    :global(.obsidian-banner-wrapper) & { height: var(--banners-height); }
+    :global(.obsidian-banner-wrapper.mobile) & { height: var(--banners-mobile-height); }
+    :global(.obsidian-banner-wrapper.in-popover) & { height: var(--banners-popover-height); }
+    :global(.obsidian-banner-wrapper.in-internal-embed) & {
+      height: var(--banners-internal-embed-height);
+    }
 
     &.gradient {
       mask-image: linear-gradient(to bottom, black 50%, transparent);

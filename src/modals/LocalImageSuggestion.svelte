@@ -25,6 +25,10 @@
 {/if}
 
 <style lang="scss">
+  :global(.banners-local-image-modal .suggestion-item) {
+    white-space: normal;
+  }
+
   .suggestion-text.with-preview {
     padding: 0.2em 0 0.4em;
   }

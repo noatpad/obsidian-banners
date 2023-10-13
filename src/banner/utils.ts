@@ -1,14 +1,6 @@
-import { Platform, requestUrl } from 'obsidian';
+import { requestUrl } from 'obsidian';
 import { IMAGE_FORMATS } from 'src/bannerData';
 import { plug } from 'src/main';
-import type { Embedded } from '.';
-
-interface Heights {
-  desktopHeight: string;
-  mobileHeight: string;
-  internalEmbedHeight: string;
-  popoverHeight: string;
-}
 
 const FILE_REGEX = /^\[\[.+\]\]/;
 const imageCache: Record<string, string> = {};
@@ -58,19 +50,6 @@ export const fetchImage = async (src: string, currentPath: string): Promise<stri
   } else {
     return getRemoteImage(src);
   }
-};
-
-export const getBannerHeight = (heights: Heights, embed: Embedded): string => {
-  const {
-    desktopHeight,
-    mobileHeight,
-    internalEmbedHeight,
-    popoverHeight
-  } = heights;
-  let newHeight = Platform.isMobile ? mobileHeight : desktopHeight;
-  if (embed === 'internal') newHeight = internalEmbedHeight;
-  else if (embed === 'popover') newHeight = popoverHeight;
-  return newHeight as string;
 };
 
 export const flushImageCache = () => {

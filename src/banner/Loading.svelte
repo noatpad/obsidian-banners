@@ -1,30 +1,19 @@
-<script lang="ts">
-  import { settings } from 'src/settings/store';
-  import { getBannerHeight } from './utils';
-  import type { Embedded } from '.';
-
-  export let embed: Embedded;
-
-  $: ({
-    height: desktopHeight,
-    mobileHeight,
-    internalEmbedHeight,
-    popoverHeight
-  } = $settings);
-  $: height = getBannerHeight({
-    desktopHeight: desktopHeight as string,
-    mobileHeight: mobileHeight as string,
-    internalEmbedHeight: internalEmbedHeight as string,
-    popoverHeight: popoverHeight as string
-  }, embed);
-</script>
-
-<div class="wrapper" style:height>
+<div class="wrapper">
   <div class="loading">Loading...</div>
 </div>
 
 <style lang="scss">
   @import './mixins.scss';
-  .wrapper { @include info-box-wrapper; }
+  .wrapper {
+    @include info-box-wrapper;
+
+    :global(.obsidian-banner-wrapper) & { height: var(--banners-height); }
+    :global(.obsidian-banner-wrapper.mobile) & { height: var(--banners-mobile-height); }
+    :global(.obsidian-banner-wrapper.in-popover) & { height: var(--banners-popover-height); }
+    :global(.obsidian-banner-wrapper.in-internal-embed) & {
+      height: var(--banners-internal-embed-height);
+    }
+  }
+
   .loading { @include info-box; }
 </style>

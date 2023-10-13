@@ -41,7 +41,7 @@
   <!-- IDEA: Add fade-in transition? -->
   {#if source}
     {#await fetchImage(source, file.path)}
-      <Loading {embed} />
+      <Loading />
     {:then src}
       <BannerImage
         {src}
@@ -53,7 +53,7 @@
         on:toggle-lock={toggleLock}
       />
     {:catch error}
-      <Error {error} {embed} />
+      <Error {error} />
     {/await}
   {/if}
   {#if icon || header}

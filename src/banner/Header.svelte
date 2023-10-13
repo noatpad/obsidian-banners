@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { IconString } from 'src/bannerData';
   import { settings } from 'src/settings/store';
-  import placeHeader from './actions/placeHeader';
-  import type { PlaceParams } from './actions/placeHeader';
+  import sizedMargin from './actions/sizedMargin';
+  import type { ActionParams } from './actions/sizedMargin';
   import Icon from './Icon.svelte';
 
   export let icon: IconString | undefined;
@@ -13,24 +13,12 @@
   let clientHeight = 0;
   $: ({
     headerDecor: decor,
-    headerSize,
     headerHorizontalAlignment: horizontal,
-    headerHorizontalTransform: hTransform,
-    headerVerticalAlignment: vertical,
-    headerVerticalTransform: vTransform
+    headerVerticalAlignment: vertical
   } = $settings);
 
-  let placeParams: PlaceParams;
-  $: placeParams = {
-    placement: {
-      horizontal,
-      hTransform,
-      vertical,
-      vTransform
-    },
-    height: clientHeight,
-    withBanner
-  };
+  let params: ActionParams;
+  $: params = { vertical, height: clientHeight, withBanner };
 </script>
 
 <div
@@ -41,14 +29,14 @@
   class:h-left={horizontal === 'left'}
   class:h-center={horizontal === 'center'}
   class:h-right={horizontal === 'right'}
+  class:h-custom={horizontal === 'custom'}
   class:v-center-banner={vertical === 'center'}
   class:v-above={vertical === 'above'}
   class:v-edge={vertical === 'edge'}
   class:v-below={vertical === 'below'}
-  class:center-of-banner={vertical === 'center'}
-  style:font-size={headerSize}
+  class:v-custom={vertical === 'custom'}
   bind:clientHeight
-  use:placeHeader={placeParams}
+  use:sizedMargin={params}
 >
   {#if icon}
     <Icon
@@ -69,6 +57,7 @@
     gap: 0.2em;
     padding: 0 var(--file-margins);
     margin: 0 auto;
+    font-size: var(--banners-header-font-size);
 
     :global(.is-readable-line-width) & {
       max-width: calc(var(--file-line-width) + (var(--file-margins) * 2));
@@ -89,6 +78,7 @@
       justify-content: end;
       text-align: right;
     }
+    &.h-custom { transform: var(--banners-header-transform); }
 
     &.with-banner {
       &.v-above,
@@ -100,6 +90,7 @@
         right: 0;
         transform: translateY(-50%);
       }
+      &.v-custom { transform: var(--banners-header-transform); }
     }
   }
 

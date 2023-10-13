@@ -16,7 +16,7 @@
     dispatch('open-icon-modal');
   };
 
-  $: ({ headerDecor: decor, iconSize: fontSize, useTwemoji } = $settings);
+  $: ({ headerDecor: decor, useTwemoji } = $settings);
   $: ({ type, value } = icon);
   $: html = (type === 'emoji' && useTwemoji)
     ? twemoji.parse(value, { className: 'banner-emoji' })
@@ -30,7 +30,6 @@
   class:emoji-icon={type === 'emoji'}
   class:shadow={decor === 'shadow'}
   class:border={decor === 'border'}
-  style:font-size={fontSize}
   role="button"
   tabindex="-1"
   on:click={handleIconClick}
@@ -49,6 +48,7 @@
     width: calc(1em + 8px);
     border-radius: 6px;
     transition: ease 0.2s background;
+    font-size: var(--banners-icon-font-size);
 
     &:not(.embed) {
       cursor: pointer;

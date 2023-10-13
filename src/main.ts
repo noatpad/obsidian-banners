@@ -6,6 +6,7 @@ import loadCommands from './commands';
 import { loadExtensions } from './editing';
 import { loadPostProcessor } from './reading';
 import { loadSettings } from './settings';
+import { unsetCssVars } from './settings/CssSettingsHandler';
 import type { BannerSettings } from './settings/structure';
 
 export let plug: BannersPlugin;
@@ -15,7 +16,6 @@ export default class BannersPlugin extends Plugin {
   events!: BannerEvents;
 
   async onload() {
-    console.log('Loading Banners 2...');
     plug = this;
     this.events = new BannerEvents();
 
@@ -27,8 +27,7 @@ export default class BannersPlugin extends Plugin {
   }
 
   async onunload() {
-    console.log('Unloading Banners 2...');
-
     unloadAllBanners();
+    unsetCssVars();
   }
 }
