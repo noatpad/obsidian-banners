@@ -1,7 +1,7 @@
 import { FuzzySuggestModal, Notice, TFile } from 'obsidian';
 import { TFolder } from 'obsidian';
 import type { FuzzyMatch } from 'obsidian';
-import { IMAGE_FORMATS, updateBannerData } from 'src/bannerData';
+import { IMAGE_EXTENSIONS, updateBannerData } from 'src/bannerData';
 import { plug } from 'src/main';
 import { getSetting } from 'src/settings';
 import { DEFAULT_SETTINGS } from 'src/settings/structure';
@@ -25,7 +25,7 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
     return folder.children.reduce((files, abFile) => {
       if (abFile instanceof TFolder) {
         files.push(...this.getImagesInFolder(folder));
-      } else if (abFile instanceof TFile && IMAGE_FORMATS.includes(abFile.extension)) {
+      } else if (abFile instanceof TFile && IMAGE_EXTENSIONS.includes(abFile.extension)) {
         files.push(abFile);
       }
       return files;
@@ -35,7 +35,7 @@ export default class LocalImageModal extends FuzzySuggestModal<TFile> {
   getItems(): TFile[] {
     if (this.path === DEFAULT_SETTINGS.bannersFolder) {
       return this.app.vault.getFiles()
-        .filter((file) => IMAGE_FORMATS.includes(file.extension));
+        .filter((file) => IMAGE_EXTENSIONS.includes(file.extension));
     }
 
     const folder = this.app.vault.getAbstractFileByPath(this.path);

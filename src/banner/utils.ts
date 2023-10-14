@@ -1,5 +1,5 @@
 import { requestUrl } from 'obsidian';
-import { IMAGE_FORMATS } from 'src/bannerData';
+import { IMAGE_EXTENSIONS } from 'src/bannerData';
 import { plug } from 'src/main';
 
 const FILE_REGEX = /^\[\[.+\]\]/;
@@ -9,7 +9,7 @@ const getInternalImage = (link: string, currentPath: string) => {
   const file = plug.app.metadataCache.getFirstLinkpathDest(link.slice(2, -2), currentPath);
   if (!file) {
     throw new Error(`${link} file does not exist!`);
-  } else if (!IMAGE_FORMATS.includes(file.extension)) {
+  } else if (!IMAGE_EXTENSIONS.includes(file.extension)) {
     throw new Error(`${file.name} is not an image!`);
   }
 

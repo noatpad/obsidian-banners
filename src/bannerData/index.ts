@@ -25,18 +25,17 @@ export interface BannerDataWrite {
   lock: boolean;
 }
 
-export const IMAGE_FORMATS = [
-  'apng',
-  'avif',
-  'gif',
-  'jpg',
-  'jpeg',
-  'jpe',
-  'jif',
-  'jfif',
-  'png',
-  'webp'
-];
+/* NOTE: These are cherry-picked from the mime-db repo (https://github.com/jshttp/mime-db)
+('cause heaven forbid I download a 200kb JSON file for a handful of types) */
+export const MIME_TYPES: Record<string, string[]> = {
+  'image/apng': ['apng'],
+  'image/avif': ['avif'],
+  'image/gif': ['gif'],
+  'image/jpeg': ['jpg', 'jpeg', 'jpe'],
+  'image/png': ['png'],
+  'image/webp': ['webp']
+};
+export const IMAGE_EXTENSIONS = Object.values(MIME_TYPES).flat();
 
 /* NOTE: These are bi-directional maps between YAML banner keys and `BannerData` keys,
 to help read, write, & transform banner data between them */

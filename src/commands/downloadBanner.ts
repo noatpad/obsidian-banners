@@ -1,8 +1,12 @@
-import mime from 'mime-types';
 import { Notice, requestUrl } from 'obsidian';
-import { extractBannerDataFromFile, updateBannerData } from 'src/bannerData';
+import { MIME_TYPES, extractBannerDataFromFile, updateBannerData } from 'src/bannerData';
 import { plug } from 'src/main';
 import { URL_REGEX } from './utils';
+
+const hasExtension = (filename: string): boolean => {
+  const ext = filename.split('.').pop();
+  return filename !== ext;
+};
 
 export const canRunCommand = (): boolean => {
   const file = plug.app.workspace.getActiveFile();
@@ -15,7 +19,7 @@ const downloadBanner = async (source?: string) => {
   try {
     const { arrayBuffer, headers } = await requestUrl(src);
     const imgName = new URL(src).pathname.split('/').pop()!;
-    const ext = mime.lookup(imgName) ? null : (mime.extension(headers['content-type']) || null);
+    const ext = hasExtension(imgName) ? null : (MIME_TYPES[headers['content-type']][0] || null);
     const path = await plug.app.vault.getAvailablePathForAttachments(imgName, ext, file.path);
     const image = await plug.app.vault.createBinary(path, arrayBuffer);
     const link = plug.app.fileManager.generateMarkdownLink(image, file.path).slice(1);
