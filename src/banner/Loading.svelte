@@ -8,7 +8,7 @@
     @include info-box-wrapper;
 
     :global(.obsidian-banner-wrapper) & { height: var(--banners-height); }
-    :global(.obsidian-banner-wrapper.mobile) & { height: var(--banners-mobile-height); }
+    :global(.is-mobile .obsidian-banner-wrapper) & { height: var(--banners-mobile-height); }
     :global(.obsidian-banner-wrapper.in-popover) & { height: var(--banners-popover-height); }
     :global(.obsidian-banner-wrapper.in-internal-embed) & {
       height: var(--banners-internal-embed-height);

@@ -1,4 +1,4 @@
-import { Notice, Platform } from 'obsidian';
+import { Notice } from 'obsidian';
 import type { TFile } from 'obsidian';
 import Banner from './Banner.svelte';
 
@@ -19,7 +19,6 @@ interface LeafBannerEntry {
 const WRAPPER_CLASS = 'obsidian-banner-wrapper';
 const IN_INTERNAL_EMBED_CLASS = 'in-internal-embed';
 const IN_POPOVER_CLASS = 'in-popover';
-const MOBILE_CLASS = 'mobile';
 const WITH_BANNER_CLASS = 'with-banner';
 const WITHOUT_BANNER_CLASS = 'without-banner';
 
@@ -28,7 +27,6 @@ export const leafBannerMap: Record<string, LeafBannerEntry> = {};
 export const createBanner = (bannerProps: BannerProps, container: HTMLElement, id: string) => {
   const cls = [WRAPPER_CLASS];
   cls.push(bannerProps.source ? WITH_BANNER_CLASS : WITHOUT_BANNER_CLASS);
-  if (Platform.isMobile) cls.push(MOBILE_CLASS);
   if (bannerProps.embed === 'internal') cls.push(IN_INTERNAL_EMBED_CLASS);
   else if (bannerProps.embed === 'popover') cls.push(IN_POPOVER_CLASS);
 

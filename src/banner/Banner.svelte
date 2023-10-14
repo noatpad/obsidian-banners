@@ -78,6 +78,12 @@
     margin: calc(-1 * var(--file-margins));
     margin-bottom: var(--file-margins);
   }
+  :global(.is-mobile .obsidian-banner-wrapper.with-banner:not(.in-internal-embed)) {
+    width: calc(100% + 2 * var(--size-4-5));
+    margin: calc(-1 * var(--size-4-5));
+    margin-top: calc(-1 * var(--size-4-2));
+    margin-bottom: var(--size-4-2);
+  }
   :global(.obsidian-banner-wrapper.with-banner.in-popover) {
     margin-bottom: 0;
   }

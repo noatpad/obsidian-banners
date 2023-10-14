@@ -62,6 +62,10 @@
       max-width: calc(var(--file-line-width) + (var(--file-margins) * 2));
     }
 
+    :global(.is-mobile .is-readable-line-width) & {
+      max-width: calc(var(--file-line-width) + (var(--size-4-5) * 2));
+    }
+
     &.shadow { text-shadow: var(--background-primary) 0 0 6px; }
     &.border { -webkit-text-stroke: 2px var(--background-primary); }
 
@@ -81,6 +85,10 @@
 
     &.with-banner {
       padding: 0 var(--file-margins);
+
+      :global(.is-mobile .is-readable-line-width) & {
+        padding: 0 var(--size-4-5);
+      }
 
       &.v-above,
       &.v-edge { position: relative; }
