@@ -10,7 +10,7 @@ import type { BannerProps, Embedded } from 'src/banner';
 import { extractBannerData } from 'src/bannerData';
 import { plug } from 'src/main';
 import { getSetting } from 'src/settings';
-import { registerSettingChangeEvent } from 'src/utils';
+import { iterateMarkdownLeaves, registerSettingChangeEvent } from 'src/utils';
 
 /* BUG: This doesn't rerender banners in internal embeds properly.
 Reload app or manually edit the view/contents to fix */
@@ -82,4 +82,11 @@ export const registerReadingBannerEvents = () => {
     'defaultHeaderValue'
   ], rerender);
   plug.registerEvent(plug.app.vault.on('rename', rerender));
+
+  // Edge case when switching from a note with a banner to a banner with no data to postprocess
+  plug.registerEvent(plug.app.workspace.on('layout-change', () => {
+    iterateMarkdownLeaves((leaf) => {
+      if (!leaf.view.file.stat.size) destroyBanner(leaf.view.previewMode.docId);
+    }, 'reading');
+  }));
 };

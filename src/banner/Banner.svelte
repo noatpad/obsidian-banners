@@ -69,6 +69,8 @@
 
 <style lang="scss">
   // NOTE: This styling rule here may cause side effects to the editing view. Let's hope it doesn't
+  /* BUG: On mobile, there is a horizontal scrolling issue where a small empty space can be
+  scrolled on the right. Unsure if this is due to this or the banner's size */
   :global(.cm-scroller) { flex-direction: column; }
 
   // Parent banner wrapper styling

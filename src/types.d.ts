@@ -57,6 +57,7 @@ declare module 'obsidian' {
   }
 
   interface MarkdownPreviewView {
+    docId: string;
     renderer: PreviewRenderer;
   }
 
@@ -71,6 +72,7 @@ declare module 'obsidian' {
   interface View {
     currentMode: EditMode | PreviewMode;
     editor: Editor;
+    file: TFile;
     previewMode: MarkdownPreviewView;
   }
 
