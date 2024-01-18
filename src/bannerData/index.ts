@@ -47,6 +47,7 @@ export const MIME_TYPES: Record<string, string[]> = {
   'image/gif': ['gif'],
   'image/jpeg': ['jpg', 'jpeg', 'jpe'],
   'image/png': ['png'],
+  'image/svg+xml': ['svg'],
   'image/webp': ['webp']
 };
 export const IMAGE_EXTENSIONS = Object.values(MIME_TYPES).flat();
