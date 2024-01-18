@@ -3,3 +3,4 @@ dist/
 .hotreload
 .env
 .vscode
+.idea
