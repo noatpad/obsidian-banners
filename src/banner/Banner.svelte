@@ -17,6 +17,10 @@
   export let y = 0.5;
   export let icon: IconString | undefined = undefined;
   export let header: string | undefined = undefined;
+  export let adjust_width: boolean | undefined = undefined;
+  export let objectFit: string | undefined = undefined;
+  export let objectPosition: string | undefined = undefined;
+  export let background: string | undefined = undefined;
   export let lock = false;
 
   export let viewType: 'editing' | 'reading';
@@ -28,6 +32,10 @@
 
   $: bannerX = x ?? 0.5;
   $: bannerY = y ?? 0.5;
+  $: imageAdjustWidthToReadableLineWidth = adjust_width ?? undefined;
+  $: imageObjectFit = objectFit ?? undefined;
+  $: imageObjectPosition = objectPosition ?? undefined;
+  $: imageBackground = background ?? undefined;
   $: lockValue = lock ?? false;
   $: withBanner = !!source;
   $: isEmbed = !!embed;
@@ -47,6 +55,10 @@
         {src}
         x={bannerX}
         y={bannerY}
+        {imageAdjustWidthToReadableLineWidth}
+        {imageObjectFit}
+        {imageObjectPosition}
+        {imageBackground}
         lock={lockValue}
         {embed}
         on:drag-banner={async ({ detail }) => updateBannerData(file, detail)}

@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import type { EditorState } from '@codemirror/state';
 import { editorInfoField, parseYaml } from 'obsidian';
 import type { TFile } from 'obsidian';
@@ -22,6 +23,19 @@ export interface BannerDataWrite {
   y: number;
   icon: string;
   header: string | null;
+  adjust_width: boolean | null;
+  /**
+   * @see [MDN / CSS / object-fit]{@link https://developer.mozilla.org/ru/docs/Web/CSS/object-fit}
+   */
+  objectFit: 'contain' | 'cover' | 'fill' | 'none' | 'revert' | 'scale-down' | 'unset' | null;
+  /**
+   * @see [MDN / CSS / object-position]{@link https://developer.mozilla.org/ru/docs/Web/CSS/object-position}
+   */
+  objectPosition: 'bottom' | 'center' | 'left' | 'revert' | 'right' | 'top' | 'unset' | string | null;
+  /**
+   * @see [MDN / CSS / background]{@link https://developer.mozilla.org/ru/docs/Web/CSS/background}
+   */
+  background: string | null;
   lock: boolean;
 }
 
@@ -33,6 +47,7 @@ export const MIME_TYPES: Record<string, string[]> = {
   'image/gif': ['gif'],
   'image/jpeg': ['jpg', 'jpeg', 'jpe'],
   'image/png': ['png'],
+  'image/svg+xml': ['svg'],
   'image/webp': ['webp']
 };
 export const IMAGE_EXTENSIONS = Object.values(MIME_TYPES).flat();
@@ -52,6 +67,54 @@ const READ_MAP: Record<string, ReadProperty> = {
     key: 'header',
     transform: extractHeaderFromYaml
   },
+  'adjust_width': {
+    key: 'adjust_width',
+    transform(value: boolean | string | null | undefined) {
+      if (typeof value === 'boolean') {
+        return value;
+      }
+      if (value === 'false') {
+        return false;
+      }
+      if (value === 'true') {
+        return true;
+      }
+      if (value === undefined || value === null) {
+        return undefined;
+      }
+      return Boolean(value);
+    }
+  },
+  'object-fit': {
+    key: 'objectFit',
+    transform(value: string | null | undefined) {
+      if (typeof value === 'string' && !!value) {
+        return value.toLowerCase();
+      }
+      return void 0;
+    }
+  },
+  'object-position': {
+    key: 'objectPosition',
+    transform(value: string | null | undefined) {
+      if (typeof value === 'string' && !!value) {
+        return value.toLowerCase();
+      }
+      return void 0;
+    }
+  },
+  'background': {
+    key: 'background',
+    transform(value: string | null | undefined) {
+      if (typeof value === 'string' && !!value) {
+        if (value.endsWith(';')) {
+          return value.slice(0, -1);
+        }
+        return value;
+      }
+      return void 0;
+    }
+  },
   lock: { key: 'lock' }
 } as const;
 
@@ -62,6 +125,10 @@ const WRITE_MAP: Record<keyof BannerData, string> = {
   y: 'y',
   icon: 'icon',
   header: 'header',
+  adjust_width: 'adjust_width',
+  objectFit: 'object-fit',
+  objectPosition: 'object-position',
+  background: 'background',
   lock: 'lock'
 } as const;
 
