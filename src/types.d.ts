@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/ban-ts-comment,max-len */
 import type { EditorView } from '@codemirror/view';
 import type { Editor } from 'obsidian';
 import type { IconString } from './bannerData';
@@ -97,6 +97,19 @@ declare global {
     y: number;
     icon: IconString;
     header: string;
+    adjust_width: boolean;
+    /**
+     * @see [MDN / CSS / object-fit]{@link https://developer.mozilla.org/ru/docs/Web/CSS/object-fit}
+     */
+    objectFit: 'contain' | 'cover' | 'fill' | 'none' | 'revert' | 'scale-down' | 'unset' | null;
+    /**
+     * @see [MDN / CSS / object-position]{@link https://developer.mozilla.org/ru/docs/Web/CSS/object-position}
+     */
+    objectPosition: 'bottom' | 'center' | 'left' | 'revert' | 'right' | 'top' | 'unset' | string | null;
+    /**
+     * @see [MDN / CSS / background]{@link https://developer.mozilla.org/ru/docs/Web/CSS/background}
+     */
+    background: string | null;
     lock: boolean;
   }
 }

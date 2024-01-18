@@ -16,10 +16,14 @@
   export let src: string | null;
   export let x: number;
   export let y: number;
+  export let imageAdjustWidthToReadableLineWidth: boolean | undefined = undefined;
+  export let imageObjectFit: string | undefined = undefined;
+  export let imageObjectPosition: string | undefined = undefined;
+  export let imageBackground: string | undefined = undefined;
   export let lock: boolean;
   export let embed: Embedded;
   $: ({
-    adjustWidthToReadableLineWidth: readableWidth,
+    adjustWidthToReadableLineWidth: _readableWidth,
     bannerDragModifier,
     enableDragInInternalEmbed,
     enableDragInPopover,
@@ -31,6 +35,7 @@
   let draggable = !bannerDragModifier;
   let dragging = false;
 
+  const readableWidth = imageAdjustWidthToReadableLineWidth ?? _readableWidth;
   const hoverOn = () => { hovering = true; };
   const hoverOff = () => { hovering = false; };
   const dragStart = () => { dragging = true; };
@@ -58,7 +63,9 @@
     modKey: bannerDragModifier
   };
   $: gradient = (style === 'gradient');
-  $: objectPosStyle = `${objectPos.x * 100}% ${objectPos.y * 100}%`;
+  $: objectFitStyle = imageObjectFit;
+  $: objectPosStyle = imageObjectPosition ?? `${objectPos.x * 100}% ${objectPos.y * 100}%`;
+  $: backgroundStyle = imageBackground;
 </script>
 
 <img
@@ -68,7 +75,9 @@
   class:readable-width={readableWidth}
   class:draggable
   class:dragging
+  style:object-fit={objectFitStyle}
   style:object-position={objectPosStyle}
+  style:background={backgroundStyle}
   draggable={false}
   aria-hidden={true}
   on:mouseenter={hoverOn}
